@@ -1,0 +1,18 @@
+{
+  "_source": "hubspot-workflow",
+  "workflow_id": 12345678,
+  "portal_id": 87654321,
+  "object_id": 901234567,
+  "contact": {
+    "email": "anna.mueller+demo@example.com",
+    "first_name": "Anna",
+    "last_name": "Müller"
+  },
+  "properties": {
+    "lifecyclestage": { "value": "salesqualifiedlead", "source_type": "WORKFLOW" },
+    "hs_lead_status": { "value": "OPEN_DEAL", "source_type": "WORKFLOW" },
+    "hubspot_owner_id": { "value": "closer-de-01", "source_type": "WORKFLOW" },
+    "quiz_score": { "value": "72", "source_type": "INTEGRATION" }
+  },
+  "changed_at": "2026-05-19T10:11:22.000Z"
+}

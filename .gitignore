@@ -1,0 +1,68 @@
+# Application-specific files (cover letters, pitch material, internal plans)
+_application/
+
+# Secrets — NEVER commit
+streamlit-app/.streamlit/secrets.toml
+*.env
+.env
+.env.local
+.env.production
+
+# Landing page runtime config (only secrets — public IDs are committed)
+landing-page/config.local.js
+
+# Quiz frontend: only sensitive overrides — the public config.js with
+# Make-Webhook-URL + GTM-Container-ID IS committed (those are not secrets)
+quiz-frontend/config.local.js
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Power BI
+*.pbix
+~$*.pbix
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# GCP
+gha-creds-*.json
+*-key.json
+service-account*.json
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+*.bak

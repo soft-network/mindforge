@@ -1,0 +1,9 @@
+.pbix-Dateien gehören nicht ins Git (Binär, mit Auth-Tokens).
+
+Die fertige Datei liegt nach Setup unter:
+  C:\Users\msi\Desktop\demoprojekt\powerbi-cross-source\mindforge-cross-source.pbix  (lokal, in .gitignore)
+
+Für Reviewer:
+  - Screenshots der 4 Reports unter ./reports/
+  - Data-Model und DAX-Code in data-model.md und dax-measures.md
+  - Setup-Anleitung im README.md

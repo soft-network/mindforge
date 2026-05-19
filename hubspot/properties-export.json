@@ -1,0 +1,100 @@
+{
+  "inputs": [
+    {
+      "name": "quiz_business_status",
+      "label": "Quiz · Business Status",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Antwort auf 'Hast du dein eigenes Unternehmen bereits gegründet?' (ja / nein)"
+    },
+    {
+      "name": "quiz_years_self_employed",
+      "label": "Quiz · Years Self-Employed",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Dauer der Selbstständigkeit (lt_1 / 1_3 / gt_3)"
+    },
+    {
+      "name": "quiz_business_field",
+      "label": "Quiz · Business Field",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Geschäftsbereich (coach / services / digital / ecommerce / network / other)"
+    },
+    {
+      "name": "quiz_visibility",
+      "label": "Quiz · Visibility",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Sichtbarkeit / Kontakte (lt_1k / lt_10k / gt_10k)"
+    },
+    {
+      "name": "quiz_team_setup",
+      "label": "Quiz · Team Setup",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Team-Aufstellung (solo / lt_10 / gt_10)"
+    },
+    {
+      "name": "quiz_monthly_revenue",
+      "label": "Quiz · Monthly Revenue",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Monatsumsatz (zero / lt_5k / lt_10k / lt_100k / gt_100k)"
+    },
+    {
+      "name": "quiz_main_wish",
+      "label": "Quiz · Main Wish",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Primärer Wunsch (stable / quit_job / brand / freedom / 5fig)"
+    },
+    {
+      "name": "quiz_gap",
+      "label": "Quiz · Gap (Multi)",
+      "type": "string",
+      "fieldType": "textarea",
+      "groupName": "quiz_lead_data",
+      "description": "Wahrgenommene Lücken — komma-separiert (reach,portfolio,sales,clone,mindset)"
+    },
+    {
+      "name": "quiz_time_budget",
+      "label": "Quiz · Time Budget",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Zeitbudget pro Woche (lt_1h / 2_5h / 5_10h / gt_10h)"
+    },
+    {
+      "name": "quiz_score",
+      "label": "Quiz · Score",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "quiz_lead_data",
+      "description": "Berechneter Score 0–100. ≥70 = hot, 50–69 = warm, 30–49 = cold."
+    },
+    {
+      "name": "quiz_completed_at",
+      "label": "Quiz · Completed At",
+      "type": "datetime",
+      "fieldType": "date",
+      "groupName": "quiz_lead_data",
+      "description": "Zeitpunkt des Quiz-Abschlusses (UTC ISO)"
+    },
+    {
+      "name": "lead_source_subdomain",
+      "label": "Lead Source · Subdomain",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "quiz_lead_data",
+      "description": "Subdomain, von der der Lead kam (z.B. quiz.mindforge.demo, analyse.mindforge.demo)"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "_source": "airtable-automation",
+  "record_id": "recABC123XYZ",
+  "email": "anna.mueller+demo@example.com",
+  "mentor_id": "recMNT042",
+  "mentor_name": "Bea Vogt",
+  "onboarding_status": "Welcome Pack Sent",
+  "last_session_date": "2026-05-21T15:00:00.000Z",
+  "nps": 9,
+  "program": "Inner Circle",
+  "program_start": "2026-05-20",
+  "lifetime_value": 5400
+}

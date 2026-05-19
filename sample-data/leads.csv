@@ -1,0 +1,21 @@
+Name,Email,Phone,Source,Interest,Created,Lead Score,Status,Notes
+Anna Müller,anna.mueller@example.com,+49 170 1234567,Google Ads,Career Boost,2026-05-01 09:23,75,Converted,Möchte in 6 Monaten den Job wechseln.
+Tobias Schmidt,t.schmidt@example.com,+49 151 2345678,Referral,Business Accelerator,2026-05-02 14:11,90,Converted,Empfohlen von Sarah K. — sucht Skalierungs-Coaching.
+Lena Wagner,lena.w@example.com,,Instagram,Life Compass,2026-05-03 18:45,32,Lost,Hat sich nicht zurückgemeldet.
+Markus Fischer,markus.f@example.com,+49 162 3456789,Organic,Mindful Leadership,2026-05-04 08:02,82,Converted,Bereits Geschäftsführer mittelständischen Unternehmens.
+Sophie Becker,sophie.b@example.com,+49 173 4567890,Facebook,Health Reset,2026-05-04 10:30,55,Contacted,Nach Krankheit Lifestyle-Change geplant.
+Daniel Klein,d.klein@example.com,+49 176 5678901,Google Ads,Career Boost,2026-05-05 16:18,68,Qualified,Studium fertig wechselt aus Beratung.
+Julia Hoffmann,julia.h@example.com,,Instagram,Life Compass,2026-05-06 11:55,28,Lost,
+Felix Bauer,f.bauer@example.com,+49 152 6789012,Referral,Business Accelerator,2026-05-07 09:00,95,Converted,Empfehlung von Tobias S. — sehr konkretes Anliegen.
+Mara Weber,mara.w@example.com,+49 174 7890123,Organic,Health Reset,2026-05-08 13:22,62,Contacted,Burnout-Erholung.
+Jonas Lehmann,jonas.l@example.com,+49 159 8901234,Google Ads,Mindful Leadership,2026-05-09 07:45,71,Qualified,Frischer Team-Lead.
+Pia Schulz,pia.s@example.com,,Facebook,Life Compass,2026-05-09 19:30,18,Lost,
+Stefan Krüger,s.krueger@example.com,+49 171 9012345,Referral,Mindful Leadership,2026-05-10 15:00,88,Contacted,Empfehlung vom HR-Director.
+Linda Wolf,linda.w@example.com,+49 163 0123456,Organic,Career Boost,2026-05-11 10:15,72,Qualified,Quereinstieg von Lehrerin in Tech.
+Marco Neumann,marco.n@example.com,+49 178 1234567,Instagram,Health Reset,2026-05-12 14:50,45,Contacted,Sportler-Hintergrund.
+Caroline Roth,c.roth@example.com,,Other,Business Accelerator,2026-05-13 09:00,15,Lost,
+Niko Hartmann,niko.h@example.com,+49 157 2345678,Google Ads,Career Boost,2026-05-14 11:30,77,Qualified,Tech-Branche zur Beratung.
+Eva Lange,eva.l@example.com,+49 161 3456789,Facebook,Life Compass,2026-05-15 16:00,58,New,Sehr unsicher was sie will.
+Tim Brandt,tim.b@example.com,+49 175 4567890,Referral,Business Accelerator,2026-05-15 18:22,93,New,Empfehlung von Felix B. — Wachstumsphase.
+Hannah Vogel,hannah.v@example.com,,Organic,Health Reset,2026-05-16 08:10,42,New,
+Paul Schreiber,paul.s@example.com,+49 172 5678901,Google Ads,Mindful Leadership,2026-05-16 12:40,69,New,Wird befördert braucht Vorbereitung.

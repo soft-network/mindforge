@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "event_id": "0b6a3c7e-1c2d-4f5b-9e3a-8d7e4f2a1c33",
+    "started_at": "2026-05-18T14:22:01.000Z",
+    "submitted_at": "2026-05-18T14:24:37.000Z",
+    "source_url": "https://quiz.mindforge.demo/",
+    "referrer": "https://www.facebook.com/",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ...",
+    "testMode": false
+  },
+  "utm": {
+    "utm_source": "facebook",
+    "utm_medium": "cpc",
+    "utm_campaign": "quiz_q2",
+    "utm_content": "coach_carousel_v3",
+    "fbclid": "IwAR3..."
+  },
+  "contact": {
+    "first_name": "Anna",
+    "last_name": "Müller",
+    "email": "anna.mueller+demo@example.com",
+    "phone": "+49 170 1234567",
+    "country": "DE",
+    "consent": true
+  },
+  "quiz": {
+    "score": 72,
+    "tier": "hot",
+    "tier_label": "Hot Lead — sofort durch Setter anrufen",
+    "business_status": "ja",
+    "years_self_employed": "1_3",
+    "business_field": "coach",
+    "visibility": "lt_10k",
+    "team_setup": "solo",
+    "monthly_revenue": "lt_5k",
+    "main_wish": "5fig",
+    "gap": "reach,sales",
+    "time_budget": "gt_10h"
+  }
+}

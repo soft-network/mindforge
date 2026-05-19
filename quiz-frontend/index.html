@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>MindForge Quiz · Finde heraus, wo du stehst</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Lokale Konfig (nicht in Git, siehe config.example.js) -->
+  <script src="config.js" onerror="this.remove();"></script>
+
+  <!-- GTM + Consent -->
+  <script src="tracking/gtm-bootstrap.js"></script>
+  <script src="tracking/consent.js"></script>
+</head>
+<body>
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXX"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+
+  <header class="hdr">
+    <div class="brand">MindForge</div>
+    <div class="progress" aria-hidden="true">
+      <div class="progress__bar" id="progress-bar"></div>
+    </div>
+    <div class="step-label" id="step-label">Step 0 of 10</div>
+  </header>
+
+  <main class="quiz">
+
+    <!-- Step 0: Intro -->
+    <section class="step is-active" data-step="0">
+      <h1>Finde heraus, was deine <em>nächsten Schritte zu 100k</em> sind.</h1>
+      <p class="lede">Nimm dir 2 Minuten und beantworte die nachfolgenden Fragen so ehrlich wie möglich. Im Anschluss bekommst du dein personalisiertes Ergebnis mit den drei Hebeln, an denen wir bei dir ansetzen würden.</p>
+      <button class="btn btn--primary" data-action="start">Quiz starten</button>
+      <p class="hint">* Dauer ca. 2 Minuten</p>
+    </section>
+
+    <!-- Step 1: Selbstständig? -->
+    <section class="step" data-step="1" data-key="business_status" data-type="single">
+      <h2>Hast du dein eigenes Unternehmen bereits gegründet?</h2>
+      <div class="options">
+        <button class="opt" data-value="ja" data-score="10">Ja</button>
+        <button class="opt" data-value="nein" data-score="0" data-skip-to="3">Nein</button>
+      </div>
+    </section>
+
+    <!-- Step 2: Wie lange selbstständig? (skip wenn Step 1 = Nein) -->
+    <section class="step" data-step="2" data-key="years_self_employed" data-type="single">
+      <h2>Wie lange bist du schon selbstständig?</h2>
+      <div class="options">
+        <button class="opt" data-value="lt_1" data-score="2">Weniger als 1 Jahr</button>
+        <button class="opt" data-value="1_3" data-score="6">1 – 3 Jahre</button>
+        <button class="opt" data-value="gt_3" data-score="10">Mehr als 3 Jahre</button>
+      </div>
+    </section>
+
+    <!-- Step 3: Bereich -->
+    <section class="step" data-step="3" data-key="business_field" data-type="single">
+      <h2>In welchem Bereich bist du aktiv?</h2>
+      <div class="options options--grid">
+        <button class="opt" data-value="coach"     data-score="10">Coach / Berater</button>
+        <button class="opt" data-value="services"  data-score="8">Dienstleistungen (Freelancer)</button>
+        <button class="opt" data-value="digital"   data-score="8">Digitale Produkte / Kurse</button>
+        <button class="opt" data-value="ecommerce" data-score="6">E-Commerce</button>
+        <button class="opt" data-value="network"   data-score="4">Network Marketing</button>
+        <button class="opt" data-value="other"     data-score="2">Sonstiges</button>
+      </div>
+    </section>
+
+    <!-- Step 4: Sichtbarkeit -->
+    <section class="step" data-step="4" data-key="visibility" data-type="single">
+      <h2>Wie sichtbar bist du heute? <span class="muted">(E-Mail-Liste, Follower, Kontakte)</span></h2>
+      <div class="options">
+        <button class="opt" data-value="lt_1k"  data-score="2">weniger als 1.000 Kontakte</button>
+        <button class="opt" data-value="lt_10k" data-score="6">weniger als 10.000 Kontakte</button>
+        <button class="opt" data-value="gt_10k" data-score="10">mehr als 10.000 Kontakte</button>
+      </div>
+    </section>
+
+    <!-- Step 5: Team-Aufstellung -->
+    <section class="step" data-step="5" data-key="team_setup" data-type="single">
+      <h2>Wie bist du im Business aufgestellt?</h2>
+      <div class="options">
+        <button class="opt" data-value="solo"   data-score="4">Nur ich (+ ggf. Gründerteam)</button>
+        <button class="opt" data-value="lt_10" data-score="8">Ich + weniger als 10 Mitarbeiter / Freelancer</button>
+        <button class="opt" data-value="gt_10" data-score="10">Ich + mehr als 10 Mitarbeiter / Freelancer</button>
+      </div>
+    </section>
+
+    <!-- Step 6: Monatsumsatz -->
+    <section class="step" data-step="6" data-key="monthly_revenue" data-type="single">
+      <h2>Wie viel Umsatz machst du durchschnittlich pro Monat?</h2>
+      <div class="options">
+        <button class="opt" data-value="zero"   data-score="0">noch gar nichts</button>
+        <button class="opt" data-value="lt_5k"  data-score="2">unter 5.000 €</button>
+        <button class="opt" data-value="lt_10k" data-score="6">unter 10.000 €</button>
+        <button class="opt" data-value="lt_100k" data-score="10">unter 100.000 €</button>
+        <button class="opt" data-value="gt_100k" data-score="10">über 100.000 €</button>
+      </div>
+    </section>
+
+    <!-- Step 7: Wunsch -->
+    <section class="step" data-step="7" data-key="main_wish" data-type="single">
+      <h2>Wenn du einen Wunsch frei hättest — was würdest du wählen?</h2>
+      <div class="options options--stack">
+        <button class="opt" data-value="stable"   data-score="2">Stabiles Einkommen haben.</button>
+        <button class="opt" data-value="quit_job" data-score="4">Meinen Hauptjob mit gutem Gewissen kündigen.</button>
+        <button class="opt" data-value="brand"    data-score="6">Mehr Menschen erreichen und eine Marke aufbauen.</button>
+        <button class="opt" data-value="freedom"  data-score="8">Zeitlich, örtlich und finanziell frei werden.</button>
+        <button class="opt" data-value="5fig"     data-score="10">5-stellige Monatsumsätze haben.</button>
+      </div>
+    </section>
+
+    <!-- Step 8: Was fehlt (Multi) -->
+    <section class="step" data-step="8" data-key="gap" data-type="multi">
+      <h2>Was glaubst du fehlt dir, um dein Ziel zu erreichen?</h2>
+      <p class="hint">Mehrfachauswahl möglich.</p>
+      <div class="options options--stack">
+        <button class="opt opt--check" data-value="reach"      data-score="2">Mehr Menschen zu erreichen</button>
+        <button class="opt opt--check" data-value="portfolio"  data-score="2">Das Produktportfolio zu erweitern</button>
+        <button class="opt opt--check" data-value="sales"      data-score="2">Mehr / besser zu verkaufen</button>
+        <button class="opt opt--check" data-value="clone"      data-score="2">Mich zu „klonen" (Mehr Zeit, effektiver werden)</button>
+        <button class="opt opt--check" data-value="mindset"    data-score="2">Mindset: Größer denken</button>
+      </div>
+      <button class="btn btn--primary" data-action="next-multi">Weiter zur nächsten Frage</button>
+    </section>
+
+    <!-- Step 9: Zeitbudget -->
+    <section class="step" data-step="9" data-key="time_budget" data-type="single">
+      <h2>Wie viel Zeit kannst du in den Ausbau deines Business investieren?</h2>
+      <div class="options">
+        <button class="opt" data-value="lt_1h"  data-score="0">weniger als 1 Std. pro Woche</button>
+        <button class="opt" data-value="2_5h"   data-score="4">ca. 2 – 5 Std. pro Woche</button>
+        <button class="opt" data-value="5_10h"  data-score="8">ca. 5 – 10 Std. pro Woche</button>
+        <button class="opt" data-value="gt_10h" data-score="10">mehr als 10 Std. pro Woche</button>
+      </div>
+    </section>
+
+    <!-- Step 10: Kontakt -->
+    <section class="step" data-step="10" data-key="contact" data-type="form">
+      <h2>Um zum Ergebnis zu gelangen, gib hier bitte deine Kontaktdaten ein.</h2>
+      <form id="contact-form" novalidate>
+        <div class="row">
+          <label>
+            <span>Vorname</span>
+            <input type="text" name="first_name" placeholder="Max"
+                   autocomplete="given-name" required minlength="2" maxlength="60" />
+          </label>
+          <label>
+            <span>Nachname</span>
+            <input type="text" name="last_name" placeholder="Mustermann"
+                   autocomplete="family-name" required minlength="2" maxlength="60" />
+          </label>
+        </div>
+        <p class="hint">Stelle sicher, dass Dein Vor- und Nachname korrekt sind.</p>
+
+        <label>
+          <span>E-Mail</span>
+          <input type="email" name="email" placeholder="beispiel@gmail.com"
+                 autocomplete="email" required />
+        </label>
+
+        <label>
+          <span>Telefonnummer</span>
+          <input type="tel" name="phone" placeholder="+49 123 456 78"
+                 autocomplete="tel" required pattern="[\+0-9\s\-()]{6,}" />
+        </label>
+
+        <label>
+          <span>Land</span>
+          <select name="country" required>
+            <option value="">Bitte wählen…</option>
+            <option value="DE" selected>Deutschland</option>
+            <option value="AT">Österreich</option>
+            <option value="CH">Schweiz</option>
+            <option value="OTHER">Anderes Land</option>
+          </select>
+        </label>
+
+        <label class="consent">
+          <input type="checkbox" name="consent" required />
+          <span>Ich stimme der <a href="#" target="_blank">Verarbeitung meiner Daten</a> zur Zusendung des Ergebnisses zu.</span>
+        </label>
+
+        <button type="submit" class="btn btn--primary btn--lg">
+          Antworten senden und Ergebnis erhalten
+        </button>
+        <p class="form-error" id="form-error" hidden></p>
+      </form>
+    </section>
+
+    <!-- Step 11: Thank-You -->
+    <section class="step" data-step="11" data-key="done" data-type="end">
+      <h2>Geschafft.</h2>
+      <p class="lede">Dein persönliches Ergebnis ist auf dem Weg in dein Postfach. Aktiv-Score: <strong id="final-score">–</strong> / 100.</p>
+      <p>Unser Team meldet sich innerhalb der nächsten 24 Stunden bei dir, um die nächsten Schritte zu besprechen.</p>
+      <a href="#" class="btn btn--ghost" id="restart">Quiz erneut starten</a>
+    </section>
+
+  </main>
+
+  <footer class="ftr">
+    <p>MindForge Demo · synthetische Daten · <a href="https://github.com/" target="_blank" rel="noopener">Source</a></p>
+  </footer>
+
+  <script src="score-engine.js"></script>
+  <script src="quiz-engine.js"></script>
+  <script src="submit-engine.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MindForge — Premium-Coaching für Karriere, Life und Business. Buche dein kostenloses Erstgespräch.">
+    <meta property="og:title" content="MindForge Coaching — Dein nächster Schritt beginnt hier">
+    <meta property="og:description" content="Premium-Coaching für Karriere, Life und Business. Buche dein kostenloses Erstgespräch.">
+    <meta property="og:type" content="website">
+    <title>MindForge Coaching — Kostenloses Erstgespräch</title>
+
+    <!-- Runtime config (cp config.example.js config.js + Werte einsetzen) -->
+    <script src="config.js"></script>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer',window.MINDFORGE_CONFIG.GTM_CONTAINER_ID);</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', window.MINDFORGE_CONFIG.META_PIXEL_ID);
+    fbq('track', 'PageView');
+    </script>
+    <!-- noscript fallback: für Pre-JS-Tracking YOUR_META_PIXEL_ID hier manuell ersetzen -->
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=YOUR_META_PIXEL_ID&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <header class="hero">
+        <nav class="nav">
+            <div class="logo">MindForge</div>
+            <a href="#programs" class="nav-link">Programme</a>
+        </nav>
+
+        <div class="hero-content">
+            <h1>Dein nächster Schritt beginnt hier.</h1>
+            <p class="subtitle">Premium-Coaching für Menschen, die nicht warten wollen — sondern entscheiden.</p>
+            <a href="#contact" class="cta-button">Kostenloses Erstgespräch buchen</a>
+        </div>
+    </header>
+
+    <section id="programs" class="programs">
+        <h2>Unsere Programme</h2>
+        <div class="program-grid">
+            <div class="program-card">
+                <h3>Career Boost</h3>
+                <p>Intensiv-Coaching für Karrierewechsel.</p>
+                <span class="program-meta">8 Wochen · ab 2.490 EUR</span>
+            </div>
+            <div class="program-card">
+                <h3>Life Compass</h3>
+                <p>Werte-Klärung und Lebensziel-Roadmap.</p>
+                <span class="program-meta">6 Wochen · ab 1.490 EUR</span>
+            </div>
+            <div class="program-card">
+                <h3>Business Accelerator</h3>
+                <p>Skalierungs-Coaching für Solo-Founder.</p>
+                <span class="program-meta">12 Wochen · ab 4.990 EUR</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="contact-inner">
+            <h2>Buche dein kostenloses Erstgespräch</h2>
+            <p>30 Minuten · ehrliche Einschätzung · keine Verkaufsmasche.</p>
+
+            <form id="leadForm" novalidate>
+                <div class="form-row">
+                    <label for="name">Vor- und Nachname *</label>
+                    <input type="text" id="name" name="name" required autocomplete="name">
+                </div>
+
+                <div class="form-row">
+                    <label for="email">E-Mail *</label>
+                    <input type="email" id="email" name="email" required autocomplete="email">
+                </div>
+
+                <div class="form-row">
+                    <label for="phone">Telefon (optional, beschleunigt Antwort)</label>
+                    <input type="tel" id="phone" name="phone" autocomplete="tel">
+                </div>
+
+                <div class="form-row">
+                    <label for="interest_program">Welches Programm interessiert dich? *</label>
+                    <select id="interest_program" name="interest_program" required>
+                        <option value="">Bitte wählen</option>
+                        <option value="Career Boost">Career Boost</option>
+                        <option value="Life Compass">Life Compass</option>
+                        <option value="Business Accelerator">Business Accelerator</option>
+                        <option value="Mindful Leadership">Mindful Leadership</option>
+                        <option value="Health Reset">Health Reset</option>
+                        <option value="unsure">Bin mir nicht sicher</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label for="notes">Worum geht's konkret? (optional)</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Erzähl in 1-2 Sätzen, was dich gerade beschäftigt."></textarea>
+                </div>
+
+                <div class="form-row hidden-source">
+                    <input type="hidden" id="source" name="source" value="Organic">
+                </div>
+
+                <button type="submit" class="submit-button" id="submitBtn">
+                    Gespräch jetzt anfragen
+                </button>
+
+                <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+
+                <p class="form-hint">
+                    Mit dem Absenden stimmst du unseren <a href="/privacy">Datenschutzbestimmungen</a> zu.
+                </p>
+            </form>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 MindForge Demo · Portfolio-Projekt</p>
+        <p><a href="https://status.mindforge.demo">System-Status</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
