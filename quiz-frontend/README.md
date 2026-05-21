@@ -15,7 +15,7 @@ Vanilla JS, kein Build-Step. Nachgebaut nach dem Strukturmuster des
 | `score-engine.js` | Score-Berechnung pro Frage, Tier-Klassifizierung (hot / warm / cold / unqualified) |
 | `quiz-engine.js` | State in `sessionStorage`, Skip-Logic, Navigation, Form-Validation |
 | `submit-engine.js` | Webhook-POST an Make, DataLayer `quiz_submit`-Event |
-| `tracking/gtm-bootstrap.js` | Lädt GTM-Container, setzt Default-Consent auf `denied` |
+| `tracking/gtm-bootstrap.js` | Lädt GTM-Container, setzt Default-Einwilligung auf `denied` |
 | `tracking/consent.js` | Minimaler DSGVO-Banner, Cookie `mf_consent={granted\|denied}` |
 | `config.example.js` | Template — kopiere zu `config.js` (in `.gitignore`) |
 

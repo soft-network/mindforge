@@ -31,7 +31,7 @@ werden, damit Operations-Reports konsistent sind.
 ### 4. Airtable — Search Records
 - Base: `MindForge CRM`
 - Table: `Leads`
-- Formula: `{Email} = "{{1.contact.email}}"`
+- Formula: `{E-Mail} = "{{1.contact.email}}"`
 - Max records: 1
 
 ### 5. Router
@@ -82,8 +82,8 @@ Filter: {{4.fields.lifecycleStage}} ≠ {{1.properties.lifecyclestage.value}}
 | `lifecyclestage` | `Lifecycle Stage` | **HubSpot** |
 | `hubspot_owner_id` | `Owner` | **HubSpot** |
 | `hs_lead_status` | `Lead Status` | **HubSpot** |
-| `email` | `Email` | shared (immutable Dedup-Key) |
-| `phone` | `Phone` | **HubSpot** |
+| `email` | `E-Mail` | shared (immutable Dedup-Key) |
+| `phone` | `Telefon` | **HubSpot** |
 | `quiz_score` | `Quiz Score` | shared (in Scenario #1 berechnet) |
 
 Vollständige Tabelle siehe `field-mapping.md`.

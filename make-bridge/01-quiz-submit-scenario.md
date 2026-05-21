@@ -17,7 +17,7 @@
 ### 2. Router
 - Vier Pfade: HubSpot · Airtable · Pixels · Slack
 
-### 3a. Pfad „HubSpot": Search Contact by Email
+### 3a. Pfad „HubSpot": Search Contact by E-Mail
 - Module: **HubSpot → Search Contacts**
 - Filter:
   - `properties.email` = `{{1.contact.email}}`
@@ -40,8 +40,8 @@
 - E-Mail: `{{1.contact.email}}`
 - First name: `{{1.contact.first_name}}`
 - Last name: `{{1.contact.last_name}}`
-- Phone: `{{1.contact.phone}}`
-- Country/Region: `{{1.contact.country}}`
+- Telefon: `{{1.contact.phone}}`
+- Land/Region: `{{1.contact.country}}`
 - + alle 12 Quiz-Properties
 - `lifecyclestage = lead`
 - `hs_lead_status = NEW`
@@ -50,7 +50,7 @@
 - Module: **Airtable → Search Records**
 - Base: `MindForge CRM`
 - Table: `Leads`
-- Formula: `{Email} = "{{1.contact.email}}"`
+- Formula: `{E-Mail} = "{{1.contact.email}}"`
 - Max records: 1
 
 ### 4b. Pfad „Airtable": Update vs Create

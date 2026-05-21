@@ -87,7 +87,7 @@ Bedingung:
 **3d — Create task**
 - Title: `Quiz-Lead nachfassen — {{contact.firstname}}`
 - Due in: `2 days`
-- Type: Email
+- Type: E-Mail
 
 ---
 
@@ -106,7 +106,7 @@ tatsächlich vom Setter zum SQL aufgewertet werden.
 
 1. Manuell Contact anlegen mit:
    - First name: `Test`, Last name: `Hot`
-   - Email: `test+hot@example.com`
+   - E-Mail: `test+hot@example.com`
    - `quiz_score = 75`, `quiz_completed_at = now()`
 2. Erwartet: Workflow triggert sofort, History zeigt 4 Aktionen ausgeführt
 3. Slack-Channel sollte eine Nachricht erhalten (sofern Make-Webhook live)

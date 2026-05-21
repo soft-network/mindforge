@@ -1,4 +1,4 @@
-# Consent & DSGVO
+# Einwilligung & DSGVO
 
 Wie das Quiz DSGVO-konform tracked, ohne externes CMP-Tool zu nutzen.
 
@@ -37,7 +37,7 @@ Bei „Nur notwendige":
 
 ## 3. Was sich bei „denied" trotzdem feuert
 
-Auch wenn Consent denied:
+Auch wenn Einwilligung denied:
 - **Make-Webhook** wird gefeuert (Vertragserfüllung)
 - **HubSpot-Contact** wird angelegt (Vertragserfüllung)
 - **Airtable-Lead** wird angelegt (Vertragserfüllung)
@@ -71,8 +71,8 @@ Alle Anbieter haben Standard-DPAs unter `<anbieter>/legal/dpa`.
 | Quiz beantworten | Art. 6 (1)(a) DSGVO Einwilligung |
 | Kontaktdaten speichern | Art. 6 (1)(b) DSGVO Vertragserfüllung („Ergebnis senden") |
 | Marketing-Pixel feuern | Art. 6 (1)(a) DSGVO Einwilligung |
-| HubSpot-Workflow (Email an Setter) | Art. 6 (1)(b) DSGVO Vertragserfüllung |
-| Cold-Outreach via Aircall | Art. 6 (1)(a) DSGVO Einwilligung — Setter darf nur anrufen wenn Consent für „Kontaktaufnahme" gegeben |
+| HubSpot-Workflow (E-Mail an Setter) | Art. 6 (1)(b) DSGVO Vertragserfüllung |
+| Cold-Outreach via Aircall | Art. 6 (1)(a) DSGVO Einwilligung — Setter darf nur anrufen wenn Einwilligung für „Kontaktaufnahme" gegeben |
 
 Im Quiz-Kontaktformular ist `consent`-Checkbox **required** → der User
 willigt explizit ein.
@@ -82,11 +82,10 @@ willigt explizit ein.
 ## 6. Recht auf Löschung
 
 Wenn ein User die Löschung anfordert:
-1. **HubSpot:** Contact löschen → setzt automatisch `GDPR-deleted = true` auf der Email-Hash
-2. **Airtable:** manueller Lookup nach Email → Record löschen
+1. **HubSpot:** Contact löschen → setzt automatisch `GDPR-deleted = true` auf der E-Mail-Hash
+2. **Airtable:** manueller Lookup nach E-Mail → Record löschen
 3. **Meta:** Deletion-Request über CAPI mit `data_processing_options = ["LDU"]`
 4. **Google:** GA4 User Deletion API
 5. **TikTok:** Events API mit `event = 'UserDeletion'`
 
-Phase E baut diesen Cleanup-Flow nicht aus. Für die Bewerbung als
-„future work" erwähnt.
+Phase E baut diesen Cleanup-Flow nicht aus — als „future work" dokumentiert.

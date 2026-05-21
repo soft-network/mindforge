@@ -22,7 +22,7 @@ Airtable nutzt.
                 ┌───────────────────┐       ┌───────────────────┐
                 │  Power BI Desktop │◀──────│   Airtable Base   │
                 │  (Power Query M)  │ REST  │   (4 Tables +     │
-                │                   │       │    Mentors)       │
+                │                   │       │    Mentoren)       │
                 └─────────┬─────────┘       └───────────────────┘
                           │
                           ▼
@@ -66,7 +66,7 @@ Airtable nutzt.
 - Pagination: Power Query M Loop bis `paging.next.after` leer
 
 **Airtable:**
-- Get Data → **Web** → URL: `https://api.airtable.com/v0/{BASE_ID}/Clients?pageSize=100`
+- Get Data → **Web** → URL: `https://api.airtable.com/v0/{BASE_ID}/Kunden?pageSize=100`
 - Authentication: **Bearer Token** (Personal Access Token)
 - Pagination: ähnlich, mit `offset`-Parameter
 
@@ -75,15 +75,15 @@ Airtable nutzt.
 Pro Quelle:
 - Records flach klopfen (`Table.ExpandRecordColumn`)
 - Datentypen casten (Date, Number, Text)
-- Normalisierte Spaltennamen (`Email`, `LifecycleStage`, `QuizScore`, …)
-- Email-Spalte als Primary-Key markieren
+- Normalisierte Spaltennamen (`E-Mail`, `LifecycleStage`, `QuizScore`, …)
+- E-Mail-Spalte als Primary-Key markieren
 
 ### 3.3 Beziehungen
 
 | Source | Target | Type | Cardinality |
 |---|---|---|---|
-| `hubspot_contacts[Email]` | `airtable_leads[Email]` | Many-to-One | 1:1 (Bridge) |
-| `airtable_leads[Email]` | `airtable_sessions[Email]` | One-to-Many | 1:n |
+| `hubspot_contacts[E-Mail]` | `airtable_leads[E-Mail]` | Many-to-One | 1:1 (Bridge) |
+| `airtable_leads[E-Mail]` | `airtable_sessions[E-Mail]` | One-to-Many | 1:n |
 | `airtable_leads[Mentor]` | `airtable_mentors[MentorID]` | Many-to-One | n:1 |
 | `airtable_leads[Program]` | `airtable_programs[ProgramID]` | Many-to-One | n:1 |
 
@@ -123,11 +123,11 @@ Phase-E-Scope: nur **Power BI Desktop**. Workspace-Publish auf
 Power-BI-Service ist mit Free-Lizenz möglich, aber RLS braucht Pro
 (~ 10 €/Monat).
 
-Für die Bewerbung reicht Desktop + Screenshots in
+Für die Demo reicht Desktop + Screenshots in
 [`reports/`](reports/).
 
-Falls Workspace-Publish gewünscht: separate Phase E.5, dokumentiert
-im Bewerbungs-Pitch als „nächster Schritt".
+Falls Workspace-Publish gewünscht: separate Phase E.5 als „nächster
+Schritt" dokumentiert.
 
 ---
 
@@ -155,11 +155,11 @@ Setup:
 
 ---
 
-## 8. Pitch-Verwendung
+## 8. Business-Wert
 
-Power-BI-Cross-Source ist der **stärkste Bewerbungs-Hebel** dieser Phase:
-
-> *„Hier ist ein Dashboard, das HubSpot-Marketing-Daten und Airtable-Operations-Daten in einem Funnel-Bild zusammenführt. Damit sieht der CEO, welche Quiz-Antwort-Kombinationen den höchsten LTV bringen — eine Frage, die mit nur einem System nicht beantwortbar wäre."*
-
-Direkter Anknüpfungspunkt zur Stellenanzeige:
-*„Power BI Datenmodellierung, DAX und Deployment, um aussagekräftige Dashboards zu erstellen"*
+Power-BI-Cross-Source zeigt das zentrale Wertversprechen dieser Phase:
+ein Dashboard, das HubSpot-Marketing-Daten und
+Airtable-Operations-Daten in einem Funnel-Bild zusammenführt. Damit
+sind Fragen wie *„welche Quiz-Antwort-Kombinationen bringen den
+höchsten LTV?"* beantwortbar — etwas, das mit nur einem der beiden
+Systeme nicht geht.

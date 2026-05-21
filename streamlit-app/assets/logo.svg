@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80">
+  <!-- Option A: Hexagon Mark + Inner Flame + Modern Wordmark -->
+  <defs>
+    <linearGradient id="hexFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#1F2937"/>
+      <stop offset="100%" stop-color="#374151"/>
+    </linearGradient>
+    <linearGradient id="flameGrad" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%"  stop-color="#FF4B4B"/>
+      <stop offset="55%" stop-color="#FF8800"/>
+      <stop offset="100%" stop-color="#FFD700"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Hexagon Mark -->
+  <g transform="translate(8, 8)">
+    <polygon points="32,2 60,18 60,46 32,62 4,46 4,18"
+             fill="url(#hexFill)" stroke="none"/>
+    <!-- Inner Flame -->
+    <path d="M 32 18
+             Q 22 28 25 38
+             Q 26 33 28 37
+             Q 28 30 34 25
+             Q 36 30 35 35
+             Q 38 32 40 38
+             Q 42 30 38 22
+             Q 36 25 32 18 Z"
+          fill="url(#flameGrad)"/>
+    <!-- Spark above hexagon -->
+    <circle cx="50" cy="6" r="2.5" fill="#FFD700" opacity="0.9"/>
+    <circle cx="56" cy="10" r="1.5" fill="#FFA500" opacity="0.7"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="84" y="48"
+        font-family="-apple-system, 'Inter', 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif"
+        font-size="28" font-weight="700" fill="#0E1117"
+        letter-spacing="-0.7">MindForge</text>
+  <text x="84" y="64"
+        font-family="-apple-system, 'Inter', 'Segoe UI', system-ui, sans-serif"
+        font-size="11" font-weight="500" fill="#6B7280"
+        letter-spacing="1.2">COACH ADMIN</text>
+</svg>

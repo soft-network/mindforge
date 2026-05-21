@@ -1,5 +1,5 @@
 """
-MindForge Email-Domain-Enrichment Function
+MindForge E-Mail-Domain-Enrichment Function
 ============================================
 HTTP-triggered Cloud Function that classifies an email address as either
 personal (gmail, yahoo, etc.) or business (custom domain).

@@ -14,7 +14,9 @@
       "mcp__Claude_in_Chrome__find",
       "mcp__Claude_in_Chrome__javascript_tool",
       "mcp__Claude_in_Chrome__tabs_create_mcp",
-      "Bash(curl -s -X POST https://hook.eu1.make.com/eikeiljl9fbwaoagpn013mjy30vel5wb -H 'Content-Type: application/json' -d @C:/Users/msi/Desktop/demoprojekt/make-bridge/sample-payloads/01-quiz-submit.json -w '\\\\nHTTP %{http_code}\\\\n')"
+      "Bash(curl -s -X POST https://hook.eu1.make.com/eikeiljl9fbwaoagpn013mjy30vel5wb -H 'Content-Type: application/json' -d @C:/Users/msi/Desktop/demoprojekt/make-bridge/sample-payloads/01-quiz-submit.json -w '\\\\nHTTP %{http_code}\\\\n')",
+      "Bash(rm -rf streamlit-app/integrations streamlit-app/pages)",
+      "Bash(git checkout *)"
     ]
   }
 }

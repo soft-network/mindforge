@@ -95,7 +95,7 @@ DIVIDE(
 
 Avg Sessions per Customer =
 AVERAGEX(
-    VALUES(fact_quiz_leads[Email]),
+    VALUES(fact_quiz_leads[E-Mail]),
     CALCULATE([Total Sessions])
 )
 
@@ -164,7 +164,7 @@ SWITCH(TRUE(),
 LTV per Tier =
 DIVIDE(
     SUM(fact_quiz_leads[LTV]),
-    DISTINCTCOUNT(fact_quiz_leads[Email]),
+    DISTINCTCOUNT(fact_quiz_leads[E-Mail]),
     0
 )
 ```

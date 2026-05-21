@@ -34,19 +34,19 @@ unter **Settings → Properties → Contact properties → Create property**.
 
 Property-Group: **„Quiz Lead Data"** (selbst anlegen, einmalig)
 
-| Label im UI | Internal Name | Type | Field type | Options / Notes |
+| Label im UI | Internal Name | Type | Field type | Options / Notizen |
 |---|---|---|---|---|
-| Quiz · Business Status | `quiz_business_status` | Single-line text | Single-line text | Werte: `ja`, `nein` |
-| Quiz · Years Self-Employed | `quiz_years_self_employed` | Single-line text | Single-line text | Werte: `lt_1`, `1_3`, `gt_3` |
-| Quiz · Business Field | `quiz_business_field` | Single-line text | Single-line text | Werte: `coach`, `services`, `digital`, `ecommerce`, `network`, `other` |
-| Quiz · Visibility | `quiz_visibility` | Single-line text | Single-line text | Werte: `lt_1k`, `lt_10k`, `gt_10k` |
-| Quiz · Team Setup | `quiz_team_setup` | Single-line text | Single-line text | Werte: `solo`, `lt_10`, `gt_10` |
-| Quiz · Monthly Revenue | `quiz_monthly_revenue` | Single-line text | Single-line text | Werte: `zero`, `lt_5k`, `lt_10k`, `lt_100k`, `gt_100k` |
-| Quiz · Main Wish | `quiz_main_wish` | Single-line text | Single-line text | Werte: `stable`, `quit_job`, `brand`, `freedom`, `5fig` |
-| Quiz · Gap (Multi) | `quiz_gap` | Multi-line text | Multi-line text | Komma-separierte Liste der Werte aus Frage 8 |
-| Quiz · Time Budget | `quiz_time_budget` | Single-line text | Single-line text | Werte: `lt_1h`, `2_5h`, `5_10h`, `gt_10h` |
+| Quiz · Selbstständig | `quiz_business_status` | Single-line text | Single-line text | Werte: `ja`, `nein` |
+| Quiz · Dauer Selbstständigkeit | `quiz_years_self_employed` | Single-line text | Single-line text | Werte: `lt_1`, `1_3`, `gt_3` |
+| Quiz · Branche | `quiz_business_field` | Single-line text | Single-line text | Werte: `coach`, `services`, `digital`, `ecommerce`, `network`, `other` |
+| Quiz · Sichtbarkeit | `quiz_visibility` | Single-line text | Single-line text | Werte: `lt_1k`, `lt_10k`, `gt_10k` |
+| Quiz · Team | `quiz_team_setup` | Single-line text | Single-line text | Werte: `solo`, `lt_10`, `gt_10` |
+| Quiz · Monatsumsatz | `quiz_monthly_revenue` | Single-line text | Single-line text | Werte: `zero`, `lt_5k`, `lt_10k`, `lt_100k`, `gt_100k` |
+| Quiz · Hauptwunsch | `quiz_main_wish` | Single-line text | Single-line text | Werte: `stable`, `quit_job`, `brand`, `freedom`, `5fig` |
+| Quiz · Lücke (Multi) | `quiz_gap` | Multi-line text | Multi-line text | Komma-separierte Liste der Werte aus Frage 8 |
+| Quiz · Zeitbudget | `quiz_time_budget` | Single-line text | Single-line text | Werte: `lt_1h`, `2_5h`, `5_10h`, `gt_10h` |
 | Quiz · Score | `quiz_score` | Number | Number | Range 0–100 |
-| Quiz · Completed At | `quiz_completed_at` | Date picker | DateTime | UTC ISO |
+| Quiz · Completed At | `quiz_completed_at` | Date picker | DateTime | Europe/Berlin ISO |
 | Lead Source · Subdomain | `lead_source_subdomain` | Single-line text | Single-line text | z.B. `quiz.mindforge.demo` |
 
 **Schneller Import via API:** siehe [`properties-export.json`](properties-export.json) —

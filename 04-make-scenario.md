@@ -16,7 +16,7 @@
         │
         ▼
 [3] Router
-   ├──► [3a] Filter: Email valid?      ──► [4] Airtable: Search existing
+   ├──► [3a] Filter: E-Mail valid?      ──► [4] Airtable: Search existing
    │                                              │
    │                                              ▼
    │                                       [5] Filter: kein Duplikat
@@ -105,7 +105,7 @@ curl -X POST <DEINE_WEBHOOK_URL> \
 - Add: **Airtable → Search records**
 - Base: MindForge CRM
 - Table: Leads
-- Formula: `{Email} = "{{1.email}}"`
+- Formula: `{E-Mail} = "{{1.email}}"`
 - Limit: 1
 
 ### 6. Filter: kein Duplikat
@@ -119,12 +119,12 @@ curl -X POST <DEINE_WEBHOOK_URL> \
 - Table: Leads
 - Felder mappen:
   - `Name` ← `1.name`
-  - `Email` ← `1.email`
-  - `Phone` ← `clean_phone`
+  - `E-Mail` ← `1.email`
+  - `Telefon` ← `clean_phone`
   - `Source` ← `source_clean`
-  - `Interest` ← Suche per Linked-Field-Lookup mit `1.interest_program`
+  - `Interesse` ← Suche per Linked-Field-Lookup mit `1.interest_program`
   - `Status` ← `New`
-  - `Notes` ← `1.notes`
+  - `Notizen` ← `1.notes`
 
 ### 8. Score-Lead Cloud Function aufrufen
 
@@ -146,10 +146,10 @@ und schreibt `Lead Score` + `Status` direkt zurück. Die Response enthält
 
 Setup der Function: siehe [08-gcp-deployment.md](08-gcp-deployment.md).
 
-### 9. (optional) Email-Domain-Enrichment
+### 9. (optional) E-Mail-Domain-Enrichment
 
 Erweiterung nach `score-lead`: zweite Cloud Function (`enrich-email`)
-klassifiziert die Email-Domain als business vs. personal und liefert einen
+klassifiziert die E-Mail-Domain als business vs. personal und liefert einen
 Score-Bonus/-Malus. Setup: [08-gcp-deployment.md](08-gcp-deployment.md).
 
 **Step 9a — Function aufrufen:**
@@ -166,7 +166,7 @@ Score-Bonus/-Malus. Setup: [08-gcp-deployment.md](08-gcp-deployment.md).
 - Add module: **Airtable → Update a record**
 - Record ID: `{{7.id}}`
 - Lead Score: `{{8.score + 9a.score_adjustment}}` (Base aus Step 8 + Bonus/Malus aus 9a)
-- Optional Notes-Anhang: `"Email type: " + {{9a.type}}`
+- Optional Notizen-Anhang: `"E-Mail type: " + {{9a.type}}`
 
 > **Hinweis zum Hot-Lead-Filter unten:** Step 10 nutzt standardmäßig
 > `{{8.score}}`. Wenn du Step 9 aktivierst, ersetze dort durch den
@@ -182,12 +182,12 @@ Score-Bonus/-Malus. Setup: [08-gcp-deployment.md](08-gcp-deployment.md).
   Neuer Hot Lead! ({{8.score}}/100)
 
   Name: {{1.name}}
-  Email: {{1.email}}
-  Phone: {{clean_phone}}
-  Interest: {{1.interest_program}}
+  E-Mail: {{1.email}}
+  Telefon: {{clean_phone}}
+  Interesse: {{1.interest_program}}
   Source: {{source_clean}}
 
-  Notes: {{1.notes}}
+  Notizen: {{1.notes}}
 
   → Airtable: https://airtable.com/<base>/<table>/{{7.id}}
   ```
@@ -201,7 +201,7 @@ Score-Bonus/-Malus. Setup: [08-gcp-deployment.md](08-gcp-deployment.md).
 ### 12. Error Handler
 
 - Auf dem Airtable-Create-Modul: Rechtsklick → **Add error handler** → **Resume**
-- Logge Fehler in einem Google Sheet oder per Email an dich selbst
+- Logge Fehler in einem Google Sheet oder per E-Mail an dich selbst
 
 ### 13. Scheduling
 
@@ -216,7 +216,7 @@ Score-Bonus/-Malus. Setup: [08-gcp-deployment.md](08-gcp-deployment.md).
 |---|---|
 | Vollständiger Lead, Score 80 | Airtable Record + Slack-Message + 200 Response |
 | Vollständiger Lead, Score 40 | Airtable Record + 200 Response (keine Slack) |
-| Email = "abc" (kein @) | 400 Response, kein Airtable Record |
+| E-Mail = "abc" (kein @) | 400 Response, kein Airtable Record |
 | Doppelter Lead | 200 Response, kein neues Record |
 
 ---
@@ -227,7 +227,7 @@ Score-Bonus/-Malus. Setup: [08-gcp-deployment.md](08-gcp-deployment.md).
 |---|---|
 | Workflow-Orchestrierung | Komplettes Make-Scenario mit Router |
 | Webhooks (REST) | Webhook In + strukturiertes Out |
-| Datenvalidierung | Email-Check, Phone-Cleanup |
+| Datenvalidierung | E-Mail-Check, Telefon-Cleanup |
 | Error Handling | Resume-Handler auf Airtable-Modul |
 | Business Logic | Pre-Score-Berechnung mit Make-Formulae |
 | Integration | Airtable + Slack |

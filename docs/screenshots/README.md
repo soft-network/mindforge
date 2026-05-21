@@ -1,7 +1,7 @@
 # Screenshots
 
 Build-Artefakte, die nicht direkt in der Versionskontrolle liegen sollen,
-aber den Portfolio-Wert erhöhen.
+aber zur Doku-Qualität des Demos beitragen.
 
 ## Power BI Dashboard
 

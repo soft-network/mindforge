@@ -5,7 +5,7 @@ neue Leads schnell triagieren kann — ohne separates Frontend.
 
 **Warum hier und nicht nur im Streamlit-Dashboard:** Airtable Interfaces sind in
 5–10 Min. gebaut, brauchen kein Deployment und sind perfekt für das *operative*
-Lead-Handling (durchklicken, Status setzen, Notes ergänzen). Die Streamlit-App in
+Lead-Handling (durchklicken, Status setzen, Notizen ergänzen). Die Streamlit-App in
 [07-streamlit-admin.md](07-streamlit-admin.md) ergänzt das um Analytics-Sicht
 und KPIs, ist aber nicht für die tägliche Sales-Routine optimiert.
 
@@ -24,10 +24,10 @@ Score, klickt sich durch und entscheidet → Qualified / Contacted / Lost.
 4. **Filter:** `Status = "New"` **OR** `Status = "Qualified"`
 5. **Sort:** `Lead Score` absteigend (Hot Leads zuerst)
 6. Sichtbare Felder im Preview:
-   - Name, Email, Phone
-   - Source, Interest (Programm)
+   - Name, E-Mail, Telefon
+   - Source, Interesse (Programm)
    - Lead Score (mit Color-Coding via Conditional Formatting)
-   - Notes
+   - Notizen
    - Status (editierbar)
 7. **Action Buttons** hinzufügen:
    - "Qualifizieren" → setzt Status = Qualified
@@ -46,7 +46,7 @@ Zweck: KPI-Übersicht für den Coach selbst — was steht aktuell in der Pipelin
 
 1. **+ New Page** → Layout: **Dashboard**
 2. Number-Widgets oben:
-   - "Neue Leads diese Woche" — Filter: `Created` letzten 7 Tage
+   - "Neue Leads diese Woche" — Filter: `Erstellt am` letzten 7 Tage
    - "Hot Leads offen" — Filter: `Lead Score >= 70 AND Status IN (New, Qualified)`
    - "Conversion Rate" — via Rollup-Formel
 3. Chart-Widget:
@@ -64,7 +64,7 @@ Zweck: KPI-Übersicht für den Coach selbst — was steht aktuell in der Pipelin
 2. **Add collaborators:** Coach-Emails einladen
 3. **Permission:** Read + Comment + Edit (für Status-Updates)
 
-→ Coaches loggen sich mit ihrer Airtable-Email ein und sehen nur das Interface,
+→ Coaches loggen sich mit ihrer Airtable-E-Mail ein und sehen nur das Interface,
 nicht die Roh-Tabellen.
 
 ---

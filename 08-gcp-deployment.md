@@ -1,6 +1,6 @@
 # Schritt 8 — GCP Deployment (Cloud Run + Cloud Function)
 
-**Ziel:** Streamlit-App auf Cloud Run hosten + eine Cloud Function für Email-Enrichment deployen.
+**Ziel:** Streamlit-App auf Cloud Run hosten + eine Cloud Function für E-Mail-Enrichment deployen.
 
 **Schwerpunkte:** Containerisierung, Secret Management, Serverless für isolierte Aufgaben.
 
@@ -135,12 +135,12 @@ gcloud beta run domain-mappings create \
 
 ---
 
-## Teil 3: Cloud Function für Email-Enrichment
+## Teil 3: Cloud Function für E-Mail-Enrichment
 
 ### Code-Ansicht
 
 In `gcp/cloud-function/main.py`:
-- HTTP-Endpoint, der POST mit Email empfängt
+- HTTP-Endpoint, der POST mit E-Mail empfängt
 - Klassifiziert Domain als personal (Gmail/Yahoo etc.) vs business
 - Gibt Score-Adjustment zurück (-5 für privat, +10 für business, +20 für High-Value)
 
@@ -196,7 +196,7 @@ Im Make-Scenario, nach `Create Airtable Lead`:
 
 6. **Add module: Airtable → Update Record**
    - Record ID: vorheriges Airtable-Modul
-   - Notes (oder neues Custom-Field): `"Email type: " + {{HTTP_response.type}} + " | Score adj: " + {{HTTP_response.score_adjustment}}`
+   - Notizen (oder neues Custom-Field): `"E-Mail type: " + {{HTTP_response.type}} + " | Score adj: " + {{HTTP_response.score_adjustment}}`
    - Lead Score: `{{current_score}} + {{HTTP_response.score_adjustment}}`
 
 → Damit beeinflusst die Cloud Function das Lead Scoring **in Echtzeit**.
@@ -207,7 +207,7 @@ Im Make-Scenario, nach `Create Airtable Lead`:
 
 In UptimeRobot ergänzen:
 - Monitor 3: Cloud Run Streamlit URL → ping `/healthz` alle 5 Min
-- Monitor 4: Cloud Function URL → POST mit Test-Email alle 5 Min
+- Monitor 4: Cloud Function URL → POST mit Test-E-Mail alle 5 Min
 
 → Bei Ausfall: Slack-Alert + Statuspage-Update.
 
@@ -236,7 +236,7 @@ In UptimeRobot ergänzen:
 - Cloud-Function-Equivalent: deploy als Web Service auf Render.com (Free Tier)
 
 **Variante C — Azure:**
-- Mit Universitäts-Email: Azure for Students = $100 Credit ohne Kreditkarte
+- Mit Universitäts-E-Mail: Azure for Students = $100 Credit ohne Kreditkarte
 - Cloud-Run-Equivalent: Azure Container Apps
 - Cloud-Function-Equivalent: Azure Functions
 
@@ -248,7 +248,7 @@ In UptimeRobot ergänzen:
 |---|---|
 | Cloud-Hosting | Cloud Run für Streamlit + Cloud Functions für Helper |
 | Containerization | Dockerfile, Cloud Build automatisiert |
-| Serverless | Cloud Function für isolierte Aufgabe (Email-Enrichment) |
+| Serverless | Cloud Function für isolierte Aufgabe (E-Mail-Enrichment) |
 | Infrastructure-as-Code (light) | Versionierte Deploy-Skripte |
 | Cost-Awareness | Free-Tier-bewusste Architektur |
 | Production-Mindset | Secret Manager, Healthchecks, Multi-Service-Architektur |

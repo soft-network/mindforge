@@ -81,43 +81,43 @@ def get_schema() -> dict:
 # Zu Phase-1-Leads-Tabelle hinzuzufügende Felder
 LEADS_FIELDS = [
     # 1a — Kontakt-Felder
-    {"name": "First Name", "type": "singleLineText"},
-    {"name": "Last Name",  "type": "singleLineText"},
-    {"name": "Country", "type": "singleSelect", "options": {"choices": [
+    {"name": "Vorname", "type": "singleLineText"},
+    {"name": "Nachname",  "type": "singleLineText"},
+    {"name": "Land", "type": "singleSelect", "options": {"choices": [
         {"name": "DE"}, {"name": "AT"}, {"name": "CH"}, {"name": "OTHER"},
     ]}},
-    {"name": "Consent", "type": "checkbox", "options": {"icon": "check", "color": "greenBright"}},
+    {"name": "Einwilligung", "type": "checkbox", "options": {"icon": "check", "color": "greenBright"}},
 
     # 1b — 12 Quiz-Properties (einheitlich gepunktete Naming-Convention)
-    {"name": "Quiz · Business Status", "type": "singleSelect", "options": {"choices": [
+    {"name": "Quiz · Selbstständig", "type": "singleSelect", "options": {"choices": [
         {"name": "ja"}, {"name": "nein"},
     ]}},
-    {"name": "Quiz · Years Self-Employed", "type": "singleSelect", "options": {"choices": [
+    {"name": "Quiz · Dauer Selbstständigkeit", "type": "singleSelect", "options": {"choices": [
         {"name": "lt_1"}, {"name": "1_3"}, {"name": "gt_3"},
     ]}},
-    {"name": "Quiz · Business Field", "type": "singleSelect", "options": {"choices": [
+    {"name": "Quiz · Branche", "type": "singleSelect", "options": {"choices": [
         {"name": "coach"}, {"name": "services"}, {"name": "digital"},
         {"name": "ecommerce"}, {"name": "network"}, {"name": "other"},
     ]}},
-    {"name": "Quiz · Visibility", "type": "singleSelect", "options": {"choices": [
+    {"name": "Quiz · Sichtbarkeit", "type": "singleSelect", "options": {"choices": [
         {"name": "lt_1k"}, {"name": "lt_10k"}, {"name": "gt_10k"},
     ]}},
-    {"name": "Quiz · Team Setup", "type": "singleSelect", "options": {"choices": [
+    {"name": "Quiz · Team", "type": "singleSelect", "options": {"choices": [
         {"name": "solo"}, {"name": "lt_10"}, {"name": "gt_10"},
     ]}},
-    {"name": "Quiz · Monthly Revenue", "type": "singleSelect", "options": {"choices": [
+    {"name": "Quiz · Monatsumsatz", "type": "singleSelect", "options": {"choices": [
         {"name": "zero"}, {"name": "lt_5k"}, {"name": "lt_10k"},
         {"name": "lt_100k"}, {"name": "gt_100k"},
     ]}},
-    {"name": "Quiz · Main Wish", "type": "singleSelect", "options": {"choices": [
+    {"name": "Quiz · Hauptwunsch", "type": "singleSelect", "options": {"choices": [
         {"name": "stable"}, {"name": "quit_job"}, {"name": "brand"},
         {"name": "freedom"}, {"name": "5fig"},
     ]}},
-    {"name": "Quiz · Gap", "type": "multipleSelects", "options": {"choices": [
+    {"name": "Quiz · Lücke", "type": "multipleSelects", "options": {"choices": [
         {"name": "reach"}, {"name": "portfolio"}, {"name": "sales"},
         {"name": "clone"}, {"name": "mindset"},
     ]}},
-    {"name": "Quiz · Time Budget", "type": "singleSelect", "options": {"choices": [
+    {"name": "Quiz · Zeitbudget", "type": "singleSelect", "options": {"choices": [
         {"name": "lt_1h"}, {"name": "2_5h"}, {"name": "5_10h"}, {"name": "gt_10h"},
     ]}},
     {"name": "Quiz Tier", "type": "singleSelect", "options": {"choices": [
@@ -126,7 +126,7 @@ LEADS_FIELDS = [
         {"name": "cold", "color": "blueBright"},
         {"name": "unqualified", "color": "grayBright"},
     ]}},
-    {"name": "Quiz Completed At", "type": "dateTime",
+    {"name": "Quiz Abgeschlossen am", "type": "dateTime",
      "options": {"timeZone": "Europe/Berlin",
                  "dateFormat": {"name": "iso"},
                  "timeFormat": {"name": "24hour"}}},
@@ -151,7 +151,7 @@ LEADS_FIELDS = [
     ]}},
     {"name": "HubSpot Owner", "type": "singleLineText"},
     {"name": "HubSpot Contact ID", "type": "singleLineText"},
-    {"name": "HS Last Modified", "type": "dateTime",
+    {"name": "HS Zuletzt geändert", "type": "dateTime",
      "options": {"timeZone": "Europe/Berlin",
                  "dateFormat": {"name": "iso"},
                  "timeFormat": {"name": "24hour"}}},
@@ -163,12 +163,12 @@ LEADS_FIELDS = [
 
 # Sessions-Erweiterungen
 SESSIONS_FIELDS = [
-    {"name": "Duration (min)", "type": "number", "options": {"precision": 0}},
+    {"name": "Dauer (min)", "type": "number", "options": {"precision": 0}},
     {"name": "NPS", "type": "number", "options": {"precision": 0}},
-    {"name": "Recording URL", "type": "url"},
+    {"name": "Aufnahme-URL", "type": "url"},
 ]
 
-# Clients-Erweiterungen
+# Kunden-Erweiterungen
 CLIENTS_FIELDS = [
     {"name": "Onboarding Status", "type": "singleSelect", "options": {"choices": [
         {"name": "Pending"}, {"name": "Welcome Pack Sent"},
@@ -177,16 +177,16 @@ CLIENTS_FIELDS = [
     {"name": "LTV", "type": "currency", "options": {"precision": 2, "symbol": "€"}},
 ]
 
-# Mentors-Tabelle
+# Mentoren-Tabelle
 MENTORS_TABLE = {
-    "name": "Mentors",
-    "description": "Inner-Circle-Mentoren mit Kapazität und Speciality",
+    "name": "Mentoren",
+    "description": "Inner-Circle-Mentoren mit Kapazität und Spezialisierung",
     "fields": [
         {"name": "Name", "type": "singleLineText"},
-        {"name": "Email", "type": "email"},
-        {"name": "City", "type": "singleLineText"},
-        {"name": "Capacity per Week", "type": "number", "options": {"precision": 0}},
-        {"name": "Speciality", "type": "multipleSelects", "options": {"choices": [
+        {"name": "E-Mail", "type": "email"},
+        {"name": "Stadt", "type": "singleLineText"},
+        {"name": "Kapazität pro Woche", "type": "number", "options": {"precision": 0}},
+        {"name": "Spezialisierung", "type": "multipleSelects", "options": {"choices": [
             {"name": "Business"}, {"name": "Sales"}, {"name": "Mindset"},
             {"name": "Marketing"}, {"name": "Operations"}, {"name": "Finance"},
         ]}},
@@ -200,14 +200,14 @@ MENTORS_TABLE = {
 
 # Sample-Mentoren
 MENTOR_RECORDS = [
-    {"Name": "Bea Vogt",        "Email": "bea@mindforge.demo",     "City": "Stuttgart",  "Capacity per Week": 12, "Speciality": ["Business", "Sales"], "Status": "Active"},
-    {"Name": "Finn Weiner",     "Email": "finn@mindforge.demo",    "City": "Berlin",     "Capacity per Week": 10, "Speciality": ["Marketing"],          "Status": "Active"},
-    {"Name": "Jonas Spießbach", "Email": "jonas@mindforge.demo",   "City": "Hamburg",    "Capacity per Week": 10, "Speciality": ["Operations"],         "Status": "Active"},
-    {"Name": "Sam Guezel",      "Email": "sam@mindforge.demo",     "City": "München",    "Capacity per Week": 12, "Speciality": ["Mindset"],            "Status": "Active"},
-    {"Name": "Oguzhan Ünal",    "Email": "oguzhan@mindforge.demo", "City": "Köln",       "Capacity per Week": 8,  "Speciality": ["Sales"],              "Status": "Active"},
-    {"Name": "Tina Eckert",     "Email": "tina@mindforge.demo",    "City": "Frankfurt",  "Capacity per Week": 10, "Speciality": ["Business"],           "Status": "Active"},
-    {"Name": "Mischa Dieterle", "Email": "mischa@mindforge.demo",  "City": "Düsseldorf", "Capacity per Week": 8,  "Speciality": ["Marketing"],          "Status": "On Leave"},
-    {"Name": "Jimmy Künzli",    "Email": "jimmy@mindforge.demo",   "City": "Zürich",     "Capacity per Week": 10, "Speciality": ["Finance"],            "Status": "Active"},
+    {"Name": "Bea Vogt",        "E-Mail": "bea@mindforge.demo",     "Stadt": "Stuttgart",  "Kapazität pro Woche": 12, "Spezialisierung": ["Business", "Sales"], "Status": "Active"},
+    {"Name": "Finn Weiner",     "E-Mail": "finn@mindforge.demo",    "Stadt": "Berlin",     "Kapazität pro Woche": 10, "Spezialisierung": ["Marketing"],          "Status": "Active"},
+    {"Name": "Jonas Spießbach", "E-Mail": "jonas@mindforge.demo",   "Stadt": "Hamburg",    "Kapazität pro Woche": 10, "Spezialisierung": ["Operations"],         "Status": "Active"},
+    {"Name": "Sam Guezel",      "E-Mail": "sam@mindforge.demo",     "Stadt": "München",    "Kapazität pro Woche": 12, "Spezialisierung": ["Mindset"],            "Status": "Active"},
+    {"Name": "Oguzhan Ünal",    "E-Mail": "oguzhan@mindforge.demo", "Stadt": "Köln",       "Kapazität pro Woche": 8,  "Spezialisierung": ["Sales"],              "Status": "Active"},
+    {"Name": "Tina Eckert",     "E-Mail": "tina@mindforge.demo",    "Stadt": "Frankfurt",  "Kapazität pro Woche": 10, "Spezialisierung": ["Business"],           "Status": "Active"},
+    {"Name": "Mischa Dieterle", "E-Mail": "mischa@mindforge.demo",  "Stadt": "Düsseldorf", "Kapazität pro Woche": 8,  "Spezialisierung": ["Marketing"],          "Status": "On Leave"},
+    {"Name": "Jimmy Künzli",    "E-Mail": "jimmy@mindforge.demo",   "Stadt": "Zürich",     "Kapazität pro Woche": 10, "Spezialisierung": ["Finance"],            "Status": "Active"},
 ]
 
 
@@ -320,22 +320,22 @@ def main() -> None:
             time.sleep(0.15)
         print(f"  → Sessions: {counts['created']} created, {counts['exists']} already existed, {counts['error']} errors")
 
-    # --- Clients erweitern ---
-    clients = tables_by_name.get("Clients")
+    # --- Kunden erweitern ---
+    clients = tables_by_name.get("Kunden")
     if clients:
         cli_id = clients["id"]
         cli_existing = {f["name"] for f in clients["fields"]}
-        print(f"\n[Clients] Adding {len(CLIENTS_FIELDS)} fields…")
+        print(f"\n[Kunden] Adding {len(CLIENTS_FIELDS)} fields…")
         counts = {"created": 0, "exists": 0, "error": 0}
         for f in CLIENTS_FIELDS:
-            status = ensure_field(cli_id, "Clients", f, cli_existing)
+            status = ensure_field(cli_id, "Kunden", f, cli_existing)
             counts[status] += 1
             print(f"  {status:8s} {f['name']}")
             time.sleep(0.15)
-        print(f"  → Clients: {counts['created']} created, {counts['exists']} already existed, {counts['error']} errors")
+        print(f"  → Kunden: {counts['created']} created, {counts['exists']} already existed, {counts['error']} errors")
 
-    # --- Mentors-Tabelle ---
-    print(f"\n[Mentors] Creating table…")
+    # --- Mentoren-Tabelle ---
+    print(f"\n[Mentoren] Creating table…")
     mentors_id, status = ensure_table(MENTORS_TABLE, schema)
     print(f"  -> {status} (id={mentors_id})")
     if status == "exists":
@@ -345,17 +345,17 @@ def main() -> None:
         existing = {f["name"] for f in (mentors or {}).get("fields", [])}
         for f in MENTORS_TABLE["fields"]:
             if f["name"] not in existing:
-                ensure_field(mentors_id, "Mentors", f, existing)
+                ensure_field(mentors_id, "Mentoren", f, existing)
 
     # Sample-Mentoren einfügen, wenn Tabelle leer
     if mentors_id:
         code, resp = http("GET", f"{DATA_URL}/{mentors_id}?maxRecords=1")
         if code == 200 and not resp.get("records"):
             print(f"  Inserting {len(MENTOR_RECORDS)} sample mentors…")
-            n = create_records(mentors_id, "Mentors", MENTOR_RECORDS)
+            n = create_records(mentors_id, "Mentoren", MENTOR_RECORDS)
             print(f"  → {n} mentors inserted")
         else:
-            print(f"  Mentors table already has records — skipping seed")
+            print(f"  Mentoren table already has records — skipping seed")
 
     print("\n" + "=" * 70)
     print("Phase E Airtable Setup · DONE")

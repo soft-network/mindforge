@@ -1,4 +1,4 @@
-# Application-specific files (cover letters, pitch material, internal plans)
+# Local-only working folder (excluded from public repo)
 _application/
 
 # Secrets — NEVER commit

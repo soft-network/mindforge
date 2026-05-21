@@ -1,7 +1,7 @@
 # Phase E — Realitäts-Bridge zu Love Life Passport
 
 **Status:** Plan · noch nicht implementiert
-**Aufwand:** ~10 h (E1 + Quer-Welle)
+**Aufwand:** ~13,5 h (E1 + E2 + Quer-Welle)
 **Voraussetzung:** Phasen 1, A, B, C, D des Demo-Projekts laufen oder sind dokumentiert
 **Ziel:** Das Demo-Projekt um genau die zwei Bausteine erweitern, die durch
 die Live-Analyse des Quiz `analyse.lovelifepassport.com` als reale LLP-Praxis
@@ -14,7 +14,7 @@ verifiziert wurden — **HubSpot als zweites CRM neben Airtable** und ein
 
 | Punkt | Befund |
 |---|---|
-| Warum Phase E? | Live-Analyse hat gezeigt: LLP nutzt **HubSpot (EU, Account 26317639) als primäres CRM** und Tracking-Layer + ein mehrstufiges Quiz mit 13 Schritten und 4 parallelen Pixeln. Die Stellenanzeige listet HubSpot *nicht* explizit — dieses Wissen aus der Recherche zu zeigen ist der Bewerbungs-Hebel. |
+| Warum Phase E? | Live-Analyse hat gezeigt: LLP nutzt **HubSpot (EU, Account 26317639) als primäres CRM** und Tracking-Layer + ein mehrstufiges Quiz mit 13 Schritten und 4 parallelen Pixeln. Phase E erweitert die Demo-Pipeline um genau die zwei Bausteine, die in der Live-Realität von LLP verifiziert wurden: HubSpot-Forms-Submit-Pfad neben der Make-Webhook-Pipeline, und ein voller GTM-Container mit allen vier Pixeln. |
 | Architektur-Entscheidung | **Parallel, nicht Ersatz.** HubSpot übernimmt die Marketing-/Sales-Pipeline; Airtable bleibt die Operations-DB (Programme, Sessions, Mentoren, internes Reporting). Make ist der Bridge-Layer. Power BI konsolidiert beide. |
 | Markenneutralität | Demo bleibt unter dem fiktiven Namen **MindForge**. Alle IDs, Konten und Daten sind synthetisch. Nichts wird unter LLPs Namen abgesendet. |
 | Free-Tier-Strategie | HubSpot Free CRM, Make Free (1.000 Ops/Monat), Power BI Desktop, GCP Free Tier — kein Geldeinsatz nötig. Limits dokumentiert in §7. |
@@ -23,6 +23,10 @@ verifiziert wurden — **HubSpot als zweites CRM neben Airtable** und ein
 ---
 
 ## 2. Ziel-Architektur (nach Phase E)
+
+**Legende:**
+- `[LLP-Live]` = entspricht LLPs heute beobachtbarer Realität (HubSpot, Pixel, Quiz)
+- `[NEU]` = additive Operations-Schicht, die diese Rolle aufbaut (Airtable, Make-Bridge, Power BI, Streamlit, GCP)
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
@@ -33,13 +37,15 @@ verifiziert wurden — **HubSpot als zweites CRM neben Airtable** und ein
 │   │  Quiz-Frontend (9 Schritte)          │   ┌─────────────────────┐     │
 │   │  HTML + Vanilla JS + Skip-Logic      │   │  GTM Container      │     │
 │   │  Mobile-first, mit Score-Berechnung  │──▶│  GTM-XXXXXX (DEMO)  │     │
-│   │  Hosted auf GitHub Pages             │   │   ├─ Meta Pixel     │     │
-│   └─────────────────┬────────────────────┘   │   ├─ GA4 Stream A   │     │
-│                     │                        │   ├─ GA4 Stream B   │     │
-│                     │ POST (JSON)            │   └─ TikTok Pixel   │     │
-│                     ▼                        └─────────────────────┘     │
+│   │  Hosted auf GitHub Pages             │   │   ├─ Meta Pixel     │ ← [LLP-Live]
+│   │                                      │   │   ├─ GA4 Stream A   │   (Pixel-Stack
+│   │  [LLP-Live: OnePage.io-Pendant]      │   │   ├─ GA4 Stream B   │    1:1 nach
+│   └─────────────────┬────────────────────┘   │   └─ TikTok Pixel   │    LLP-Realität)
+│                     │                        └─────────────────────┘     │
+│                     │ POST (JSON)                                        │
+│                     ▼                                                    │
 │   ┌──────────────────────────────────────────────────────────────────┐   │
-│   │                  Make Scenario "Quiz Submit"                     │   │
+│   │ [NEU] Make Scenario "Quiz Submit" (Bridge & Orchestrator)        │   │
 │   │  1. Validate fields                                              │   │
 │   │  2. Compute Lead Score (existing JS, Phase 1)                    │   │
 │   │  3. ─▶ Branch A: Airtable upsert (Leads-Table, Operations-View) │   │
@@ -57,25 +63,45 @@ verifiziert wurden — **HubSpot als zweites CRM neben Airtable** und ein
 │             INTERNAL                                                     │
 ├────────────────┼─────────────────────────────────────────────────────────┤
 │                ▼                                                         │
-│   ┌────────────────────┐      ┌────────────────────┐                     │
-│   │   HubSpot Free CRM │◀────▶│   Airtable Base    │                     │
-│   │   Account: demo    │      │   4 Tables (Phase 1)│                    │
-│   │   Marketing+Sales  │ Make │   + Mentor-Tabelle  │                    │
-│   │   Pipeline + Quiz- │  bi- │   (neu)             │                    │
-│   │   Properties       │ direc│                     │                    │
-│   └─────────┬──────────┘      └─────────┬───────────┘                    │
-│             │                           │                                │
-│             ▼ OData/REST                ▼ REST                           │
+│   ┌────────────────────┐                ┌────────────────────┐           │
+│   │  [LLP-Live]        │                │  [NEU]             │           │
+│   │  HubSpot Free CRM  │◀══════════════▶│  Airtable Base     │           │
+│   │  Account: demo     │   Make-Bridge  │  4 Tables (Phase 1)│           │
+│   │  Marketing + Sales │   baut diese   │  + Mentor-Tabelle  │           │
+│   │  Pipeline + 12     │   Sync-Schicht │  (Operations-DB)   │           │
+│   │  Quiz-Properties   │   (3 Szenarien)│                    │           │
+│   │                    │   ──────────── │                    │           │
+│   │  ◄ bleibt zentral  │   #1 Quiz→Both │                    │           │
+│   │    Source-of-Truth │   #2 HS→AT     │                    │           │
+│   │    für Marketing/  │      (Sales-   │                    │           │
+│   │    Sales (unverän- │       Update)  │                    │           │
+│   │    dert ggü. LLP)  │   #3 AT→HS     │                    │           │
+│   │                    │      (Ops-     │                    │           │
+│   │                    │       Update)  │                    │           │
+│   └─────────┬──────────┘                └─────────┬──────────┘           │
+│             │                                     │                      │
+│             ▼ OData/REST                          ▼ REST                 │
 │   ┌──────────────────────────────────────────────────────┐               │
-│   │              Power BI Cross-Source                   │               │
+│   │ [NEU]      Power BI Cross-Source                     │               │
 │   │  - Marketing-Funnel (HubSpot)                        │               │
 │   │  - Sales-Pipeline (HubSpot Deals)                    │               │
 │   │  - Mentoring-Operations (Airtable)                   │               │
 │   │  - Joined: Lead → Customer → Mentor-Sessions         │               │
 │   └──────────────────────────────────────────────────────┘               │
 │                                                                          │
+│   ┌──────────────────────────────────────────────────────┐               │
+│   │ [NEU]   Streamlit Coach-Admin (auf GCP Cloud Run)    │               │
+│   │  Interne Tools für CS-Team und Mentoren              │               │
+│   └──────────────────────────────────────────────────────┘               │
+│                                                                          │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
+
+**Zentrale Architektur-Aussage:** HubSpot bleibt unangetastet als
+Marketing-/Sales-Source-of-Truth (das entspricht LLPs Live-Realität).
+Die **Make-Bridge** baut die bidirektionale Sync-Schicht zwischen
+HubSpot und der neuen Airtable-Operations-DB auf. Power BI joint beide
+Quellen, Streamlit ist das interne UI für CS und Mentoren.
 
 ---
 
@@ -290,6 +316,102 @@ powerbi-cross-source/
 
 ---
 
+## 3.5 Welle E2 — Setter-Daily mit Google Calendar + Meet
+
+### 3.5.1 Hintergrund
+
+Eine Live-Inspektion (Mai 2026) der Buchungsseite
+`www.lovelifepassport.com/kontakt/kostenloses-strategiegespraech` und
+des Strategie-Quiz `strategie.lovelifepassport.com` hat verifiziert,
+dass **kein Self-Service-Booking-Tool** (Calendly, HubSpot Meetings,
+cal.com, Acuity etc.) eingesetzt wird. Die Buchungs-UI ist ein
+klassisches Lead-Capture-Formular (HubSpot-Form-UUID
+`7b99f4ed-ff21-42b6-8780-65e7899d4028`); die eigentliche
+Terminvereinbarung erfolgt im Setter-Anruf via Aircall — eine bewusste
+High-Ticket-Sales-Architektur (Setter qualifiziert, danach erst
+Closer-Termin).
+
+Welle E2 bildet diesen Flow im Demo als **Setter-Daily-Tool im
+Streamlit** ab, mit **Google Calendar + Meet** als Termin- und
+Video-Layer. Das ist deutlich realistischer als ein Calendly-Webhook
+und deckt zwei zusätzliche Themen ab: Google-Workspace-Integration
+(Service Account, Calendar API, Domain-wide Delegation) und interne
+Setter-Tooling-Workflows.
+
+### 3.5.2 Komponenten
+
+| Modul | Zweck |
+|---|---|
+| Streamlit-Page `2_Setter_Daily.py` | Priorisierte Hot-Lead-Queue + Call-Buttons + Termin-Buchung |
+| `integrations/google_calendar.py` | Service-Account-Auth + `create_strategy_call()` Helper, der Calendar-Event mit auto-generiertem Meet-Link erzeugt |
+| `integrations/aircall.py.stub` | Click-to-Call-Stub mit dokumentiertem `POST /v1/users/{id}/dial`-Call — nicht produktiv verkabelt (Aircall ist kostenpflichtig) |
+| Airtable-Feld-Erweiterung | Neue Felder im `Leads`-Table: `call_at` (Datetime), `meet_link` (URL), `setter_owner` (Single Select) |
+| GCP Service Account | Domain-wide Delegation für Calendar-API in Google-Workspace-Demo-Domain |
+
+### 3.5.3 Funktionsumfang
+
+1. **Hot-Lead-Queue** — sortiert nach Score, gefiltert auf Status `New` / `Qualifying`
+2. **Click-to-Call** — Button feuert `POST /v1/users/{setter_id}/dial` an Aircall (Stub) oder öffnet `tel:` Link als Fallback
+3. **Termin buchen mit Meet-Link** — Datetime-Picker + Button erzeugt:
+   - Google-Calendar-Event mit Setter + Lead als Attendees
+   - automatischer Google-Meet-Link via `conferenceData.createRequest`
+   - E-Mail-Einladung an Lead über Google-Workspace
+   - Airtable-Update: `status=Call scheduled`, `call_at`, `meet_link`
+4. **Status-Updates** — Setter kann Lead von "New" → "Qualifying" → "Call scheduled" / "Not interested" / "Wrong fit" durchklicken
+5. **Notizen-Editor** — Markdown-Textarea, sync zu Airtable
+6. **Daily-KPIs** — Calls heute, Termine gebucht, Hot-Leads offen
+
+### 3.5.4 Files
+
+```
+streamlit-app/
+├── pages/
+│   └── 2_Setter_Daily.py          # neu — Setter-UI mit Hot-Lead-Queue
+├── integrations/
+│   ├── __init__.py
+│   ├── google_calendar.py          # neu — Service-Account + create_strategy_call()
+│   ├── aircall.py.stub             # neu — Click-to-Call-Stub mit Doku
+│   └── airtable_helpers.py         # existiert aus Phase C; um get_hot_leads() erweitert
+└── .streamlit/
+    └── secrets.example.toml        # Service-Account-JSON-Platzhalter dokumentiert
+```
+
+### 3.5.5 Account-Setup-Sprint
+
+1. GCP-Projekt anlegen (existiert aus Phase D)
+2. Calendar API aktivieren: `gcloud services enable calendar-json.googleapis.com`
+3. Service Account anlegen mit Rolle `Calendar User`
+4. JSON-Key herunterladen → `streamlit-app/.streamlit/secrets.toml` (lokal) oder GCP Secret Manager (produktiv)
+5. Domain-wide Delegation im Google-Workspace-Admin aktivieren (Scope `https://www.googleapis.com/auth/calendar.events`)
+6. Test-Termin gegen Demo-Kalender feuern → Meet-Link in Response prüfen
+
+### 3.5.6 Sicherheits-Notizen
+
+- Service-Account-JSON **niemals** committen — `.gitignore` enthält `**/secrets.toml`
+- Bei Cloud-Run-Deployment: JSON über Secret-Manager mounten, nicht im Container-Image
+- Token-Rotation: alle 90 Tage planen (Eintrag in `09-monitoring.md` ergänzen)
+- Domain-wide Delegation ist mächtig — Scope auf `calendar.events` einschränken, kein Vollzugriff
+
+### 3.5.7 Limitierungen / Was bewusst nicht gebaut wird
+
+- Kein OAuth-Multi-User-Flow (jeder Setter mit eigenem Google-Konto) — würde 3-4h zusätzlich kosten. Demo nutzt Service Account mit zentralem Demo-Kalender.
+- Kein Webhook-Rückkanal von Google Calendar (Termin verschoben/abgesagt) — Streamlit kann keine Webhooks empfangen. Workaround: Make-Szenario "Google Calendar Update → Airtable" als Phase-F-Idee dokumentiert.
+- Kein Recording-Download von Google Meet — separater Workspace-Plan (Business Standard+) nötig.
+
+### 3.5.8 Aufwand
+
+**Total Welle E2: ~3,5 h**
+
+| Block | Dauer |
+|---|---|
+| GCP Service Account + Calendar API Setup | 30 min |
+| `google_calendar.py` Integration (Auth, create_strategy_call, get_busy_slots) | 1 h |
+| Airtable-Schema-Erweiterung (3 neue Felder) | 15 min |
+| `2_Setter_Daily.py` Streamlit-Page | 1,5 h |
+| `aircall.py.stub` mit Doku | 15 min |
+
+---
+
 ## 4. Quer-Welle — Tracking-Realität
 
 **Was:** Der bestehende Phase-A/B-Tracking-Stack (Meta Pixel + CAPI) wird
@@ -344,7 +466,7 @@ tracking-full/
 ├── 02-meta-pixel-capi.md           # Pixel + CAPI (erweitert Phase B)
 ├── 03-ga4-dual-stream.md           # 2 Streams konfigurieren
 ├── 04-tiktok-pixel.md              # Setup + Test
-├── 05-consent-and-dsgvo.md         # Cookie-Consent-Logic + DSGVO-Notes
+├── 05-consent-and-dsgvo.md         # Cookie-Consent-Logic + DSGVO-Notizen
 └── dataLayer-spec.md               # Welche Events mit welchen Properties
 ```
 
@@ -396,6 +518,8 @@ tracking-full/
 | Airtable | Free | Existiert bereits aus Phase 1 | airtable.com |
 | Power BI Desktop | Free | Existiert bereits aus Phase 1 | powerbi.microsoft.com |
 | GitHub Pages | Free | Existiert bereits | github.com |
+| GCP Service Account (Calendar API) | Free | 1 Service Account mit Domain-wide Delegation, Calendar-API aktiviert | console.cloud.google.com |
+| Google Workspace Demo-Domain | Free Trial möglich | für Calendar-Events + Meet-Links + Domain-wide Delegation | workspace.google.com |
 
 **Reihenfolge der Setup-Schritte (~1 h gesamt vor dem ersten Code):**
 
@@ -430,8 +554,9 @@ tracking-full/
 |---|---|
 | Wellen E2 (Sales-Pipeline mit Leadhunter/Setter/Closer) | Wurde nicht gewählt |
 | Welle E3 (Mentor-Performance, RLS, Customer-Health) | Wurde nicht gewählt |
-| Aircall-Integration | Braucht kostenpflichtigen Aircall-Trial |
-| Calendly-Webhook | Calendly Free-Tier hat keine Webhooks; Substitution mit Make-Cal-Connector möglich, aber nicht im Scope |
+| Aircall-Integration (produktiv) | Aircall hat keinen Free-Tier (~30 €/Setter/Monat). Click-to-Call-Stub in der Setter-Daily-UI ist dokumentiert, aber nicht live verkabelt — siehe `streamlit-app/integrations/aircall.py.stub` |
+| Calendly-Self-Service-Booking | Bewusst weggelassen — die Live-Inspektion (Mai 2026) hat verifiziert, dass LLP **kein** Calendly/HubSpot-Meetings/Self-Service-Booking nutzt. Strategiegespräche werden vom Setter im Aircall-Telefonat manuell vereinbart. Das Demo bildet diesen Flow ab (siehe Welle E2 in §3.5) statt eines unbenutzten Tools. |
+| Zoom-Integration | Google Meet wird beim Calendar-Event automatisch mit-erstellt (`conferenceData.createRequest`) — separate Zoom-Integration unnötig |
 | Salesforce / Pipedrive | HubSpot reicht zur Demonstration des Patterns |
 | Replizierung des originalen LLP-Funnel-Builders (`con-kit`) | Proprietäres Tool, keine Public-API. Vanilla-JS ist portabler. |
 | Echte LinkedIn-Pixel | Meta + GA4 + TikTok zeigen das Pattern bereits |
@@ -449,25 +574,29 @@ Phase E ist „done" wenn:
 - [ ] GA4 DebugView zeigt `quiz_submit`-Events auf beiden Streams parallel
 - [ ] TikTok Events Manager zeigt mindestens einen „Lead"-Test-Event
 - [ ] Power BI Desktop lädt beide Datenquellen, das Cross-Source-Dashboard zeigt mindestens 5 Test-Leads mit gejointen Mentor-Sessions
+- [ ] Streamlit-Page „Setter Daily" zeigt Hot-Lead-Queue, ein Test-Termin wird gebucht und erscheint im Demo-Google-Kalender mit auto-generiertem Meet-Link
+- [ ] Airtable-Lead nach Buchung hat `status=Call scheduled`, `call_at` und `meet_link` gesetzt
 - [ ] `LOVELIFEPASSPORT-ANALYSE.md` ist um einen Abschnitt „Phase-E-Status" ergänzt mit Verweisen auf alle neuen Files
-- [ ] Bewerbungs-Pitch (Abschnitt 8 der Master-Analyse) ist um die HubSpot-Bridge-Story erweitert
 
 ---
 
-## 10. Zeitplan (~10 h gesamt)
+## 10. Zeitplan (~13,5 h gesamt)
 
 | Block | Dauer | Voraussetzung | Output |
 |---|---|---|---|
-| Account-Setup-Sprint | 1 h | – | Alle IDs in `.env.example` |
+| Account-Setup-Sprint (inkl. GCP Service Account) | 1,5 h | – | Alle IDs in `.env.example` + Service-Account-JSON |
 | Quiz-Frontend HTML + Skip-Logic | 1,5 h | – | `quiz-frontend/index.html` + Engine |
 | Quiz-Frontend Submit + DataLayer | 1 h | Frontend-Markup | DataLayer-Events feuern |
 | HubSpot Properties + Workflow | 1 h | Account | Properties live, Workflow als Markdown |
 | Make-Szenario E1.3a (Quiz → HubSpot+Airtable) | 1,5 h | HubSpot + Frontend | Make läuft, Test-Submit fließt |
 | Make-Szenarien E1.3b/c (Bidi-Sync) | 1 h | E1.3a | Sync in beide Richtungen |
 | GTM-Container + alle Tags | 1,5 h | GTM-Account | Pixel feuern auf Quiz-Events |
+| **E2: Google Calendar Integration** | 1 h | GCP Service Account | `integrations/google_calendar.py` mit `create_strategy_call()` |
+| **E2: Setter-Daily Streamlit-Page** | 1,5 h | E1.3a (Leads in Airtable) + E2-Cal | `2_Setter_Daily.py` mit Hot-Lead-Queue + Termin-Buchung + Meet-Link |
+| **E2: Aircall-Stub + Airtable-Schema** | 0,5 h | – | `aircall.py.stub` + 3 neue Airtable-Felder (`call_at`, `meet_link`, `setter_owner`) |
 | Power-BI Cross-Source | 1,5 h | HubSpot + Airtable mit Daten | `.pbix` mit 4 Reports |
 
-**Realistisch über ein langes Wochenende oder zwei Abende + ein Wochenende.**
+**Realistisch über zwei lange Wochenenden.**
 
 ---
 
@@ -478,8 +607,6 @@ Phase E ist „done" wenn:
 | HubSpot-Account-Mail | `net24.twork@gmail.com` (Hauptmail) |
 | GTM-Container-Name | "MindForge Demo" |
 | GitHub-Repo | sofort public ab Phase E |
-| Loom-Video | offen, Klick-Pfade werden beim Bauen dokumentiert, damit beides möglich bleibt |
-| Pitch-Update / Anschreiben | macht User selbst, Claude liefert nur Code + Setup-Doku |
 
 ---
 
@@ -488,12 +615,12 @@ Phase E ist „done" wenn:
 Mit E1 + Quer-Welle erreicht das Demo eine Tiefe, die folgendes belegt:
 
 - **Geschäftsverständnis:** Quiz-Pfad, Lead-Score, Sales-Pipeline 1:1 nachgebaut
-- **Tool-Beherrschung:** Airtable + HubSpot + Make + Power BI im Verbund (statt nur Airtable wie in der Stellenanzeige)
+- **Tool-Beherrschung:** Airtable + HubSpot + Make + Power BI im Verbund
 - **Tracking-Reife:** GTM + 4 Pixel + CAPI + Privacy-Sandbox-Awareness
 - **Operations-Reife:** Bidirektionaler Sync mit Conflict-Resolution
 
-Optional in einer späteren Welle: E2 (Sales-Pipeline) und E3 (Mentoring),
-wenn Zeit bis zur Bewerbung bleibt.
+Optional in einer späteren Welle: Sales-Pipeline-Übergaben (Leadhunter →
+Setter → Closer) und Mentor-Performance-Dashboard mit Row-Level-Security.
 
 ---
 

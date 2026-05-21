@@ -20,8 +20,8 @@ Berechnet einen Score (0-100) basierend auf:
 |---|---|---|
 | Source | 30 | Referral=30, Organic=25, Google Ads=20, FB=15, IG=12, Other=5 |
 | Programm-Preis | 30 | Premium-Programme = höherer Intent (linear bis 5000 EUR) |
-| Phone vorhanden | 15 | Telefonnummer angegeben |
-| Notes vorhanden | 5 | Mehr als 20 Zeichen Notiz |
+| Telefon vorhanden | 15 | Telefonnummer angegeben |
+| Notizen vorhanden | 5 | Mehr als 20 Zeichen Notiz |
 | Recency | 20 | <24h=20, <72h=10, <168h=5, älter=0 |
 
 Wenn Score ≥ 70 → Status wird automatisch auf "Qualified" gesetzt → Hot Lead.
@@ -50,14 +50,14 @@ Wenn Score ≥ 70 → Status wird automatisch auf "Qualified" gesetzt → Hot Le
 
 Das Lead-Scoring-Script läuft direkt in der Airtable Scripting API mit der nativen
 `input`/`output`-Library. Es nutzt async-Operationen für Cross-Table-Lookups
-(Programs), gewichtete Source-Bewertung und Status-Update via `updateRecordAsync`.
+(Programme), gewichtete Source-Bewertung und Status-Update via `updateRecordAsync`.
 Der Score wird transparent als Tabelle visualisiert, damit das Sales-Team die
 Logik nachvollziehen kann.
 
 | Technik | Im Script |
 |---|---|
 | JavaScript ES2020+ | Komplettes File |
-| Cross-Table Lookup | Leads → Programs via `selectRecordAsync` |
+| Cross-Table Lookup | Leads → Programme via `selectRecordAsync` |
 | Async/Await | Saubere asynchrone API-Calls |
 | Interactive Input | `input.recordAsync`, `input.buttonsAsync` |
 | Strukturiertes UI | Tabellen-Output, Bestätigungs-Dialog |

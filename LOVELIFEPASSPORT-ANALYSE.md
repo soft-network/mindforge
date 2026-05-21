@@ -1,14 +1,13 @@
-# Love Life Passport — Geschäfts-, Funnel- und Rollenanalyse
+# Love Life Passport — Geschäfts- und Funnel-Analyse
 
-**Zweck dieses Dokuments:** Dieses Demo-Projekt (`MindForge Coaching Pipeline`)
-wurde gezielt als Bewerbungs-Demo für die Stelle
-**"Low Code Frontend Webentwickler (Native or Fluent German required)"**
-bei **Love Life Passport GmbH** aufgebaut. Dieses Dokument zeigt:
+**Zweck dieses Dokuments:** Technischer Hintergrund-Kontext für das
+Demo-Projekt `MindForge Coaching Pipeline`. Die Architektur des Demos
+ist an einem realen High-Ticket-Coaching-Funnel (Love Life Passport)
+orientiert. Dieses Dokument hält fest:
 
 1. wie Love Life Passport als Geschäft funktioniert,
-2. welche Rolle die Stelle im Org-Chart einnimmt,
-3. wie der reale Funnel (analyse.lovelifepassport.com → Strategiegespräch → Inner Circle) aussieht,
-4. und 1:1 wie das Demo-Projekt jede einzelne Anforderung der Stellenanzeige abbildet.
+2. wie der reale Funnel (analyse.lovelifepassport.com → Strategiegespräch → Inner Circle) aufgebaut ist,
+3. welche Tools im Stack live verifizierbar sind und welche das Demo zusätzlich abbildet.
 
 ---
 
@@ -24,13 +23,14 @@ bei **Love Life Passport GmbH** aufgebaut. Dieses Dokument zeigt:
 | Track Record | 25–35 Mio. € Umsatz (laut Gründer-Kommunikation), Spiegel-Bestseller "Escape & Arrive", Marketer des Jahres 2024 |
 | Aktive Mentoring-Kunden | 400+ (Inner Circle), 2.000+ Programm-Alumni |
 | Kern-Wertversprechen | "Escape the ordinary" — finanzielle und geografische Freiheit durch eigenes Online-Business |
-| Stelle | Low Code Frontend Webentwickler · Operations & Tech · 3.000–3.550 € / Monat · 100 % Remote · Vollzeit · unbefristet · Deutsch ≥ C1 |
 
-**Schlüsselbeobachtung:** Der Tech-Stack der Stellenanzeige (Airtable +
-Make + Power BI + JS/TS + Streamlit + GCP + Monitoring + Pixels) ist
-**identisch** mit dem Stack des hier vorliegenden Demo-Projekts. Die
-Demo ist im Kern eine vertikale Scheibe durch genau die Pipeline, die
-diese Rolle bei LLP betreibt und weiterentwickelt.
+**Schlüsselbeobachtung:** Live-Inspektion (Mai 2026) zeigt einen
+HubSpot-zentrierten Marketing-/Sales-Stack mit OnePage.io-Funnel-Builder
+für Quiz-Frontends, ClickFunnels für Webinar-Funnels, Hotjar für
+Session-Recording und Aircall für Setter-Telefonie. Eine
+Operations-Datenbank (Airtable/Make/Power BI) und interne Tools
+(Streamlit/GCP) sind extern nicht beobachtbar — diese Schicht bildet
+das Demo zusätzlich ab.
 
 ---
 
@@ -55,7 +55,7 @@ bis zum High-Ticket-Premium-Programm.
 |---|---|---|---|
 | Free 0 | TET-Circle | Peer-Community | Brand-Awareness, Social Proof |
 | Free 1 | Quiz auf `analyse.lovelifepassport.com` | 2-Min-Quiz | Lead-Generierung (E-Mail) |
-| Free 2 | Strategiegespräch auf `strategie.lovelifepassport.com` | 1:1 Call (Calendly) | Lead-Qualifizierung, Sales |
+| Free 2 | Strategiegespräch auf `strategie.lovelifepassport.com` | 1:1 Call (Setter bucht Termin manuell im Aircall-Telefonat — Self-Service-Booking ist nicht beobachtbar) | Lead-Qualifizierung, Sales |
 | Low-Ticket | MasterYOURcard | Online-Kurs (Meilensammeln) | Cross-Sell, Vertrauensaufbau |
 | Mid-Ticket | The Escape Theory · Online Business Kickstart | Selbstlernkurse | Aufstieg in die Marke |
 | **High-Ticket (Core)** | **Inner Circle** | **12-Monats-Mentoring** | **Hauptumsatz, 400+ aktive Kunden** |
@@ -76,10 +76,9 @@ the-escapetheory.lovelifepassport.com → Escape-Theory-Kurs
 retreat.lovelifepassport.com  → Retreat-Anmeldung
 ```
 
-**Implikation für die Tech-Rolle:** Conversion-Tracking, Pixel-Setup
-und Funnel-Auswertung müssen pro Subdomain konsistent aufgesetzt sein.
-Das ist exakt der Grund, warum die Stellenanzeige `CAPI/Pixels` explizit
-listet.
+**Implikation für die Architektur:** Conversion-Tracking, Pixel-Setup
+und Funnel-Auswertung müssen pro Subdomain konsistent aufgesetzt sein —
+inklusive serverseitiger Conversion-API für iOS-14.5-Robustheit.
 
 ### 2.4 Customer Journey (rekonstruiert)
 
@@ -88,10 +87,10 @@ Awareness
   Meta-/Google-Ads, Instagram-Reels, Buch „Escape & Arrive", Bestseller-PR
             │
             ▼
-Interest
+Interesse
   Landing Page → Quiz auf analyse.lovelifepassport.com (2 Min, „dein CEO Alex
   meldet sich persönlich mit deinen nächsten Schritten zu 100k")
-            │  E-Mail/Phone-Capture, Quiz-Score-Logik
+            │  E-Mail/Telefon-Capture, Quiz-Score-Logik
             ▼
 Consideration
   Automatischer Lead-Eintrag im CRM → Setter-Anruf via Aircall
@@ -99,7 +98,7 @@ Consideration
             │
             ▼
 Decision
-  Setter bucht Termin (Calendly) bei Closer → 60-Min-Strategiegespräch
+  Setter vereinbart Termin manuell im Aircall-Telefonat → 60-Min-Strategiegespräch beim Closer
   Closer schließt Inner Circle / Kurs ab
             │
             ▼
@@ -191,7 +190,7 @@ ein Lead-Score-Modell mappen:
 | Runtime | React 18.2.0 (production min) + MobX (State Management) |
 | Build-Bundle-Pfad | `https://onecdn.io/b/client/1778147797912/js/main.bundle.js` |
 | Fonts | Jost (italic) aus `onecdn.io/font-storage/` |
-| Country-Flags | aus `onecdn.io/country-flag/default/` (Telefonnummer-Picker) |
+| Land-Flags | aus `onecdn.io/country-flag/default/` (Telefonnummer-Picker) |
 
 Das deutet auf einen **deutschen / EU-No-Code-Funnel-Builder** mit
 Custom-Domain-Mapping. Hidden Fields existieren im DOM-Submit-Moment
@@ -235,7 +234,7 @@ Quiz Submit (Step 12 → 13)
   │   └─ HubSpot Form-Submission-Tracking
   │
   ├─► HubSpot Contact Create / Update (Account 26317639, EU)
-  │     ├─ Properties: First-/Lastname, Email, Phone, Country
+  │     ├─ Properties: First-/Lastname, E-Mail, Telefon, Land
   │     ├─ Custom Properties: alle 9 Quiz-Antworten als Felder
   │     ├─ Lead-Score-Property (vermutlich serverseitig berechnet)
   │     └─ Lifecycle Stage: „Lead" oder „Marketing Qualified Lead"
@@ -249,14 +248,12 @@ Quiz Submit (Step 12 → 13)
   └─► Aircall-Queue (CTI-Integration) für Setter-Outbound innerhalb von <24h
 ```
 
-**Konsequenzen für die Tech-Rolle:** Der Low-Code-Frontend-Entwickler
-arbeitet zwar im Stack-Listing der Stellenanzeige mit „Airtable" als
-Primär-Datenbank — bei der live-beobachteten Realität wird Airtable
-mit hoher Wahrscheinlichkeit **neben** HubSpot betrieben, z.B. für
-*Operations-Use-Cases* (Mentor-Zuordnung, interne Tools, Programme,
-Sessions, Power-BI-Reporting), während HubSpot das Marketing- und
-Sales-CRM bleibt. Die spannendste Aufgabe ist dann die **Make-Bridge
-zwischen HubSpot ↔ Airtable**, plus **Power BI über beide Quellen**.
+**Konsequenz für die Demo-Architektur:** Airtable läuft **neben**
+HubSpot, nicht als Ersatz. HubSpot bleibt Marketing-/Sales-CRM,
+Airtable übernimmt Operations-Use-Cases (Mentor-Zuordnung, interne
+Tools, Programme, Sessions). Die Brücke dazwischen ist eine
+**Make-Bridge HubSpot ↔ Airtable**, plus **Power BI über beide
+Quellen** für Cross-Source-Reporting.
 
 ---
 
@@ -282,22 +279,21 @@ recherchierten Rollen ergibt sich folgendes Bild:
        │            │                   │             │             │             │
   Teamlead     Head of Product    Admin & Ops    Teamlead CS   Teamlead Mentor  Head of P&C
   Consulting   Performance Mkt.   Manager        Strategie Mgr  Mentor (8x)     (Sabrina K.)
-  Leadhunter   CRM & Auto. Mgr.   ▶ Low Code     Account Mgr    ─ Bea Vogt      Recruiter
-  Setter       Funnel & Conv.       Frontend     Praktikant     ─ Finn Weiner   Praktikant
-  Closer       Content & Social     Webentw.                    ─ Jonas Sp.     Controller
-               Creative Producer    ◀ DIESE                     ─ Sam Guezel
-               Copywriter           STELLE                      ─ Oguzhan Ü.
+  Leadhunter   CRM & Auto. Mgr.   Low Code       Account Mgr    ─ Bea Vogt      Recruiter
+  Setter       Funnel & Conv.     Frontend       Praktikant     ─ Finn Weiner   Praktikant
+  Closer       Content & Social   Webentw.                      ─ Jonas Sp.     Controller
+               Creative Producer                                ─ Sam Guezel
+               Copywriter                                       ─ Oguzhan Ü.
                (3x Praktikanten)                                ─ Tina Eckert
                                                                 ─ Mischa D.
                                                                 ─ Jimmy Künzli
 ```
 
-### 4.2 Wo die Stelle sitzt
+### 4.2 Stakeholder-Map des Operations-&-Tech-Teams
 
-Die **Low Code Frontend Webentwickler**-Rolle ist im Team **Operations
-& Tech** verankert, neben dem **Admin & Operations Manager**. Das ist
-das zentrale Tooling-Team — es wird von **allen anderen Abteilungen**
-parallel beansprucht:
+Das zentrale Tooling-Team **Operations & Tech** wird von allen anderen
+Abteilungen parallel beansprucht. Diese Stakeholder-Map ist die
+Grundlage für die im Demo gebauten Komponenten:
 
 | Stakeholder | Anforderung an Operations & Tech |
 |---|---|
@@ -309,81 +305,56 @@ parallel beansprucht:
 | **Finance / Controller** | Power-BI-Umsatz-Reports, Programm-Wirtschaftlichkeit |
 | **CEO** | OKR-Dashboard, Monatsreport |
 
-### 4.3 Typisches Tagesgeschäft der Rolle (Hypothese)
-
-Aus den expliziten Anforderungen der Stellenanzeige abgeleitet:
+### 4.3 Aufwands-Verteilung in Operations & Tech (Schätzung)
 
 - **40 %** Airtable: Schemas pflegen, Lookups/Rollups fixen, Interfaces für Setter/Closer/Mentoren bauen, Skripte (JS) für Score-Berechnung, Daten-Migrations-Skripte
-- **20 %** Make / Zapier: Quiz-Hook → CRM, Stripe → Onboarding-Mail → Slack, Calendly → Lead-Update, Aircall-Logs → Airtable
+- **20 %** Make / Zapier: Quiz-Hook → CRM, Stripe → Onboarding-Mail → Slack, Google Cal → Lead-Update, Aircall-Logs → Airtable
 - **15 %** Power BI: Sales-Funnel-Dashboard, Marketing-Performance, Customer-Health-Score, Mentor-Auslastung
 - **10 %** Tracking & Marketing-Ops: Meta CAPI, Pixel-Diagnose, GA4, UTM-Hygiene, Cross-Subdomain-Attribution
 - **10 %** Interne Tools: kleine Streamlit-/Retool-Apps für Sales-Daily, Quartals-Reviews, Onboarding-Checks
 - **5 %** Monitoring & Admin: Statuspage, UptimeRobot, Slack/Google-Workspace-Admin
 
-### 4.4 Erfahrungsstufe und Gehalt
-
-- **Gehalt:** 3.000 – 3.550 € brutto / Monat → Mid-Level / Junior-Plus
-- **Erfahrung:** Implizit Mid-Level (eigenverantwortliche Projektleitung)
-- **Sprache:** Deutsch C1+ Pflicht (Stellenanzeige), Englisch im Team gegeben
-- **Standort:** 100 % Remote weltweit ("Work from anywhere")
-
 ---
 
-## 5. Tech-Stack-Mapping: Stellenanzeige ↔ Demo-Projekt
-
-Jede einzelne in der Stellenanzeige genannte Technologie ist im
-Demo-Projekt mit einer **konkret lieferbaren Komponente** belegt.
-
-| Anforderung Stellenanzeige | Komponente Demo-Projekt | Datei / Pfad |
-|---|---|---|
-| Airtable: komplexe Datenmodelle (Links, Lookups, Rollups) | 4-Tabellen-Schema (Programs, Leads, Sessions, Clients) mit Lookups & Rollups | [`02-airtable-schema.md`](02-airtable-schema.md) |
-| Airtable: Interfaces | Lead-Triage- + Pipeline-Overview-Interface | [`06-airtable-interfaces.md`](06-airtable-interfaces.md) |
-| Airtable: Automatisierungen + Skripte | JS-Scoring im Airtable-Scripting-Block | [`03-airtable-script.md`](03-airtable-script.md) · [`airtable-scripts/lead-scoring.js`](airtable-scripts/lead-scoring.js) |
-| Automatisierungstool Make | Webhook → Validate → Enrich → Insert → Score → CAPI → Slack-Notify | [`04-make-scenario.md`](04-make-scenario.md) |
-| Power BI: Datenmodellierung, DAX, Deployment | Funnel-Dashboard, Program-Revenue-Dashboard, DAX-Maße | [`05-powerbi-dashboard.md`](05-powerbi-dashboard.md) |
-| APIs: REST / Webhooks | Airtable-REST-API, Make-Webhook, GCP-Function-HTTP | [`04-make-scenario.md`](04-make-scenario.md) · [`08-gcp-deployment.md`](08-gcp-deployment.md) |
-| JavaScript / TypeScript | Airtable-Scripting (JS), Landing-Page-Vanilla-JS | [`airtable-scripts/lead-scoring.js`](airtable-scripts/lead-scoring.js) · [`landing-page/script.js`](landing-page/script.js) |
-| Admin-Basics Google Workspace / Slack | Slack-Bot-Pings für Hot-Leads + System-Alerts | [`04-make-scenario.md`](04-make-scenario.md) |
-| Streamlit | Coach Admin Dashboard mit Login, Lead-Edit, KPIs | [`07-streamlit-admin.md`](07-streamlit-admin.md) · [`streamlit-app/`](streamlit-app/) |
-| GCP | Cloud Run (Streamlit) + Cloud Function (Enrichment, Score) | [`08-gcp-deployment.md`](08-gcp-deployment.md) · [`gcp/`](gcp/) |
-| Monitoring (Statuspage, UptimeRobot) | UptimeRobot-Pings + öffentliche Statuspage | [`09-monitoring.md`](09-monitoring.md) |
-| Pixels / CAPI | Meta Pixel client-side + Conversion API server-side, GTM-Container | [`10-meta-capi-tracking.md`](10-meta-capi-tracking.md) |
-| Git / Versionskontrolle | Das gesamte Repository | `.git`, dieses Verzeichnis |
-| Python / SQL (nice-to-have) | Cloud-Function in Python + pytest-Tests | [`gcp/cloud-function-score/`](gcp/cloud-function-score/) |
-| Saubere Dokumentation | 13 Markdown-Files mit Schritt-für-Schritt-Walkthrough | dieses Repository |
-
-**Coverage: 13/13 Pflicht-Technologien + 2/3 Nice-to-haves abgedeckt.**
-
----
-
-## 6. Wie das Demo-Projekt LLPs reales Geschäft nachbildet
+## 5. Wie das Demo-Projekt LLPs reales Geschäft nachbildet
 
 Die `MindForge`-Pipeline ist absichtlich strukturell isomorph zur
 LLP-Realität — nur mit fiktivem Markennamen, um keine Markenrechte zu
-berühren. Das Mapping ist 1:1:
+berühren. Die Live-Inspektion (Stand 2026-05-19) hat verifiziert, dass
+LLP heute **HubSpot (EU, Account 26317639) als zentrales CRM** betreibt.
+Airtable, Make, Power BI, Streamlit und GCP sind im Live-DOM nicht
+beobachtbar — sie kommen im Demo als **additive Operations-Schicht
+parallel zu HubSpot** hinzu. Spalte 3 kategorisiert jede Komponente als
+`Verifikation` (im Demo dasselbe wie bei LLP) oder `Erweiterung` (im Demo
+zusätzlich gebaut).
 
-| Love Life Passport (real) | MindForge Demo (1:1-Äquivalent) |
-|---|---|
-| Quiz `analyse.lovelifepassport.com` | `landing-page/index.html` mit Lead-Capture-Formular + Meta Pixel |
-| CEO-Versprechen "persönliches Ergebnis" | Slack-Bot-Hot-Lead-Notification an Setter |
-| Quiz-Lead landet im CRM | Airtable-Base `Leads`-Table |
-| Setter sieht priorisiert Hot-Leads | Lead-Scoring-Skript + Airtable-Interface "Triage" |
-| Setter ruft an / qualifiziert (Aircall) | Statusfeld + Notes im Lead, manuell setzbar in Streamlit |
-| Termin mit Closer (Calendly) | Sessions-Table, verknüpft zum Lead |
-| Closer macht Abschluss | Status `Converted` → Client-Record in Clients-Table |
-| Mentor-Zuordnung im Inner Circle | Client → Program-Verknüpfung, Sessions pro Kunde |
-| Programmumsätze tracken | Power BI Program-Revenue-Dashboard |
-| Meta-Ads optimieren | Meta CAPI + Pixel-Deduplizierung |
-| Operations sieht Systemstatus | UptimeRobot + Statuspage |
-| Mentoren-Team kommuniziert | Slack-Channel-Pings aus Make |
+| Love Life Passport (real) | MindForge Demo (Äquivalent) | Verhältnis zu LLP-Live-Stack |
+|---|---|---|
+| Quiz `analyse.lovelifepassport.com` (OnePage.io + HubSpot Forms) | `quiz-frontend/index.html` mit 9-Schritt-Quiz, Skip-Logic, Score | Erweiterung: portable Quiz-Variante; HubSpot-Forms-Pfad als E1.2 dokumentiert |
+| HubSpot CRM mit Custom-Properties + Workflows | Phase E: HubSpot Free-Account mit denselben 12 Quiz-Properties + Workflow | Verifikation |
+| CEO-Versprechen "persönliches Ergebnis" | Slack-Bot-Hot-Lead-Notification an Setter | Erweiterung |
+| Quiz-Lead landet im CRM (HubSpot) | Make-Bridge synchronisiert HubSpot ↔ Airtable-`Leads`-Table | Erweiterung: Operations-DB zusätzlich zu HubSpot |
+| Setter sieht priorisiert Hot-Leads | Lead-Scoring-Skript + Airtable-Interface "Triage" | Erweiterung |
+| Setter ruft an / qualifiziert (Aircall) | Statusfeld + Notizen im Lead, manuell setzbar in Streamlit | Erweiterung |
+| Termin mit Closer (vom Setter manuell vereinbart) | Streamlit-Setter-Daily-Tool bucht Termin im Google Calendar mit auto-generiertem Meet-Link, schreibt `call_at` + `meet_link` zurück nach Airtable | Erweiterung: Welle E2 (siehe `PHASE-E-PLAN.md` §3.5) |
+| Closer macht Abschluss | Status `Converted` → Client-Record in Kunden-Table | Erweiterung |
+| Mentor-Zuordnung im Inner Circle (400+ Kunden × 8 Mentoren) | Client → Program-Verknüpfung, Sessions pro Kunde | Erweiterung: M:N-Mentor-Allocation — in HubSpot strukturell nicht abbildbar |
+| Programmumsätze tracken | Power BI Program-Revenue-Dashboard | Erweiterung: Cross-Source-Reporting über HubSpot + Airtable |
+| Meta-Ads optimieren | Meta CAPI + Pixel-Deduplizierung | Verifikation: LLP betreibt 4 parallele Pixel; Demo zeigt das Pattern an einem |
+| Operations sieht Systemstatus | UptimeRobot + Statuspage | Erweiterung |
+| Mentoren-Team kommuniziert | Slack-Channel-Pings aus Make | Verifikation: Slack ist im DNS bestätigt (`slack-domain-verification`) |
 
-Anders gesagt: Wenn die Person in dieser Stelle morgen anfangen würde,
-wäre das, was im Demo-Repo liegt, **eine plausible vereinfachte
-V1 ihres Tagesgeschäft-Outputs**.
+Die Demo ist damit eine **portable, vollständig dokumentierte
+Operations-Schicht**, die sich gegen ein bestehendes HubSpot-CRM
+andocken lässt: HubSpot bleibt Marketing-/Sales-Source-of-Truth,
+Airtable übernimmt Mentor-/Session-/Programm-Operations, Make
+synchronisiert beide Richtungen, Power BI joint die Quellen für
+Reporting, und Streamlit liefert das interne UI für CS- und
+Mentoren-Workflows.
 
 ---
 
-## 7. LLP-spezifische Erweiterungs-Ideen (nice-to-have)
+## 6. LLP-spezifische Erweiterungs-Ideen (nice-to-have)
 
 Wenn das Demo noch enger an LLPs Realität rücken soll, lassen sich
 folgende Erweiterungen als optionale **Phase E** ergänzen. Jede
@@ -393,71 +364,42 @@ einzelne ist eine direkte Antwort auf eine LLP-Eigenheit:
 |---|---|---|
 | E1 | Mehrstufiges Quiz (Typeform / Tally / Eigenbau) statt einfaches Formular | `analyse.lovelifepassport.com` |
 | E2 | Sales-Übergaben Leadhunter → Setter → Closer mit eigenen Views/Owner-Wechsel in Airtable | LLP-Org: 3 getrennte Sales-Rollen |
-| E3 | Calendly-Webhook → Strategiegespräch-Buchung mit automatischem Owner-Wechsel | `strategie.lovelifepassport.com` |
+| E3 | Setter-Daily-Streamlit-Tool + Google-Calendar-Integration (Meet-Link automatisch) — bewusst kein Self-Service-Booking, weil LLP-Live-Inspektion verifiziert hat, dass kein Calendly/HubSpot-Meetings eingesetzt wird | `strategie.lovelifepassport.com` |
 | E4 | Aircall-Integration: Call-Logs + Recording-Links im Lead | Aircall ist nachweislich im Stack |
 | E5 | Mentor-Performance-Dashboard (NPS, Auslastung, Session-Anzahl, Kunden-Health) | Acht namentlich genannte Mentoren |
 | E6 | Customer-Health-Score für Inner-Circle-Kunden (Engagement, letzte Session, Community-Aktivität) | 400+ aktive Mentoring-Kunden |
 | E7 | Multi-Funnel-Tracking mit separaten Conversion-Events pro Subdomain | 7+ Subdomains mit eigenen Funnels |
 | E8 | Slack-Bot für Mentor-Reminders ("Heute Call mit Kunde X um 14:00") | Wöchentliche Live-Calls + Mentor-Modell |
 | E9 | Power-BI Row-Level-Security: jeder Mentor sieht nur eigene Kunden | Datenschutz + Mentor-Vielfalt |
-| E10 | GA4 + Meta CAPI parallel, DSGVO-konformes Consent-Setup | DACH-Markt + EU-Regulierung |
+| E10 | GA4 + Meta CAPI parallel, DSGVO-konformes Einwilligung-Setup | DACH-Markt + EU-Regulierung |
 | E11 | Internes Streamlit-Tool "Setter Daily" mit priorisierter Call-Liste | 4 Sales-Rollen in der Stelle |
 | E12 | Webhook-Endpoint für Stripe / Digistore24 → Customer-Success-Onboarding | High-Ticket-Payment-Provider |
 
 Diese Erweiterungen sind im Demo bewusst **nicht** vorab umgesetzt —
-sie eignen sich besser als Gesprächsstoff im Bewerbungsinterview
-("hier ist die V1, das wäre meine V2 wenn ich anfange").
+sie sind dokumentierter Ausblick auf eine V2 der Pipeline.
 
 ---
 
-## 8. Bewerbungs-Pitch (Anschreiben-Kern)
+## 7. Bekannte Limitierungen des Demos
 
-Empfohlene Bewerbungs-Story in drei Sätzen:
-
-> *"Ich habe euren Funnel von `analyse.lovelifepassport.com` bis zum
-> Inner Circle als End-to-End-Demo nachgebaut — mit eurem genauen
-> Tech-Stack: Airtable als CRM mit Lookups/Rollups, Make für die
-> Webhook-Pipeline, ein JS-Lead-Scoring-Skript, ein Power-BI-Dashboard
-> mit DAX, ein Streamlit-Tool für das interne Team, deployed auf GCP
-> Cloud Run, mit Meta Pixel + CAPI, UptimeRobot und Statuspage. Jede
-> einzelne Technologie eurer Stellenanzeige liegt im Repo als
-> lauffähige Komponente. Hier ist der Link — ich freue mich auf ein
-> Gespräch."*
-
-**Ankerpunkte für das Interview:**
-
-1. **Geschäftsverständnis:** Ich habe euer Geschäft strukturell verstanden — Quiz-Lead → Setter → Closer → Mentor → Power-BI-Loop ist im Demo abgebildet.
-2. **Technische Tiefe:** Airtable mit echten Lookups/Rollups, JS-Scripting, Python-Cloud-Function mit pytest — kein Tutorial-Niveau.
-3. **Operations-Mindset:** Monitoring, Statuspage und Alerting sind drin, weil ein Funnel-System ohne Outage-Erkennung kein System ist.
-4. **Marketing-Verständnis:** CAPI + Pixel + GTM zeigen, dass ich serverseitiges Tracking nach iOS-14.5 ernst nehme.
-5. **Dokumentation:** 13 Markdown-Files mit Schritt-für-Schritt-Walkthrough — direkte Antwort auf den "saubere Dokumentation"-Punkt der Anzeige.
-6. **Pragmatismus:** Bewusste Nicht-Entscheidungen sind in `00-architecture.md` dokumentiert (z.B. "kein Postgres, weil Airtable im Scope reicht") — ich denke an Trade-offs, nicht an Tech-Showcasing.
-
----
-
-## 9. Risiken und ehrliche Limitierungen dieser Bewerbungs-Demo
-
-Damit dieses Dokument nicht reines Selbstmarketing ist, hier eine
-ehrliche Inventur:
-
-| Limitierung | Wie ich damit umgehen würde |
+| Limitierung | Mitigation / nächster Schritt |
 |---|---|
-| Ich nutze ein fiktives Quiz-Formular, nicht das echte Typeform-Setup von LLP | Im Interview anbieten, das echte Quiz zu re-buildi-en, sobald Zugang zum tatsächlichen Stack besteht |
+| Demo nutzt ein eigenes Vanilla-JS-Quiz statt eines OnePage.io-Funnels | OnePage.io ist proprietär und nicht selbst hostbar; portable Vanilla-Variante deckt das Skip-Logic-Pattern ab |
 | Power BI Desktop, nicht der Workspace-Deploy mit RLS | Phase E9 vorgesehen — RLS pro Mentor ist die nächste Stufe |
-| Streamlit statt Retool | Streamlit ist portabler für ein Demo; Retool wäre LLPs vermutliche Realität — beide Tools sind 80% gleicher Skill |
-| Keine Aircall-Integration | Aircall benötigt API-Key, der nur intern verfügbar ist — als Phase-E-Idee dokumentiert |
-| Daten sind synthetisch (20 Leads, 4 Clients) | Schema ist auf 10.000+ Records ausgelegt; Skalierungsverhalten dokumentierbar |
+| Streamlit statt Retool | Streamlit ist portabler für eine offene Demo; Retool wäre eine vergleichbare Wahl mit 80 % Skill-Overlap |
+| Keine Aircall-Integration produktiv | Aircall hat keinen Free-Tier; Click-to-Call-Stub ist als Phase-E-Idee dokumentiert |
+| Daten sind synthetisch (20 Leads, 4 Kunden) | Schema ist auf 10.000+ Records ausgelegt; Skalierungsverhalten dokumentierbar |
 | Kein TikTok/LinkedIn-Pixel | Meta-Pixel-Pattern lässt sich 1:1 auf andere Plattformen übertragen, bewusst nicht dupliziert |
 
 ---
 
-## 10. Quellen
+## 8. Quellen
 
 - [`www.lovelifepassport.com`](https://www.lovelifepassport.com/) — Hauptwebsite
 - [`www.lovelifepassport.com/inner-circle`](https://www.lovelifepassport.com/inner-circle) — Inner Circle Programm
 - [`analyse.lovelifepassport.com`](https://analyse.lovelifepassport.com/) — Quiz-Funnel
 - [`strategie.lovelifepassport.com`](https://strategie.lovelifepassport.com/) — Strategiegespräch-Funnel
-- [Stellenanzeige Low Code Frontend Webentwickler](https://lovelifepassport.factorialhr.de/job_posting/low-code-frontend-webentwickler-native-or-fluent-german-required-264132)
+- [LLP Karriere-Portal](https://lovelifepassport.factorialhr.de/) — Quelle für Org-Struktur und Team-Größe
 - [Crunchbase-Profil Tayler Schweigert](https://www.crunchbase.com/person/tayler-schweigert)
 - [Crunchbase-Profil Love Life Passport](https://www.crunchbase.com/organization/love-life-passport)
 - [Remote Rocketship — alle offenen Stellen](https://www.remoterocketship.com/company/lovelifepassport/)
@@ -467,10 +409,11 @@ ehrliche Inventur:
 
 ---
 
-## 11. Phase-E-Status
+## 9. Phase-E-Status
 
-Phase E (Realitäts-Bridge zu LLP) ist **in Implementierung**. Der vollständige
-Plan liegt in [`PHASE-E-PLAN.md`](PHASE-E-PLAN.md). Aktueller Status:
+Phase E (HubSpot-Bridge + Setter-Daily) ist **in Implementierung**. Der
+vollständige Plan liegt in [`PHASE-E-PLAN.md`](PHASE-E-PLAN.md).
+Aktueller Status:
 
 | Komponente | Status | Dateien |
 |---|---|---|
@@ -484,7 +427,7 @@ Plan liegt in [`PHASE-E-PLAN.md`](PHASE-E-PLAN.md). Aktueller Status:
 
 **Was Claude geliefert hat:**
 - 19 neue Dateien (Code + Markdown-Dokus) über 5 Subdirectories
-- Vanilla-JS-Quiz mit Score-Engine, Skip-Logic, DSGVO-Consent
+- Vanilla-JS-Quiz mit Score-Engine, Skip-Logic, DSGVO-Einwilligung
 - Vollständige Step-by-Step-Anleitungen für HubSpot, Make, GTM, Meta, GA4, TikTok, Power BI
 - Field-Mapping-Matrix HubSpot ↔ Airtable mit Loop-Prevention
 - 3 Make-Szenario-Specs mit Sample-Payloads
@@ -498,13 +441,4 @@ Plan liegt in [`PHASE-E-PLAN.md`](PHASE-E-PLAN.md). Aktueller Status:
 5. GTM-Tags nach Doku konfigurieren — ca. 45 min
 6. End-to-End: Submit auf Demo-URL → erscheint in HubSpot + Airtable + Slack + Pixel-Test-Events
 7. Power BI Desktop laden, REST-Connections, DAX einfügen — ca. 1,5 h
-8. (Optional) Loom-Video aufnehmen
 
----
-
-## 12. Nächste Schritte (Bewerbung)
-
-- [ ] Phase E technisch abschließen (laut §11)
-- [ ] GitHub-Repo public machen, README finalisieren
-- [ ] Anschreiben mit den Anker-Punkten aus Abschnitt 8 + HubSpot-Bridge-Story formulieren (User selbst)
-- [ ] (Optional) Loom-Video (~5 Min) aufnehmen: Quiz-Submit → Slack-Hot-Lead → HubSpot-Contact → Airtable-Lead → Power-BI-Cross-Source-Dashboard (z.B. echtes Quiz + Calendly-Integration)

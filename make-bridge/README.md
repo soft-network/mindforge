@@ -121,7 +121,7 @@ Pro Quiz-Submit:
 
 **Budget:** 1.000 Ops / Monat ÷ 6,3 ≈ **158 Submits / Monat**.
 
-Reicht für eine Bewerbungs-Demo (deutlich weniger Traffic erwartet).
+Reicht für die Demo-Volumina (deutlich weniger Traffic erwartet).
 Bei Skalierung: Make Core (~ 9 €/Monat = 10.000 Ops) oder Workato-Migration.
 
 ---

@@ -7,8 +7,8 @@ it back to Airtable. Called by Make after lead creation.
 Score components (identical to airtable-scripts/lead-scoring.js):
   - Source weight       (max 30)
   - Program price       (max 30, linear 0-5000 EUR)
-  - Phone present       (15)
-  - Notes >20 chars     (5)
+  - Telefon present       (15)
+  - Notizen >20 chars     (5)
   - Recency             (max 20)
 
 If score >= HOT_LEAD_THRESHOLD (70), Status is set to "Qualified".
@@ -39,7 +39,7 @@ from pyairtable import Api
 
 
 LEADS_TABLE = "Leads"
-PROGRAMS_TABLE = "Programs"
+PROGRAMS_TABLE = "Programme"
 HOT_LEAD_THRESHOLD = 70
 
 SOURCE_WEIGHTS = {
@@ -95,9 +95,9 @@ def compute_score(lead_fields, program_price=0):
     breakdown = {
         "source":  _score_source(lead_fields.get("Source")),
         "program": _score_program(program_price),
-        "phone":   _score_phone(lead_fields.get("Phone")),
-        "notes":   _score_notes(lead_fields.get("Notes")),
-        "recency": _score_recency(lead_fields.get("Created")),
+        "phone":   _score_phone(lead_fields.get("Telefon")),
+        "notes":   _score_notes(lead_fields.get("Notizen")),
+        "recency": _score_recency(lead_fields.get("Erstellt am")),
     }
     total = min(100, sum(breakdown.values()))
     return {"total": total, "breakdown": breakdown}
@@ -131,7 +131,7 @@ def score_lead(request):
     fields = lead["fields"]
 
     program_price = 0
-    interest_links = fields.get("Interest", [])
+    interest_links = fields.get("Interesse", [])
     if interest_links:
         try:
             program = programs.get(interest_links[0])
