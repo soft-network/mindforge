@@ -13,7 +13,7 @@ from typing import TypedDict
 
 import pandas as pd
 
-from .tz import today_start_berlin, week_start_berlin
+from lib.tz import today_start_berlin, week_start_berlin
 
 
 class FunnelKpis(TypedDict):
