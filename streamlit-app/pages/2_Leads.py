@@ -1,22 +1,30 @@
-"""Leads — filterbare Browse-View mit Edit-Aktion pro Lead."""
+"""Leads — filterbare Browse-View mit direkter Edit-in-Tabelle."""
 
 from __future__ import annotations
 
 import pathlib
 import sys
+from datetime import date, datetime, timedelta
 
 import streamlit as st
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 from integrations.airtable_helpers import load_leads, update_lead  # noqa: E402
-from lib.filters import filter_leads, unique_options  # noqa: E402
+from lib.filters import (  # noqa: E402
+    DATE_RANGE_OPTIONS,
+    filter_by_date_range,
+    filter_leads,
+    unique_options,
+)
 
 
 # Page-Config + Passwort-Gate werden in app.py zentral gesetzt.
 
 st.title("📋 Leads")
-st.caption("Browse · Filter · Quick-Edit (Status + Score)")
+st.caption(
+    "Filter · Zeitraum · direkte Inline-Bearbeitung von Status und Lead Score"
+)
 
 df = load_leads()
 
@@ -26,14 +34,28 @@ if df.empty:
 
 
 # -----------------------------------------------------------------------------
-# Filter-Row
+# Filter-Row (5 Spalten + ggf. Date-Range bei Custom)
 # -----------------------------------------------------------------------------
 
-fcols = st.columns(4)
+fcols = st.columns(5)
 status_filter = fcols[0].selectbox("Status", unique_options(df, "Status"))
 source_filter = fcols[1].selectbox("Source", unique_options(df, "Source"))
-min_score     = fcols[2].slider("Min Lead Score", 0, 100, 0)
-search        = fcols[3].text_input("Suche (Name/E-Mail)", "")
+min_score = fcols[2].slider("Min Lead Score", 0, 100, 0)
+search = fcols[3].text_input("Suche (Name/E-Mail)", "")
+date_range = fcols[4].selectbox("Zeitraum", DATE_RANGE_OPTIONS)
+
+custom_start: date | None = None
+custom_end: date | None = None
+if date_range.startswith("Custom"):
+    dcols = st.columns(2)
+    default_start = (datetime.now() - timedelta(days=30)).date()
+    custom_start = dcols[0].date_input("Von", value=default_start)
+    custom_end = dcols[1].date_input("Bis", value=datetime.now().date())
+
+
+# -----------------------------------------------------------------------------
+# Filter anwenden
+# -----------------------------------------------------------------------------
 
 filtered = filter_leads(
     df,
@@ -42,54 +64,114 @@ filtered = filter_leads(
     min_score=min_score,
     search=search,
 )
+filtered = filter_by_date_range(
+    filtered,
+    range_name=date_range,
+    custom_start=custom_start,
+    custom_end=custom_end,
+).reset_index(drop=True)
 
 st.write(f"**{len(filtered)} Leads** gefunden")
 
-
-# -----------------------------------------------------------------------------
-# Liste
-# -----------------------------------------------------------------------------
-
-display_cols = ["Name", "E-Mail", "Source", "Lead Score", "Status", "Erstellt am"]
-st.dataframe(
-    filtered[display_cols].sort_values("Erstellt am", ascending=False),
-    use_container_width=True,
-    hide_index=True,
-)
-
-
-# -----------------------------------------------------------------------------
-# Quick-Edit
-# -----------------------------------------------------------------------------
-
-st.markdown("### Lead bearbeiten")
-
-if len(filtered) == 0:
-    st.caption("Keine Leads im aktuellen Filter zum Bearbeiten.")
+if filtered.empty:
+    st.caption("Keine Leads im aktuellen Filter.")
     st.stop()
 
-selected = st.selectbox(
-    "Lead auswählen",
-    filtered["id"].tolist(),
-    format_func=lambda lid: filtered.loc[filtered["id"] == lid, "Name"].values[0],
+
+# -----------------------------------------------------------------------------
+# Editable Tabelle (st.data_editor) — Status + Lead Score in-place editierbar
+# -----------------------------------------------------------------------------
+
+EDITOR_KEY = "leads_table_editor"
+STATUS_OPTIONS = ["New", "Qualified", "Contacted", "Converted", "Lost"]
+
+# Spalten + Reihenfolge im Display. id muss drin sein (versteckt) damit wir
+# nach Edit den Record finden.
+display_df = filtered[
+    ["id", "Name", "E-Mail", "Source", "Lead Score", "Status", "Erstellt am"]
+].copy()
+
+# Status sanitisieren: leere oder unbekannte Werte → "New" damit der
+# Selectbox-Editor sie als gültige Auswahl erkennt.
+display_df["Status"] = display_df["Status"].apply(
+    lambda s: s if s in STATUS_OPTIONS else "New"
 )
 
-if selected:
-    row = filtered[filtered["id"] == selected].iloc[0]
-    status_options = ["New", "Qualified", "Contacted", "Converted", "Lost"]
-    cur_status = row["Status"] if row["Status"] in status_options else "New"
+edited = st.data_editor(
+    display_df,
+    column_config={
+        "id": None,  # versteckt
+        "Name":        st.column_config.TextColumn("Name",        disabled=True),
+        "E-Mail":      st.column_config.TextColumn("E-Mail",      disabled=True),
+        "Source":      st.column_config.TextColumn("Source",      disabled=True),
+        "Erstellt am": st.column_config.DatetimeColumn(
+            "Erstellt am", disabled=True, format="DD.MM.YYYY HH:mm",
+        ),
+        "Lead Score":  st.column_config.NumberColumn(
+            "Lead Score ✏️", min_value=0, max_value=100, step=1,
+            help="Direkt in der Zelle editieren",
+        ),
+        "Status": st.column_config.SelectboxColumn(
+            "Status ✏️", options=STATUS_OPTIONS, required=True,
+            help="Direkt in der Zelle editieren",
+        ),
+    },
+    hide_index=True,
+    use_container_width=True,
+    key=EDITOR_KEY,
+    num_rows="fixed",
+)
 
-    ecols = st.columns(2)
-    new_status = ecols[0].selectbox(
-        "Status",
-        status_options,
-        index=status_options.index(cur_status),
-    )
-    new_score = ecols[1].slider(
-        "Lead Score", 0, 100, int(row["Lead Score"] or 0)
-    )
 
-    if st.button("Speichern", type="primary"):
-        update_lead(selected, {"Status": new_status, "Quiz Score": new_score})
-        st.success("Aktualisiert.")
-        st.rerun()
+# -----------------------------------------------------------------------------
+# Save-Button — Batch-Update nach Airtable
+# -----------------------------------------------------------------------------
+
+state = st.session_state.get(EDITOR_KEY, {})
+edited_rows: dict[int, dict] = state.get("edited_rows", {}) if state else {}
+
+scol1, scol2 = st.columns([1, 4])
+with scol1:
+    save_clicked = st.button(
+        "💾 Änderungen speichern",
+        type="primary",
+        disabled=not edited_rows,
+    )
+with scol2:
+    if edited_rows:
+        st.caption(f"⚠️ {len(edited_rows)} Zeile(n) bearbeitet — noch nicht gespeichert.")
+    else:
+        st.caption("Keine ungespeicherten Änderungen.")
+
+if save_clicked and edited_rows:
+    success_count = 0
+    error_count = 0
+    for row_idx, changes in edited_rows.items():
+        try:
+            lead_id = filtered.iloc[row_idx]["id"]
+        except (IndexError, KeyError):
+            error_count += 1
+            continue
+
+        # UI-Spaltennamen → Airtable-Feldnamen
+        patch = {}
+        if "Status" in changes:
+            patch["Status"] = changes["Status"]
+        if "Lead Score" in changes:
+            patch["Quiz Score"] = int(changes["Lead Score"])
+
+        if not patch:
+            continue
+
+        try:
+            update_lead(lead_id, patch)
+            success_count += 1
+        except Exception as e:
+            error_count += 1
+            st.error(f"Fehler bei Lead {lead_id}: {e}")
+
+    if success_count:
+        st.success(f"✅ {success_count} Lead(s) aktualisiert.")
+    if error_count:
+        st.warning(f"⚠️ {error_count} Update(s) fehlgeschlagen.")
+    st.rerun()

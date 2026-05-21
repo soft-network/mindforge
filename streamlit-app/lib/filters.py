@@ -2,7 +2,28 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime, timedelta
+from typing import Optional
+
 import pandas as pd
+
+from lib.tz import TZ_BERLIN
+
+
+# Vordefinierte Zeit-Range-Optionen für UI-Selectbox
+DATE_RANGE_OPTIONS = [
+    "Alle",
+    "Heute",
+    "Diese Woche",
+    "Letzte Woche",
+    "Diesen Monat",
+    "Letzten Monat",
+    "Letzte 3 Monate",
+    "Letzte 6 Monate",
+    "Dieses Jahr",
+    "Letztes Jahr",
+    "Custom (Kalender)",
+]
 
 
 def filter_leads(
@@ -53,3 +74,105 @@ def unique_options(df: pd.DataFrame, col: str) -> list[str]:
     if df.empty or col not in df.columns:
         return ["Alle"]
     return ["Alle"] + sorted(df[col].dropna().unique().tolist())
+
+
+# -----------------------------------------------------------------------------
+# Date-Range-Filter
+# -----------------------------------------------------------------------------
+
+def get_date_range(
+    range_name: str,
+    custom_start: Optional[date] = None,
+    custom_end: Optional[date] = None,
+) -> tuple[Optional[datetime], Optional[datetime]]:
+    """Berechnet (start, end) tz-aware Berlin-Datetimes für eine benannte Range.
+
+    Rückgabe (None, None) heißt: kein Filter anwenden (z.B. "Alle").
+    end ist exklusiv (`<`), start ist inklusiv (`>=`).
+    """
+    now = datetime.now(TZ_BERLIN)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    if range_name in ("Alle", None, ""):
+        return (None, None)
+
+    if range_name == "Heute":
+        return (today_start, today_start + timedelta(days=1))
+
+    if range_name == "Diese Woche":
+        # weekday(): Mo=0, So=6 — wir starten am Montag
+        days_since_monday = today_start.weekday()
+        start = today_start - timedelta(days=days_since_monday)
+        return (start, start + timedelta(days=7))
+
+    if range_name == "Letzte Woche":
+        days_since_monday = today_start.weekday()
+        this_week_start = today_start - timedelta(days=days_since_monday)
+        return (this_week_start - timedelta(days=7), this_week_start)
+
+    if range_name == "Diesen Monat":
+        start = today_start.replace(day=1)
+        end = (
+            start.replace(year=start.year + 1, month=1)
+            if start.month == 12
+            else start.replace(month=start.month + 1)
+        )
+        return (start, end)
+
+    if range_name == "Letzten Monat":
+        first_of_this_month = today_start.replace(day=1)
+        last_month_start = (
+            first_of_this_month.replace(year=first_of_this_month.year - 1, month=12)
+            if first_of_this_month.month == 1
+            else first_of_this_month.replace(month=first_of_this_month.month - 1)
+        )
+        return (last_month_start, first_of_this_month)
+
+    if range_name == "Letzte 3 Monate":
+        return (today_start - timedelta(days=90), today_start + timedelta(days=1))
+
+    if range_name == "Letzte 6 Monate":
+        return (today_start - timedelta(days=180), today_start + timedelta(days=1))
+
+    if range_name == "Dieses Jahr":
+        start = today_start.replace(month=1, day=1)
+        return (start, start.replace(year=start.year + 1))
+
+    if range_name == "Letztes Jahr":
+        this_year_start = today_start.replace(month=1, day=1)
+        return (
+            this_year_start.replace(year=this_year_start.year - 1),
+            this_year_start,
+        )
+
+    if range_name.startswith("Custom") and custom_start and custom_end:
+        start_dt = datetime.combine(custom_start, datetime.min.time(), tzinfo=TZ_BERLIN)
+        end_dt = (
+            datetime.combine(custom_end, datetime.min.time(), tzinfo=TZ_BERLIN)
+            + timedelta(days=1)  # end-of-day inclusive
+        )
+        return (start_dt, end_dt)
+
+    return (None, None)
+
+
+def filter_by_date_range(
+    df: pd.DataFrame,
+    range_name: str,
+    custom_start: Optional[date] = None,
+    custom_end: Optional[date] = None,
+    date_column: str = "Erstellt am",
+) -> pd.DataFrame:
+    """Filtert ein DataFrame nach einer Date-Spalte anhand einer benannten Range.
+
+    Erwartet `df[date_column]` als tz-aware Series (typischerweise UTC).
+    Pandas vergleicht intern korrekt mit Berlin-aware Datetimes.
+    """
+    if df.empty or date_column not in df.columns:
+        return df
+
+    start, end = get_date_range(range_name, custom_start, custom_end)
+    if start is None:
+        return df
+
+    return df[(df[date_column] >= start) & (df[date_column] < end)]
