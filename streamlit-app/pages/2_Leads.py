@@ -1,4 +1,4 @@
-"""Leads — filterbare Browse-View mit direkter Edit-in-Tabelle."""
+"""Leads — Liste mit Edit-Modal pro Zeile + Zeitfilter."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import pathlib
 import sys
 from datetime import date, datetime, timedelta
 
+import pandas as pd
 import streamlit as st
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
@@ -17,25 +18,123 @@ from lib.filters import (  # noqa: E402
     filter_leads,
     unique_options,
 )
+from lib.tz import TZ_BERLIN  # noqa: E402
 
 
-# Page-Config + Passwort-Gate werden in app.py zentral gesetzt.
+STATUS_OPTIONS = ["New", "Qualified", "Contacted", "Converted", "Lost"]
+
+
+# -----------------------------------------------------------------------------
+# Modal — Lead bearbeiten
+# -----------------------------------------------------------------------------
+
+@st.dialog("Lead bearbeiten", width="large")
+def edit_lead_modal(lead: pd.Series) -> None:
+    """Modal-Overlay mit allen editierbaren Feldern eines Leads."""
+    st.subheader(f"✏️ {lead['Name'] or '—'}")
+    st.caption(
+        f"📧 {lead.get('E-Mail', '—')}  ·  "
+        f"📞 `{lead.get('Telefon', '—') or '—'}`  ·  "
+        f"🌍 {lead.get('Land', '—') or '—'}"
+    )
+    st.markdown("---")
+
+    # Quiz-Snapshot (read-only) — zur Erinnerung warum dieser Lead Score hat
+    if lead.get("Branche") or lead.get("Monatsumsatz"):
+        with st.expander("Quiz-Antworten", expanded=False):
+            st.write(
+                f"**Branche:** {lead.get('Branche') or '—'}  ·  "
+                f"**Umsatz:** {lead.get('Monatsumsatz') or '—'}  ·  "
+                f"**Wunsch:** {lead.get('Hauptwunsch') or '—'}  ·  "
+                f"**Zeitbudget:** {lead.get('Zeitbudget') or '—'}"
+            )
+
+    # Editierbare Felder
+    col1, col2 = st.columns(2)
+    cur_status = lead["Status"] if lead["Status"] in STATUS_OPTIONS else "New"
+    new_status = col1.selectbox(
+        "Status",
+        STATUS_OPTIONS,
+        index=STATUS_OPTIONS.index(cur_status),
+        key=f"modal_status_{lead['id']}",
+    )
+    new_score = col2.slider(
+        "Lead Score",
+        0, 100,
+        value=int(lead.get("Lead Score") or 0),
+        key=f"modal_score_{lead['id']}",
+    )
+
+    new_note = st.text_area(
+        "Notiz anhängen (optional)",
+        placeholder="Wird mit Timestamp an die bestehenden Notizen angehängt",
+        key=f"modal_note_{lead['id']}",
+    )
+
+    # Bestehende Notizen als Read-only Hinweis
+    if lead.get("Notizen"):
+        with st.expander("Bestehende Notizen", expanded=False):
+            st.text(lead["Notizen"])
+
+    st.markdown("---")
+
+    bcol1, bcol2 = st.columns(2)
+    if bcol1.button(
+        "💾 Speichern",
+        type="primary",
+        use_container_width=True,
+        key=f"modal_save_{lead['id']}",
+    ):
+        patch: dict = {"Status": new_status, "Quiz Score": int(new_score)}
+        if new_note.strip():
+            existing = lead.get("Notizen") or ""
+            ts = datetime.now(TZ_BERLIN).strftime("%Y-%m-%d %H:%M")
+            patch["Notizen"] = (existing + f"\n[{ts}] {new_note.strip()}").strip()
+        try:
+            update_lead(lead["id"], patch)
+            st.success("Aktualisiert.")
+            st.rerun()
+        except Exception as e:
+            st.error(f"Fehler: {e}")
+
+    if bcol2.button(
+        "Abbrechen",
+        use_container_width=True,
+        key=f"modal_cancel_{lead['id']}",
+    ):
+        st.rerun()
+
+
+# -----------------------------------------------------------------------------
+# Hilfsfunktion: Tier-Badge
+# -----------------------------------------------------------------------------
+
+def tier_emoji(score: int) -> str:
+    if score >= 85:
+        return "🔥"
+    if score >= 70:
+        return "🌶️"
+    if score >= 40:
+        return "💧"
+    return "❄️"
+
+
+# -----------------------------------------------------------------------------
+# Page — Filter + Liste
+# -----------------------------------------------------------------------------
 
 st.title("📋 Leads")
 st.caption(
-    "Filter · Zeitraum · direkte Inline-Bearbeitung von Status und Lead Score"
+    "Filter · Zeitraum · Klick auf ✏️ neben einem Lead öffnet das Edit-Modal"
 )
 
 df = load_leads()
-
 if df.empty:
     st.info("Keine Leads vorhanden.")
     st.stop()
 
 
-# -----------------------------------------------------------------------------
-# Filter-Row (5 Spalten + ggf. Date-Range bei Custom)
-# -----------------------------------------------------------------------------
+# ----- Filter-Row (5 Spalten) -------------------------------------------------
 
 fcols = st.columns(5)
 status_filter = fcols[0].selectbox("Status", unique_options(df, "Status"))
@@ -53,22 +152,20 @@ if date_range.startswith("Custom"):
     custom_end = dcols[1].date_input("Bis", value=datetime.now().date())
 
 
-# -----------------------------------------------------------------------------
-# Filter anwenden
-# -----------------------------------------------------------------------------
+# ----- Filter anwenden -------------------------------------------------------
 
 filtered = filter_leads(
-    df,
-    status=status_filter,
-    source=source_filter,
-    min_score=min_score,
-    search=search,
+    df, status=status_filter, source=source_filter,
+    min_score=min_score, search=search,
 )
 filtered = filter_by_date_range(
-    filtered,
-    range_name=date_range,
-    custom_start=custom_start,
-    custom_end=custom_end,
+    filtered, range_name=date_range,
+    custom_start=custom_start, custom_end=custom_end,
+).reset_index(drop=True)
+
+# Sortierung: hot leads first, newest first
+filtered = filtered.sort_values(
+    ["Lead Score", "Erstellt am"], ascending=[False, False]
 ).reset_index(drop=True)
 
 st.write(f"**{len(filtered)} Leads** gefunden")
@@ -78,100 +175,42 @@ if filtered.empty:
     st.stop()
 
 
-# -----------------------------------------------------------------------------
-# Editable Tabelle (st.data_editor) — Status + Lead Score in-place editierbar
-# -----------------------------------------------------------------------------
+# ----- Lead-Liste mit Edit-Buttons -------------------------------------------
 
-EDITOR_KEY = "leads_table_editor"
-STATUS_OPTIONS = ["New", "Qualified", "Contacted", "Converted", "Lost"]
-
-# Spalten + Reihenfolge im Display. id muss drin sein (versteckt) damit wir
-# nach Edit den Record finden.
-display_df = filtered[
-    ["id", "Name", "E-Mail", "Source", "Lead Score", "Status", "Erstellt am"]
-].copy()
-
-# Status sanitisieren: leere oder unbekannte Werte → "New" damit der
-# Selectbox-Editor sie als gültige Auswahl erkennt.
-display_df["Status"] = display_df["Status"].apply(
-    lambda s: s if s in STATUS_OPTIONS else "New"
+# Header-Row
+hcols = st.columns([0.5, 3, 3, 1.2, 1.6, 1.6, 0.8])
+hcols[0].markdown("**🎯**")
+hcols[1].markdown("**Name**")
+hcols[2].markdown("**E-Mail**")
+hcols[3].markdown("**Score**")
+hcols[4].markdown("**Status**")
+hcols[5].markdown("**Erstellt**")
+hcols[6].markdown("**Edit**")
+st.markdown(
+    "<hr style='margin-top:0; margin-bottom:0.5rem'>",
+    unsafe_allow_html=True,
 )
 
-edited = st.data_editor(
-    display_df,
-    column_config={
-        "id": None,  # versteckt
-        "Name":        st.column_config.TextColumn("Name",        disabled=True),
-        "E-Mail":      st.column_config.TextColumn("E-Mail",      disabled=True),
-        "Source":      st.column_config.TextColumn("Source",      disabled=True),
-        "Erstellt am": st.column_config.DatetimeColumn(
-            "Erstellt am", disabled=True, format="DD.MM.YYYY HH:mm",
-        ),
-        "Lead Score":  st.column_config.NumberColumn(
-            "Lead Score ✏️", min_value=0, max_value=100, step=1,
-            help="Direkt in der Zelle editieren",
-        ),
-        "Status": st.column_config.SelectboxColumn(
-            "Status ✏️", options=STATUS_OPTIONS, required=True,
-            help="Direkt in der Zelle editieren",
-        ),
-    },
-    hide_index=True,
-    use_container_width=True,
-    key=EDITOR_KEY,
-    num_rows="fixed",
-)
+# Lead-Rows
+for _, lead in filtered.iterrows():
+    cols = st.columns([0.5, 3, 3, 1.2, 1.6, 1.6, 0.8])
+    score = int(lead.get("Lead Score") or 0)
 
+    cols[0].markdown(tier_emoji(score))
+    cols[1].markdown(f"**{lead['Name'] or '—'}**")
+    cols[2].caption(lead["E-Mail"] or "—")
+    cols[3].markdown(f"`{score}`")
+    cols[4].markdown(f"`{lead['Status'] or 'New'}`")
 
-# -----------------------------------------------------------------------------
-# Save-Button — Batch-Update nach Airtable
-# -----------------------------------------------------------------------------
-
-state = st.session_state.get(EDITOR_KEY, {})
-edited_rows: dict[int, dict] = state.get("edited_rows", {}) if state else {}
-
-scol1, scol2 = st.columns([1, 4])
-with scol1:
-    save_clicked = st.button(
-        "💾 Änderungen speichern",
-        type="primary",
-        disabled=not edited_rows,
-    )
-with scol2:
-    if edited_rows:
-        st.caption(f"⚠️ {len(edited_rows)} Zeile(n) bearbeitet — noch nicht gespeichert.")
+    erstellt = lead.get("Erstellt am")
+    if pd.notna(erstellt):
+        cols[5].caption(erstellt.strftime("%d.%m.%y %H:%M"))
     else:
-        st.caption("Keine ungespeicherten Änderungen.")
+        cols[5].caption("—")
 
-if save_clicked and edited_rows:
-    success_count = 0
-    error_count = 0
-    for row_idx, changes in edited_rows.items():
-        try:
-            lead_id = filtered.iloc[row_idx]["id"]
-        except (IndexError, KeyError):
-            error_count += 1
-            continue
-
-        # UI-Spaltennamen → Airtable-Feldnamen
-        patch = {}
-        if "Status" in changes:
-            patch["Status"] = changes["Status"]
-        if "Lead Score" in changes:
-            patch["Quiz Score"] = int(changes["Lead Score"])
-
-        if not patch:
-            continue
-
-        try:
-            update_lead(lead_id, patch)
-            success_count += 1
-        except Exception as e:
-            error_count += 1
-            st.error(f"Fehler bei Lead {lead_id}: {e}")
-
-    if success_count:
-        st.success(f"✅ {success_count} Lead(s) aktualisiert.")
-    if error_count:
-        st.warning(f"⚠️ {error_count} Update(s) fehlgeschlagen.")
-    st.rerun()
+    if cols[6].button(
+        "✏️",
+        key=f"edit_btn_{lead['id']}",
+        help="Lead bearbeiten",
+    ):
+        edit_lead_modal(lead)

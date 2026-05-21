@@ -7,7 +7,7 @@ from typing import Optional
 
 import pandas as pd
 
-from lib.tz import TZ_BERLIN
+from .tz import TZ_BERLIN
 
 
 # Vordefinierte Zeit-Range-Optionen für UI-Selectbox
