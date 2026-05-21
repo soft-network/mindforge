@@ -136,6 +136,100 @@ def mentor_capacity_usage(df_mentoren: pd.DataFrame) -> pd.DataFrame:
     return out.sort_values("Auslastung %", ascending=False, na_position="last")
 
 
+# -----------------------------------------------------------------------------
+# Customer-Success-KPIs
+# -----------------------------------------------------------------------------
+
+ONBOARDING_STAGES = [
+    "Pending",
+    "Welcome Pack Sent",
+    "Onboarding Call Done",
+    "Activated",
+]
+
+HEALTH_TIERS = ["Engaged", "Active", "At Risk", "Churn Risk", "Churned"]
+
+
+class CSKpis(TypedDict):
+    total_kunden:        int
+    activated:           int
+    onboarding_pending:  int
+    churn_risk:          int
+    total_mrr:           float
+    total_ltv:           float
+    avg_health:          float
+
+
+def compute_cs_kpis(df_kunden: pd.DataFrame) -> CSKpis:
+    """KPI-Snapshot für die Customer-Success-Page Top-Strip."""
+    if df_kunden.empty:
+        return CSKpis(
+            total_kunden=0, activated=0, onboarding_pending=0,
+            churn_risk=0, total_mrr=0.0, total_ltv=0.0, avg_health=0.0,
+        )
+    total = len(df_kunden)
+    activated = int((df_kunden["Onboarding Status"] == "Activated").sum())
+    pending   = int((df_kunden["Onboarding Status"] != "Activated").sum())
+    # Churn-Risk = Health Score < 50 (At Risk + Churn Risk + Churned)
+    churn_risk = int((df_kunden["Health Score"] < 50).sum())
+    total_mrr  = float(df_kunden["MRR (EUR)"].sum())
+    total_ltv  = float(df_kunden["LTV"].sum())
+    avg_health = float(df_kunden["Health Score"].mean())
+    return CSKpis(
+        total_kunden       = total,
+        activated          = activated,
+        onboarding_pending = pending,
+        churn_risk         = churn_risk,
+        total_mrr          = round(total_mrr, 2),
+        total_ltv          = round(total_ltv, 2),
+        avg_health         = round(avg_health, 1),
+    )
+
+
+def onboarding_funnel_counts(df_kunden: pd.DataFrame) -> pd.DataFrame:
+    """Kunden-Counts pro Onboarding-Stage — für Funnel-Chart.
+
+    Spalten: Stage, Count.  Stages in fester Reihenfolge (auch wenn Count=0).
+    """
+    if df_kunden.empty:
+        return pd.DataFrame({"Stage": ONBOARDING_STAGES, "Count": [0] * len(ONBOARDING_STAGES)})
+    counts = df_kunden["Onboarding Status"].value_counts()
+    return pd.DataFrame({
+        "Stage": ONBOARDING_STAGES,
+        "Count": [int(counts.get(s, 0)) for s in ONBOARDING_STAGES],
+    })
+
+
+def health_distribution(df_kunden: pd.DataFrame) -> pd.DataFrame:
+    """Kunden-Counts pro Health-Tier — für Verteilungs-Chart.
+
+    Spalten: Tier, Count.  Tiers in fester Reihenfolge (auch wenn Count=0).
+    """
+    if df_kunden.empty:
+        return pd.DataFrame({"Tier": HEALTH_TIERS, "Count": [0] * len(HEALTH_TIERS)})
+    counts = df_kunden["Health Tier"].value_counts()
+    return pd.DataFrame({
+        "Tier":  HEALTH_TIERS,
+        "Count": [int(counts.get(t, 0)) for t in HEALTH_TIERS],
+    })
+
+
+def mrr_per_program(df_kunden: pd.DataFrame) -> pd.DataFrame:
+    """MRR-Summe + Kunden-Anzahl pro Programm — für MRR-Chart.
+
+    Spalten: Program, Kunden, MRR (EUR), MRR pro Kunde
+    Sortiert absteigend nach MRR.
+    """
+    if df_kunden.empty:
+        return pd.DataFrame(columns=["Program", "Kunden", "MRR (EUR)", "MRR pro Kunde"])
+    grp = df_kunden.groupby("Program").agg(
+        Kunden=("id", "count"),
+        **{"MRR (EUR)": ("MRR (EUR)", "sum")},
+    ).reset_index()
+    grp["MRR pro Kunde"] = (grp["MRR (EUR)"] / grp["Kunden"]).round(2)
+    return grp.sort_values("MRR (EUR)", ascending=False)
+
+
 def mentor_specialization_counts(df_mentoren: pd.DataFrame) -> pd.Series:
     """Wie viele Mentoren pro Spezialisierung (Multi-Select expandiert).
 

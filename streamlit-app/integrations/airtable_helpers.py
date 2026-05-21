@@ -288,3 +288,93 @@ def update_mentor(mentor_id: str, fields: dict) -> None:
     """Generic Mentor-Update für die Mentoren-Page Edit-Funktion."""
     _api().table(_base_id(), "Mentoren").update(mentor_id, fields)
     st.cache_data.clear()
+
+
+# -----------------------------------------------------------------------------
+# Kunden (Customer Success Page)
+#
+# Joins:
+#   Letzte Session  = max(Sessions.Date)  where Sessions.Lead == Kunden.Lead
+#   Health Score    = lib.health.compute_health_score(Letzte Session)
+#   Mentor Name     = Mentoren.Name lookup über Kunden.Mentor (Link)
+#
+# Sessions↔Kunden über Lead-Text-Feld gejoint, weil weder Sessions noch Kunden
+# einen direkten Link untereinander haben. Sessions.Lead und Kunden.Lead sind
+# beide Text. Funktioniert sauber, solange Lead-Namen eindeutig sind (Demo-OK).
+# -----------------------------------------------------------------------------
+
+@st.cache_data(ttl=120)
+def load_kunden() -> pd.DataFrame:
+    """Lade Kunden mit Joins für Letzte Session, Health Score, Mentor-Name."""
+    from lib.health import compute_health_score, health_tier, health_emoji
+
+    base = _base_id()
+    kunden_recs   = _api().table(base, "Kunden").all()
+    sessions_recs = _api().table(base, "Sessions").all()
+    mentoren_recs = _api().table(base, "Mentoren").all()
+
+    if not kunden_recs:
+        return pd.DataFrame(columns=[
+            "id", "Lead", "Program", "Status", "Onboarding Status",
+            "MRR (EUR)", "LTV", "Start Date", "Mentor", "Mentor Name",
+            "Letzte Session", "Health Score", "Health Tier", "Health Emoji",
+        ])
+
+    # Mentor-Name-Lookup (Link → Name)
+    mentor_name_by_id = {
+        r["id"]: r["fields"].get("Name", "—") for r in mentoren_recs
+    }
+
+    # Sessions: Lead-Text → Liste von Dates
+    sessions_by_lead: dict[str, list[pd.Timestamp]] = {}
+    for r in sessions_recs:
+        lead = r["fields"].get("Lead")
+        date = r["fields"].get("Date")
+        if lead and date:
+            ts = pd.to_datetime(date, errors="coerce", utc=True)
+            if pd.notna(ts):
+                sessions_by_lead.setdefault(lead, []).append(ts)
+
+    now = pd.Timestamp.now(tz="UTC")
+    rows = []
+    for rec in kunden_recs:
+        f = rec["fields"]
+        mref = f.get("Mentor", [])
+        mid  = mref[0] if isinstance(mref, list) and mref else None
+        lead = f.get("Lead", "")
+
+        last_sess_list = sessions_by_lead.get(lead, [])
+        last_session = max(last_sess_list) if last_sess_list else pd.NaT
+        score = compute_health_score(last_session, now=now)
+
+        rows.append({
+            "id":                rec["id"],
+            "Lead":              lead,
+            "Program":           f.get("Program", ""),
+            "Status":            f.get("Status", "Active"),
+            "Onboarding Status": f.get("Onboarding Status", "Pending"),
+            "MRR (EUR)":         f.get("MRR (EUR)", 0) or 0,
+            "LTV":               f.get("LTV", 0) or 0,
+            "Start Date":        f.get("Start Date"),
+            "Mentor":            mref,
+            "Mentor Name":       mentor_name_by_id.get(mid, "—") if mid else "—",
+            "Letzte Session":    last_session,
+            "Health Score":      score,
+            "Health Tier":       health_tier(score),
+            "Health Emoji":      health_emoji(score),
+        })
+    df = pd.DataFrame(rows)
+    df["Start Date"] = pd.to_datetime(df["Start Date"], errors="coerce")
+    return df
+
+
+def update_kunde(kunde_id: str, fields: dict) -> None:
+    """Generic Kunde-Update für die Customer-Success-Page Edit-Funktion.
+
+    Nutzt typecast=True damit Airtable fehlende Select-Werte (z.B. neue
+    Status-Options wie 'Paused', 'Churned') beim ersten Schreiben automatisch
+    anlegt — die Meta-API erlaubt kein PATCH von Select-Choices, dieser
+    Weg ist der saubere Workaround.
+    """
+    _api().table(_base_id(), "Kunden").update(kunde_id, fields, typecast=True)
+    load_kunden.clear()  # gezielte Cache-Invalidation statt globalem clear()

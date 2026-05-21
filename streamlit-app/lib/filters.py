@@ -127,6 +127,51 @@ def unique_specializations(df: pd.DataFrame) -> list[str]:
 
 
 # -----------------------------------------------------------------------------
+# Kunden-Filter (Customer Success Page)
+# -----------------------------------------------------------------------------
+
+HEALTH_TIER_OPTIONS = ["Alle", "Engaged", "Active", "At Risk", "Churn Risk", "Churned"]
+
+
+def filter_kunden(
+    df: pd.DataFrame,
+    status: str = "Alle",
+    onboarding: str = "Alle",
+    programm: str = "Alle",
+    mentor: str = "Alle",
+    health_tier: str = "Alle",
+    search: str = "",
+) -> pd.DataFrame:
+    """Filterkette für die Customer-Success-Page.
+
+    Args:
+        df:           Volle Kunden-DataFrame
+        status:       "Alle" oder Kunden-Status (Active/Onboarding/Paused/Churned)
+        onboarding:   "Alle" oder Onboarding-Stage
+        programm:     "Alle" oder Programm-Name
+        mentor:       "Alle" oder Mentor-Name (gefiltert über `Mentor Name` Lookup)
+        health_tier:  "Alle" oder Health-Tier (Engaged/Active/At Risk/...)
+        search:       Substring-Suche in Lead-Name (case-insensitive)
+    """
+    if df.empty:
+        return df
+    out = df.copy()
+    if status != "Alle":
+        out = out[out["Status"] == status]
+    if onboarding != "Alle":
+        out = out[out["Onboarding Status"] == onboarding]
+    if programm != "Alle":
+        out = out[out["Program"] == programm]
+    if mentor != "Alle":
+        out = out[out["Mentor Name"] == mentor]
+    if health_tier != "Alle":
+        out = out[out["Health Tier"] == health_tier]
+    if search:
+        out = out[out["Lead"].str.contains(search, case=False, na=False)]
+    return out
+
+
+# -----------------------------------------------------------------------------
 # Date-Range-Filter
 # -----------------------------------------------------------------------------
 
