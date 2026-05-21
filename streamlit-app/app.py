@@ -19,10 +19,22 @@ Cloud Run Deployment: siehe ../08-gcp-deployment.md
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import streamlit as st
 
 from integrations.auth import check_password
 from integrations import google_calendar as gcal
+
+
+# -----------------------------------------------------------------------------
+# Assets-Pfade — absolute relativ zu app.py (funktioniert lokal UND auf
+# Streamlit Cloud, wo cwd != streamlit-app/).
+# -----------------------------------------------------------------------------
+
+APP_DIR = Path(__file__).resolve().parent
+LOGO_WIDE = str(APP_DIR / "assets" / "logo.svg")
+LOGO_ICON = str(APP_DIR / "assets" / "logo_icon.svg")
 
 
 # -----------------------------------------------------------------------------
@@ -31,7 +43,7 @@ from integrations import google_calendar as gcal
 
 st.set_page_config(
     page_title="MindForge Coach",
-    page_icon="assets/logo_icon.svg",
+    page_icon=LOGO_ICON,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -42,8 +54,8 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 
 st.logo(
-    image="assets/logo.svg",          # Wide-Version mit "MindForge"-Schriftzug
-    icon_image="assets/logo_icon.svg",  # Kompakt-Icon für collapsed sidebar
+    image=LOGO_WIDE,          # Wide-Version mit "MindForge"-Schriftzug
+    icon_image=LOGO_ICON,     # Kompakt-Icon für collapsed sidebar
 )
 
 # CSS-Override für größere Logo-Darstellung
