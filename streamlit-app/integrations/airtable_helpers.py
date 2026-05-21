@@ -164,13 +164,32 @@ def update_lead_status(
 # Cross-Page Loaders — werden von Dashboard, Leads, Programme genutzt
 # -----------------------------------------------------------------------------
 
+@st.cache_data(ttl=120)
+def load_mentor_lookup() -> dict[str, str]:
+    """Mentor-RecordId → Name lookup, zentral genutzt von load_leads + load_kunden.
+
+    Eigener Cache (TTL 120s) damit nicht jeder Loader die Mentoren-Tabelle pullt.
+    """
+    return {
+        r["id"]: r["fields"].get("Name", "—")
+        for r in _api().table(_base_id(), "Mentoren").all()
+    }
+
+
 @st.cache_data(ttl=60)
 def load_leads() -> pd.DataFrame:
-    """Alle Leads ohne Filter — für Dashboard- und Leads-Page."""
+    """Alle Leads ohne Filter — für Dashboard- und Leads-Page.
+
+    Inkl. Mentor-Zuweisung (optional): `Mentor` enthält die Airtable-RecordIds,
+    `Mentor Name` ist der aufgelöste Name fürs UI.
+    """
     records = _api().table(_base_id(), "Leads").all()
+    mentor_names = load_mentor_lookup()
     rows = []
     for rec in records:
         f = rec["fields"]
+        mref = f.get("Mentor", [])
+        mid  = mref[0] if isinstance(mref, list) and mref else None
         rows.append({
             "id":           rec["id"],
             "Name":         f.get("Name", ""),
@@ -194,11 +213,11 @@ def load_leads() -> pd.DataFrame:
             "Termin am":    f.get("Termin am"),
             "Meet-Link":    f.get("Meet-Link"),
             "Setter":       f.get("Setter", ""),
+            "Mentor":       mref,
+            "Mentor Name":  mentor_names.get(mid, "—") if mid else "—",
         })
     df = pd.DataFrame(rows)
     if not df.empty:
-        # tz-aware UTC, pandas konvertiert beim Vergleich automatisch in
-        # Berliner Zeit wenn TZ_BERLIN-Datetime auf der anderen Seite steht.
         df["Erstellt am"] = pd.to_datetime(df["Erstellt am"], errors="coerce", utc=True)
         df["Termin am"]   = pd.to_datetime(df["Termin am"],   errors="coerce", utc=True)
     return df
@@ -223,9 +242,13 @@ def load_programs() -> pd.DataFrame:
 
 
 def update_lead(lead_id: str, fields: dict) -> None:
-    """Generic Lead-Update für die Leads-Page Edit-Funktion."""
-    _api().table(_base_id(), "Leads").update(lead_id, fields)
-    st.cache_data.clear()
+    """Generic Lead-Update für die Leads-Page Edit-Funktion.
+
+    typecast=True für robustes Schreiben — z.B. wenn Mentor-Zuweisung als
+    String-Name statt RecordId reinkommt (Airtable löst dann selbst auf).
+    """
+    _api().table(_base_id(), "Leads").update(lead_id, fields, typecast=True)
+    load_leads.clear()  # gezielte Invalidation statt globalem clear()
 
 
 # -----------------------------------------------------------------------------
@@ -311,7 +334,6 @@ def load_kunden() -> pd.DataFrame:
     base = _base_id()
     kunden_recs   = _api().table(base, "Kunden").all()
     sessions_recs = _api().table(base, "Sessions").all()
-    mentoren_recs = _api().table(base, "Mentoren").all()
 
     if not kunden_recs:
         return pd.DataFrame(columns=[
@@ -320,10 +342,8 @@ def load_kunden() -> pd.DataFrame:
             "Letzte Session", "Health Score", "Health Tier", "Health Emoji",
         ])
 
-    # Mentor-Name-Lookup (Link → Name)
-    mentor_name_by_id = {
-        r["id"]: r["fields"].get("Name", "—") for r in mentoren_recs
-    }
+    # Mentor-Name-Lookup über zentralen Helper (cached, geteilt mit load_leads)
+    mentor_name_by_id = load_mentor_lookup()
 
     # Sessions: Lead-Text → Liste von Dates
     sessions_by_lead: dict[str, list[pd.Timestamp]] = {}

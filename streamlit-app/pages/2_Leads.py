@@ -11,7 +11,9 @@ import streamlit as st
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
-from integrations.airtable_helpers import load_leads, update_lead  # noqa: E402
+from integrations.airtable_helpers import (  # noqa: E402
+    load_leads, load_mentor_lookup, update_lead,
+)
 from lib.filters import (  # noqa: E402
     DATE_RANGE_OPTIONS,
     filter_by_date_range,
@@ -22,6 +24,7 @@ from lib.tz import TZ_BERLIN  # noqa: E402
 
 
 STATUS_OPTIONS = ["New", "Qualified", "Contacted", "Converted", "Lost"]
+MENTOR_NONE   = "— (nicht zugewiesen)"
 
 
 # -----------------------------------------------------------------------------
@@ -65,6 +68,20 @@ def edit_lead_modal(lead: pd.Series) -> None:
         key=f"modal_score_{lead['id']}",
     )
 
+    # Mentor-Zuweisung — wird beim Convert zu Kunde übernommen (Sales→CS-Handover)
+    mentor_lookup = load_mentor_lookup()  # {rec_id: name}
+    mentor_options = [MENTOR_NONE] + sorted(mentor_lookup.values())
+    cur_mentor_name = lead.get("Mentor Name") or MENTOR_NONE
+    if cur_mentor_name not in mentor_options:
+        cur_mentor_name = MENTOR_NONE
+    new_mentor_name = st.selectbox(
+        "Mentor zuweisen",
+        mentor_options,
+        index=mentor_options.index(cur_mentor_name),
+        key=f"modal_mentor_{lead['id']}",
+        help="Optional. Wird beim Lead→Kunde-Convert in Customer Success übernommen.",
+    )
+
     new_note = st.text_area(
         "Notiz anhängen (optional)",
         placeholder="Wird mit Timestamp an die bestehenden Notizen angehängt",
@@ -86,6 +103,16 @@ def edit_lead_modal(lead: pd.Series) -> None:
         key=f"modal_save_{lead['id']}",
     ):
         patch: dict = {"Status": new_status, "Quiz Score": int(new_score)}
+        # Mentor-Patch: leere Liste = un-assign, sonst RecordId-Liste
+        if new_mentor_name == MENTOR_NONE:
+            patch["Mentor"] = []
+        else:
+            mentor_id = next(
+                (mid for mid, name in mentor_lookup.items() if name == new_mentor_name),
+                None,
+            )
+            if mentor_id:
+                patch["Mentor"] = [mentor_id]
         if new_note.strip():
             existing = lead.get("Notizen") or ""
             ts = datetime.now(TZ_BERLIN).strftime("%Y-%m-%d %H:%M")
@@ -95,7 +122,7 @@ def edit_lead_modal(lead: pd.Series) -> None:
             st.success("Aktualisiert.")
             st.rerun()
         except Exception as e:
-            st.error(f"Fehler: {e}")
+            st.error(f"Speichern fehlgeschlagen: {type(e).__name__}: {e}")
 
     if bcol2.button(
         "Abbrechen",
@@ -178,14 +205,16 @@ if filtered.empty:
 # ----- Lead-Liste mit Edit-Buttons -------------------------------------------
 
 # Header-Row
-hcols = st.columns([0.5, 3, 3, 1.2, 1.6, 1.6, 0.8])
+COLS = [0.5, 2.6, 2.6, 1, 1.4, 1.6, 1.4, 0.8]
+hcols = st.columns(COLS)
 hcols[0].markdown("**🎯**")
 hcols[1].markdown("**Name**")
 hcols[2].markdown("**E-Mail**")
 hcols[3].markdown("**Score**")
 hcols[4].markdown("**Status**")
-hcols[5].markdown("**Erstellt**")
-hcols[6].markdown("**Edit**")
+hcols[5].markdown("**Mentor**")
+hcols[6].markdown("**Erstellt**")
+hcols[7].markdown("**Edit**")
 st.markdown(
     "<hr style='margin-top:0; margin-bottom:0.5rem'>",
     unsafe_allow_html=True,
@@ -193,7 +222,7 @@ st.markdown(
 
 # Lead-Rows
 for _, lead in filtered.iterrows():
-    cols = st.columns([0.5, 3, 3, 1.2, 1.6, 1.6, 0.8])
+    cols = st.columns(COLS)
     score = int(lead.get("Lead Score") or 0)
 
     cols[0].markdown(tier_emoji(score))
@@ -202,13 +231,16 @@ for _, lead in filtered.iterrows():
     cols[3].markdown(f"`{score}`")
     cols[4].markdown(f"`{lead['Status'] or 'New'}`")
 
+    mentor_name = lead.get("Mentor Name") or "—"
+    cols[5].caption(mentor_name if mentor_name != "—" else "—")
+
     erstellt = lead.get("Erstellt am")
     if pd.notna(erstellt):
-        cols[5].caption(erstellt.strftime("%d.%m.%y %H:%M"))
+        cols[6].caption(erstellt.strftime("%d.%m.%y %H:%M"))
     else:
-        cols[5].caption("—")
+        cols[6].caption("—")
 
-    if cols[6].button(
+    if cols[7].button(
         "✏️",
         key=f"edit_btn_{lead['id']}",
         help="Lead bearbeiten",

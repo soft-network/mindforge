@@ -104,7 +104,12 @@ if "code" in st.query_params:
 
 
 # -----------------------------------------------------------------------------
-# Navigation — Pages explizit definiert
+# Navigation — Pages in drei Sektionen gruppiert
+#
+#   📊 Übersicht        — lese-orientierte KPI-/Analyse-Sicht (Dashboard)
+#   ⚙️ Administration   — Listen + Edit-Modals pro Domäne (Lifecycle: Leads → Mentoren → CS → Programme)
+#   📞 Daily Operations — Setter-spezifischer Workflow (Hot-Lead-Queue + Buchung)
+#
 # Dashboard ist die Startseite (default=True).
 # -----------------------------------------------------------------------------
 
@@ -127,14 +132,11 @@ cs_page = st.Page(
     "pages/6_Customer_Success.py", title="Customer Success", icon="🤝",
 )
 
-pg = st.navigation([
-    dashboard_page,
-    leads_page,
-    setter_page,
-    programme_page,
-    mentoren_page,
-    cs_page,
-])
+pg = st.navigation({
+    "📊 Übersicht":       [dashboard_page],
+    "⚙️ Administration":  [leads_page, mentoren_page, cs_page, programme_page],
+    "📞 Daily":           [setter_page],
+})
 
 
 # -----------------------------------------------------------------------------
