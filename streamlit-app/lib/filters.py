@@ -77,6 +77,56 @@ def unique_options(df: pd.DataFrame, col: str) -> list[str]:
 
 
 # -----------------------------------------------------------------------------
+# Mentoren-Filter
+# -----------------------------------------------------------------------------
+
+def filter_mentoren(
+    df: pd.DataFrame,
+    status: str = "Alle",
+    spezialisierung: str = "Alle",
+    stadt: str = "Alle",
+    search: str = "",
+) -> pd.DataFrame:
+    """Filterkette für die Mentoren-Page.
+
+    Spezialisierung filtert über Multi-Select-Listen (Mentor mit ['Business',
+    'Sales'] matched 'Business' UND 'Sales').
+    """
+    if df.empty:
+        return df
+    out = df.copy()
+    if status != "Alle":
+        out = out[out["Status"] == status]
+    if spezialisierung != "Alle":
+        mask = out["Spezialisierung"].apply(
+            lambda x: spezialisierung in x if isinstance(x, list) else False
+        )
+        out = out[mask]
+    if stadt != "Alle":
+        out = out[out["Stadt"] == stadt]
+    if search:
+        mask = (
+            out["Name"].str.contains(search, case=False, na=False)
+            | out["E-Mail"].str.contains(search, case=False, na=False)
+        )
+        out = out[mask]
+    return out
+
+
+def unique_specializations(df: pd.DataFrame) -> list[str]:
+    """Sortierte Liste aller Spezialisierungen (Multi-Select expandiert),
+    prefixed mit 'Alle' — für Filter-Dropdown.
+    """
+    if df.empty or "Spezialisierung" not in df.columns:
+        return ["Alle"]
+    all_specs: set[str] = set()
+    for specs in df["Spezialisierung"].dropna():
+        if isinstance(specs, list):
+            all_specs.update(specs)
+    return ["Alle"] + sorted(all_specs)
+
+
+# -----------------------------------------------------------------------------
 # Date-Range-Filter
 # -----------------------------------------------------------------------------
 

@@ -120,12 +120,16 @@ setter_page = st.Page(
 programme_page = st.Page(
     "pages/4_Programme.py", title="Programme", icon="📦",
 )
+mentoren_page = st.Page(
+    "pages/5_Mentoren.py", title="Mentoren", icon="👥",
+)
 
 pg = st.navigation([
     dashboard_page,
     leads_page,
     setter_page,
     programme_page,
+    mentoren_page,
 ])
 
 

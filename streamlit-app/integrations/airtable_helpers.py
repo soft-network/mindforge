@@ -226,3 +226,65 @@ def update_lead(lead_id: str, fields: dict) -> None:
     """Generic Lead-Update für die Leads-Page Edit-Funktion."""
     _api().table(_base_id(), "Leads").update(lead_id, fields)
     st.cache_data.clear()
+
+
+# -----------------------------------------------------------------------------
+# Mentoren — Stammdaten + Python-side Joins für Aktive Kunden + Avg NPS
+# (Airtable Meta-API erlaubt kein Anlegen von Count/Rollup-Feldern, daher
+# berechnen wir die zwei Performance-Spalten hier durch Joins über
+# Sessions.Mentor und Kunden.Mentor.)
+# -----------------------------------------------------------------------------
+
+@st.cache_data(ttl=120)
+def load_mentoren() -> pd.DataFrame:
+    """Lade Mentoren-Tabelle und reichere sie mit Joins an.
+
+    Zusätzliche Spalten:
+        Aktive Kunden  — Count distinct Kunden.Mentor == this mentor
+        Sessions Count — Anzahl Sessions die diesem Mentor zugeordnet sind
+        Avg NPS        — Durchschnitt aus Sessions.NPS für diesen Mentor
+    """
+    base = _base_id()
+    mentoren_recs = _api().table(base, "Mentoren").all()
+    sessions_recs = _api().table(base, "Sessions").all()
+    kunden_recs   = _api().table(base, "Kunden").all()
+
+    # Index Sessions → NPS-Liste pro Mentor-Rec-ID
+    sessions_by_mentor: dict[str, list[int]] = {}
+    for r in sessions_recs:
+        mref = r["fields"].get("Mentor", [])
+        nps  = r["fields"].get("NPS")
+        if mref and nps is not None:
+            sessions_by_mentor.setdefault(mref[0], []).append(nps)
+
+    # Index Kunden → Count pro Mentor-Rec-ID
+    kunden_count: dict[str, int] = {}
+    for r in kunden_recs:
+        mref = r["fields"].get("Mentor", [])
+        if mref:
+            kunden_count[mref[0]] = kunden_count.get(mref[0], 0) + 1
+
+    rows = []
+    for r in mentoren_recs:
+        f = r["fields"]
+        nps_list = sessions_by_mentor.get(r["id"], [])
+        avg_nps  = round(sum(nps_list) / len(nps_list), 1) if nps_list else None
+        rows.append({
+            "id":              r["id"],
+            "Name":            f.get("Name", ""),
+            "E-Mail":          f.get("E-Mail", ""),
+            "Stadt":           f.get("Stadt", ""),
+            "Status":          f.get("Status", ""),
+            "Spezialisierung": f.get("Spezialisierung", []),
+            "Kapazität":       f.get("Kapazität pro Woche", 0),
+            "Aktive Kunden":   kunden_count.get(r["id"], 0),
+            "Sessions Count":  len(nps_list),
+            "Avg NPS":         avg_nps,
+        })
+    return pd.DataFrame(rows)
+
+
+def update_mentor(mentor_id: str, fields: dict) -> None:
+    """Generic Mentor-Update für die Mentoren-Page Edit-Funktion."""
+    _api().table(_base_id(), "Mentoren").update(mentor_id, fields)
+    st.cache_data.clear()
