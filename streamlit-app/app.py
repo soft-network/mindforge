@@ -135,6 +135,9 @@ mentoren_page = st.Page(
 cs_page = st.Page(
     "pages/6_Customer_Success.py", title="Customer Success", icon="🤝",
 )
+benutzer_page = st.Page(
+    "pages/7_Benutzer.py", title="Benutzer", icon="👤",
+)
 
 
 # Rolle aus dem eingeloggten User auslesen — Login-Gate hat schon geprüft
@@ -146,6 +149,7 @@ if _role == "Hauptadmin":
         "📊 Übersicht":      [dashboard_page],
         "⚙️ Administration": [leads_page, mentoren_page, cs_page, programme_page],
         "📞 Monitoring":     [setter_page],  # Admin sieht read-only
+        "🔧 System":         [benutzer_page],
     })
 
 elif _role == "Sales":

@@ -398,3 +398,133 @@ def update_kunde(kunde_id: str, fields: dict) -> None:
     """
     _api().table(_base_id(), "Kunden").update(kunde_id, fields, typecast=True)
     load_kunden.clear()  # gezielte Cache-Invalidation statt globalem clear()
+
+
+# -----------------------------------------------------------------------------
+# Benutzer-Verwaltung (Hauptadmin-Page)
+# Wichtig: Passwörter werden NIE im Klartext gespeichert — immer durch
+# lib.auth_security.hash_password() laufen lassen vor dem Schreiben.
+# -----------------------------------------------------------------------------
+
+@st.cache_data(ttl=60)
+def load_benutzer() -> pd.DataFrame:
+    """Alle Benutzer für die Admin-Verwaltungsseite.
+
+    Auflösung: Mentor-Link (RecordId) → Mentor-Name über load_mentor_lookup().
+    Passwort-Hash wird NICHT in den DataFrame geladen (Sicherheits-Hygiene).
+    """
+    records = _api().table(_base_id(), "Benutzer").all()
+    if not records:
+        return pd.DataFrame(columns=[
+            "id", "Name", "E-Mail", "Rolle", "Status",
+            "Mentor-Link", "Mentor Name",
+            "Letzte Anmeldung", "Angelegt am", "Angelegt von",
+        ])
+
+    mentor_names = load_mentor_lookup()
+    rows = []
+    for rec in records:
+        f = rec["fields"]
+        mref = f.get("Mentor-Link", [])
+        mid  = mref[0] if isinstance(mref, list) and mref else None
+        rows.append({
+            "id":               rec["id"],
+            "Name":             f.get("Name", ""),
+            "E-Mail":           f.get("E-Mail", ""),
+            "Rolle":            f.get("Rolle", ""),
+            "Status":           f.get("Status", "Active"),
+            "Mentor-Link":      mref,
+            "Mentor Name":      mentor_names.get(mid, "—") if mid else "—",
+            "Letzte Anmeldung": f.get("Letzte Anmeldung"),
+            "Angelegt am":      f.get("Angelegt am"),
+            "Angelegt von":     f.get("Angelegt von", ""),
+        })
+    df = pd.DataFrame(rows)
+    df["Letzte Anmeldung"] = pd.to_datetime(df["Letzte Anmeldung"], errors="coerce", utc=True)
+    df["Angelegt am"]      = pd.to_datetime(df["Angelegt am"],      errors="coerce")
+    return df
+
+
+def create_benutzer(
+    name: str,
+    email: str,
+    password: str,
+    rolle: str,
+    mentor_id: Optional[str] = None,
+    angelegt_von: Optional[str] = None,
+) -> dict:
+    """Legt einen neuen Benutzer-Record in Airtable an.
+
+    Validiert minimal:
+        - Email nicht leer
+        - Passwort nicht leer
+        - Rolle in {Hauptadmin, Sales, Mentor}
+        - Wenn Rolle=Mentor: mentor_id Pflicht
+
+    Wirft ValueError bei Validierungs-Fehlern.
+    Wirft RuntimeError wenn Email bereits existiert.
+    """
+    from datetime import date
+    from lib.auth_security import hash_password
+
+    email = email.strip().lower()
+    name  = name.strip()
+    if not name:
+        raise ValueError("Name darf nicht leer sein.")
+    if not email:
+        raise ValueError("Email darf nicht leer sein.")
+    if not password:
+        raise ValueError("Passwort darf nicht leer sein.")
+    if rolle not in ("Hauptadmin", "Sales", "Mentor"):
+        raise ValueError(f"Ungültige Rolle: {rolle!r}.")
+    if rolle == "Mentor" and not mentor_id:
+        raise ValueError("Für Rolle 'Mentor' ist ein Mentor-Link Pflicht.")
+
+    # Email-Eindeutigkeit prüfen
+    tbl = _api().table(_base_id(), "Benutzer")
+    existing = tbl.all(formula=f"LOWER({{E-Mail}})='{email}'")
+    if existing:
+        raise RuntimeError(f"Email {email!r} ist bereits vergeben.")
+
+    fields: dict = {
+        "Name":          name,
+        "E-Mail":        email,
+        "Passwort-Hash": hash_password(password),
+        "Rolle":         rolle,
+        "Status":        "Active",
+        "Angelegt am":   date.today().isoformat(),
+        "Angelegt von":  (angelegt_von or "").strip().lower(),
+    }
+    if mentor_id:
+        fields["Mentor-Link"] = [mentor_id]
+
+    rec = tbl.create(fields)
+    load_benutzer.clear()
+    return rec
+
+
+def update_benutzer(user_id: str, fields: dict) -> None:
+    """Generic User-Update (Name, Rolle, Status, Mentor-Link).
+
+    Passwort wird über reset_user_password() gesetzt (separater Pfad —
+    der ruft hash_password vor dem Schreiben auf).
+    """
+    if "Passwort-Hash" in fields:
+        raise ValueError(
+            "Passwort-Hash niemals direkt setzen — reset_user_password() benutzen."
+        )
+    _api().table(_base_id(), "Benutzer").update(user_id, fields, typecast=True)
+    load_benutzer.clear()
+
+
+def reset_user_password(user_id: str, new_password: str) -> None:
+    """Setzt das Passwort eines Benutzers neu. Hashed bevor geschrieben wird."""
+    from lib.auth_security import hash_password
+
+    if not new_password:
+        raise ValueError("Passwort darf nicht leer sein.")
+    _api().table(_base_id(), "Benutzer").update(
+        user_id,
+        {"Passwort-Hash": hash_password(new_password)},
+    )
+    load_benutzer.clear()
