@@ -308,6 +308,83 @@ def mrr_per_program(df_kunden: pd.DataFrame) -> pd.DataFrame:
     return grp.sort_values("MRR (EUR)", ascending=False)
 
 
+# -----------------------------------------------------------------------------
+# Cross-Source-KPIs für das Admin-Dashboard (Welle 6)
+# -----------------------------------------------------------------------------
+
+def sales_performance(df_leads: pd.DataFrame) -> pd.DataFrame:
+    """Performance pro Setter (Sales-Mitarbeiter).
+
+    Spalten: Setter, Leads, Hot, Booked, Converted, Conversion %.
+    Sortiert nach Conversion % desc.
+    """
+    if df_leads.empty or "Setter" not in df_leads.columns:
+        return pd.DataFrame(columns=["Setter", "Leads", "Hot", "Booked", "Converted", "Conversion %"])
+
+    with_setter = df_leads[df_leads["Setter"].fillna("").str.strip() != ""].copy()
+    if with_setter.empty:
+        return pd.DataFrame(columns=["Setter", "Leads", "Hot", "Booked", "Converted", "Conversion %"])
+
+    grp = with_setter.groupby("Setter").agg(
+        Leads=("id", "count"),
+        Hot=("Lead Score", lambda s: int((s >= 70).sum())),
+        Booked=("Termin am", lambda s: int(s.notna().sum())),
+        Converted=("Status", lambda s: int((s == "Converted").sum())),
+    ).reset_index()
+    grp["Conversion %"] = (grp["Converted"] / grp["Leads"] * 100).round(1)
+    return grp.sort_values("Conversion %", ascending=False)
+
+
+def programm_performance(df_leads: pd.DataFrame, df_kunden: pd.DataFrame,
+                          df_programme: pd.DataFrame) -> pd.DataFrame:
+    """Performance pro Programm — Lead-Reach, Conversion, Revenue.
+
+    Spalten: Programm, Lead-Count, Converted, Conversion %, MRR-Total, ⌀-MRR
+    Sortiert nach MRR-Total desc.
+    """
+    if df_programme.empty:
+        return pd.DataFrame(columns=[
+            "Programm", "Lead-Count", "Converted", "Conversion %", "MRR-Total", "⌀ MRR",
+        ])
+
+    rows = []
+    for _, prog in df_programme.iterrows():
+        name = prog["Name"]
+        if not name:
+            continue
+        # Lead-Reach: Leads die dieses Programm im Interesse haben
+        if not df_leads.empty and "Interesse" in df_leads.columns:
+            lead_count = int(df_leads["Interesse"].apply(
+                lambda interests: isinstance(interests, list) and name in interests
+            ).sum())
+        else:
+            lead_count = 0
+        # Converted: Kunden mit Program == name
+        if not df_kunden.empty:
+            prog_kunden = df_kunden[df_kunden["Program"] == name]
+            converted   = len(prog_kunden)
+            mrr_total   = float(prog_kunden["MRR (EUR)"].sum())
+            avg_mrr     = float(prog_kunden["MRR (EUR)"].mean()) if converted else 0.0
+        else:
+            converted, mrr_total, avg_mrr = 0, 0.0, 0.0
+
+        conv_pct = round(converted / lead_count * 100.0, 1) if lead_count else 0.0
+        rows.append({
+            "Programm":      name,
+            "Lead-Count":    lead_count,
+            "Converted":     converted,
+            "Conversion %":  conv_pct,
+            "MRR-Total":     round(mrr_total, 0),
+            "⌀ MRR":         round(avg_mrr, 0),
+        })
+
+    if not rows:
+        return pd.DataFrame(columns=[
+            "Programm", "Lead-Count", "Converted", "Conversion %", "MRR-Total", "⌀ MRR",
+        ])
+    return pd.DataFrame(rows).sort_values("MRR-Total", ascending=False)
+
+
 def mentor_specialization_counts(df_mentoren: pd.DataFrame) -> pd.Series:
     """Wie viele Mentoren pro Spezialisierung (Multi-Select expandiert).
 

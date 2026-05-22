@@ -138,6 +138,12 @@ cs_page = st.Page(
 benutzer_page = st.Page(
     "pages/7_Benutzer.py", title="Benutzer", icon="👤",
 )
+pipeline_page = st.Page(
+    "pages/admin_pipeline.py", title="Pipeline", icon="📊",
+)
+performance_page = st.Page(
+    "pages/admin_performance.py", title="Performance", icon="🏆",
+)
 
 
 # Rolle aus dem eingeloggten User auslesen — Login-Gate hat schon geprüft
@@ -146,10 +152,11 @@ _role = (current_user() or {}).get("rolle", "")
 
 if _role == "Hauptadmin":
     pg = st.navigation({
-        "📊 Übersicht":      [dashboard_page],
-        "⚙️ Administration": [leads_page, mentoren_page, cs_page, programme_page],
-        "📞 Monitoring":     [setter_page],  # Admin sieht read-only
-        "🔧 System":         [benutzer_page],
+        "📊 Übersicht":       [dashboard_page, pipeline_page],
+        "⚙️ Administration":  [leads_page, mentoren_page, cs_page, programme_page],
+        "🏆 Analytics":       [performance_page],
+        "📞 Monitoring":      [setter_page],
+        "🔧 System":          [benutzer_page],
     })
 
 elif _role == "Sales":
