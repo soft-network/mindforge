@@ -10,9 +10,11 @@ import streamlit as st
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 from integrations.airtable_helpers import load_programs  # noqa: E402
+from integrations.auth import require_tool_access  # noqa: E402
 
 
-# Page-Config + Passwort-Gate werden in app.py zentral gesetzt.
+# Permission-Gate
+require_tool_access("programme", "read")
 
 st.title("📦 Programme")
 st.caption("Coaching-Angebote · Lead Count · Converted Kunden")

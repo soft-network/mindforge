@@ -227,6 +227,32 @@ def current_user() -> Optional[UserDict]:
     return st.session_state.get("current_user")
 
 
+def require_tool_access(tool: str, action: str = "read") -> UserDict:
+    """Page-Gate. Stoppt die Page wenn der User keinen Zugriff hat.
+
+    Wird am Anfang jeder Page gerufen:
+        from integrations.auth import require_tool_access
+        user = require_tool_access("leads", "read")
+
+    Returns das current_user-Dict bei Erfolg, sonst `st.stop()`.
+    """
+    from lib.permissions import can  # lokal um Circular-Import zu vermeiden
+
+    user = current_user()
+    if not user:
+        st.error("Du bist nicht eingeloggt.")
+        st.stop()
+
+    if not can(user["rolle"], tool, action):  # type: ignore[arg-type]
+        st.error(
+            f"🔒 Kein Zugriff. Deine Rolle ({user['rolle']}) darf "
+            f"diese Page nicht öffnen."
+        )
+        st.stop()
+
+    return user
+
+
 def logout() -> None:
     """Session-Daten löschen + Rerun."""
     keys_to_clear = ["current_user", "authenticated"]

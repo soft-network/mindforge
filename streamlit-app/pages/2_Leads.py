@@ -14,6 +14,7 @@ sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 from integrations.airtable_helpers import (  # noqa: E402
     load_leads, load_mentor_lookup, update_lead,
 )
+from integrations.auth import require_tool_access  # noqa: E402
 from lib.filters import (  # noqa: E402
     DATE_RANGE_OPTIONS,
     filter_by_date_range,
@@ -21,6 +22,9 @@ from lib.filters import (  # noqa: E402
     unique_options,
 )
 from lib.tz import TZ_BERLIN  # noqa: E402
+
+# Permission-Gate
+require_tool_access("leads", "read")
 
 
 STATUS_OPTIONS = ["New", "Qualified", "Contacted", "Converted", "Lost"]

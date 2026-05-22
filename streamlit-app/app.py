@@ -109,13 +109,12 @@ if "code" in st.query_params:
 
 
 # -----------------------------------------------------------------------------
-# Navigation — Pages in drei Sektionen gruppiert
+# Navigation — Pages pro Rolle unterschiedlich gruppiert
 #
-#   📊 Übersicht        — lese-orientierte KPI-/Analyse-Sicht (Dashboard)
-#   ⚙️ Administration   — Listen + Edit-Modals pro Domäne (Lifecycle: Leads → Mentoren → CS → Programme)
-#   📞 Daily Operations — Setter-spezifischer Workflow (Hot-Lead-Queue + Buchung)
-#
-# Dashboard ist die Startseite (default=True).
+# Welle 2 (jetzt) zeigt eine bewusste ÜBERGANGS-Sicht: bestehende Pages
+# werden auf die Rollen verteilt, basierend auf der Permission-Matrix.
+# Rollen-spezifische Pages (Mentor-Cockpit, Sales-Strategiegespräche etc.)
+# kommen in Welle 4+5 und werden dann hier dazugesteckt.
 # -----------------------------------------------------------------------------
 
 dashboard_page = st.Page(
@@ -137,11 +136,39 @@ cs_page = st.Page(
     "pages/6_Customer_Success.py", title="Customer Success", icon="🤝",
 )
 
-pg = st.navigation({
-    "📊 Übersicht":       [dashboard_page],
-    "⚙️ Administration":  [leads_page, mentoren_page, cs_page, programme_page],
-    "📞 Daily":           [setter_page],
-})
+
+# Rolle aus dem eingeloggten User auslesen — Login-Gate hat schon geprüft
+# dass current_user existiert.
+_role = (current_user() or {}).get("rolle", "")
+
+if _role == "Hauptadmin":
+    pg = st.navigation({
+        "📊 Übersicht":      [dashboard_page],
+        "⚙️ Administration": [leads_page, mentoren_page, cs_page, programme_page],
+        "📞 Monitoring":     [setter_page],  # Admin sieht read-only
+    })
+
+elif _role == "Sales":
+    pg = st.navigation({
+        "📊 Übersicht":     [dashboard_page],
+        "📞 Mein Tag":      [setter_page],          # Hot-Lead-Queue + Buchung
+        "📋 Leads":         [leads_page],
+        "🧑‍🎓 Mentees":      [cs_page],              # für Convert-Sicht
+        "ℹ️ Info":           [programme_page, mentoren_page],   # Read-Kontext
+    })
+
+elif _role == "Mentor":
+    pg = st.navigation({
+        "📊 Übersicht":      [dashboard_page],
+        "🧑‍🎓 Meine Mentees": [cs_page],              # gefiltert auf self im Loader
+        "👤 Mein Profil":    [mentoren_page],        # read-only self
+        "ℹ️ Info":           [programme_page],
+    })
+
+else:
+    # Unbekannte Rolle → kein Zugriff (sollte nicht passieren da Login-Check)
+    st.error(f"Unbekannte Rolle: {_role!r}. Bitte beim Admin melden.")
+    st.stop()
 
 
 # -----------------------------------------------------------------------------

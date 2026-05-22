@@ -30,13 +30,15 @@ sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 from integrations import airtable_helpers as at  # noqa: E402
 from integrations import google_calendar as gcal  # noqa: E402
 from integrations import aircall  # noqa: E402
+from integrations.auth import require_tool_access  # noqa: E402
 from components.lead_card import tier_badge, render_lead_summary  # noqa: E402
 
 
 TZ = ZoneInfo("Europe/Berlin")
 
-# Page-Config, Passwort-Gate und OAuth-Callback werden in app.py
-# (Navigation-Hub) zentral gesetzt.
+# Permission-Gate (Sales hat full, Hauptadmin nur read — wir lassen Page öffnen,
+# Edit-/Buchungs-Buttons werden in der Page selbst rolle-abhängig getoggled)
+require_tool_access("hot_leads", "read")
 
 
 st.title("📞 Setter Daily")

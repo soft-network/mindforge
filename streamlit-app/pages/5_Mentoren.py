@@ -22,6 +22,7 @@ from components.mentor_capacity_chart import render_mentor_capacity  # noqa: E40
 from components.mentor_kpi_row import render_mentor_kpi_row  # noqa: E402
 from components.specialization_chart import render_specialization  # noqa: E402
 from integrations.airtable_helpers import load_mentoren, update_mentor  # noqa: E402
+from integrations.auth import require_tool_access  # noqa: E402
 from lib.filters import (  # noqa: E402
     filter_mentoren,
     unique_options,
@@ -140,6 +141,9 @@ def status_badge(status: str) -> str:
 # -----------------------------------------------------------------------------
 # Page
 # -----------------------------------------------------------------------------
+
+# Permission-Gate
+require_tool_access("mentoren", "read")
 
 st.title("👥 Mentoren")
 st.caption(

@@ -30,8 +30,13 @@ from components.health_distribution import render_health_distribution  # noqa: E
 from components.mrr_chart import render_mrr_chart  # noqa: E402
 from components.onboarding_funnel import render_onboarding_funnel  # noqa: E402
 from integrations.airtable_helpers import load_kunden, update_kunde  # noqa: E402
+from integrations.auth import require_tool_access  # noqa: E402
 from lib.filters import HEALTH_TIER_OPTIONS, filter_kunden, unique_options  # noqa: E402
 from lib.kpis import ONBOARDING_STAGES, compute_cs_kpis  # noqa: E402
+
+
+# Permission-Gate
+require_tool_access("mentees", "read")
 
 
 STATUS_OPTIONS = ["Active", "Onboarding", "Paused", "Churned"]
