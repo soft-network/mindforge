@@ -23,7 +23,11 @@ from pathlib import Path
 
 import streamlit as st
 
-from integrations.auth import check_password
+from integrations.auth import (
+    current_user,
+    render_login_gate,
+    render_sidebar_user_footer,
+)
 from integrations import google_calendar as gcal
 
 
@@ -80,10 +84,11 @@ st.markdown(
 
 
 # -----------------------------------------------------------------------------
-# Passwort-Gate (optional, abhängig von ADMIN_PASSWORD in secrets.toml)
+# Login-Gate — Email + Passwort gegen Airtable.Benutzer (bcrypt)
+# Bootstrap-Hauptadmin aus secrets.toml für den allerersten Login.
 # -----------------------------------------------------------------------------
 
-if not check_password():
+if not render_login_gate():
     st.stop()
 
 
@@ -137,6 +142,14 @@ pg = st.navigation({
     "⚙️ Administration":  [leads_page, mentoren_page, cs_page, programme_page],
     "📞 Daily":           [setter_page],
 })
+
+
+# -----------------------------------------------------------------------------
+# Sidebar-User-Footer (Avatar · Name · Rolle · Logout)
+# Nach st.navigation() gerendert, erscheint unten in der Sidebar.
+# -----------------------------------------------------------------------------
+
+render_sidebar_user_footer()
 
 
 # -----------------------------------------------------------------------------
