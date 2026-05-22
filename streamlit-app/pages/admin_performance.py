@@ -32,7 +32,7 @@ from lib.kpis import (  # noqa: E402
 require_tool_access("performance", "read")
 
 
-st.title("🏆 Performance")
+st.title(":material/leaderboard: Performance")
 st.caption("Read-only Analytics über Sales · Mentor · Programm")
 
 df_leads    = load_leads()
@@ -41,7 +41,11 @@ df_mentoren = load_mentoren()
 df_programs = load_programs()
 
 
-tab_sales, tab_mentor, tab_prog = st.tabs(["📞 Sales", "👥 Mentor", "🏆 Programm"])
+tab_sales, tab_mentor, tab_prog = st.tabs([
+    ":material/phone_in_talk: Sales",
+    ":material/school: Mentor",
+    ":material/inventory_2: Programm",
+])
 
 
 # -----------------------------------------------------------------------------
@@ -64,7 +68,7 @@ with tab_sales:
         k[3].metric("⌀ Conversion-Rate", f"{avg_conv:.1f} %")
 
         st.markdown("---")
-        st.subheader("Setter-Leaderboard")
+        st.subheader(":material/leaderboard: Setter-Leaderboard")
         fig = px.bar(
             sp, x="Setter", y="Conversion %",
             color="Conversion %", color_continuous_scale="RdYlGn",
@@ -96,7 +100,7 @@ with tab_mentor:
 
         ranked = df_mentoren.sort_values("Avg NPS", ascending=False, na_position="last")
         if not ranked["Avg NPS"].dropna().empty:
-            st.subheader("NPS-Ranking")
+            st.subheader(":material/star: NPS-Ranking")
             fig = px.bar(
                 ranked.dropna(subset=["Avg NPS"]),
                 x="Name", y="Avg NPS",
@@ -129,7 +133,7 @@ with tab_prog:
         k[3].metric("MRR gesamt (€)",   f"{int(pp['MRR-Total'].sum()):,}")
 
         st.markdown("---")
-        st.subheader("Programm-Übersicht")
+        st.subheader(":material/inventory_2: Programm-Übersicht")
 
         cc = st.columns(2)
         with cc[0]:

@@ -38,7 +38,7 @@ MENTOR_NONE   = "— (nicht zugewiesen)"
 @st.dialog("Lead bearbeiten", width="large")
 def edit_lead_modal(lead: pd.Series) -> None:
     """Modal-Overlay mit allen editierbaren Feldern eines Leads."""
-    st.subheader(f"✏️ {lead['Name'] or '—'}")
+    st.subheader(f":material/edit: {lead['Name'] or '—'}")
     st.caption(
         f"📧 {lead.get('E-Mail', '—')}  ·  "
         f"📞 `{lead.get('Telefon', '—') or '—'}`  ·  "
@@ -156,11 +156,11 @@ def tier_emoji(score: int) -> str:
 
 df = load_leads()
 if df.empty:
-    st.title("📋 Leads")
+    st.title(":material/format_list_bulleted: Leads")
     st.info("Keine Leads vorhanden.")
     st.stop()
 
-st.title(f"📋 Leads ({len(df)})")
+st.title(f":material/format_list_bulleted: Leads ({len(df)})")
 st.caption(
     "Filter · Zeitraum · Klick auf ✏️ neben einem Lead öffnet das Edit-Modal"
 )

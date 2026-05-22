@@ -38,7 +38,7 @@ if not mentor_id:
 
 @st.dialog("Mentee bearbeiten", width="large")
 def edit_mentee_modal(mentee: pd.Series) -> None:
-    st.subheader(f"✏️ {mentee['Lead']}")
+    st.subheader(f":material/edit: {mentee['Lead']}")
     st.caption(
         f"📦 {mentee.get('Program', '—')}  ·  "
         f"Health {int(mentee.get('Health Score') or 0)} ({mentee.get('Health Tier', '—')})"
@@ -100,7 +100,7 @@ def edit_mentee_modal(mentee: pd.Series) -> None:
 # Page
 # -----------------------------------------------------------------------------
 
-st.title("🧑‍🎓 Meine Mentees")
+st.title(":material/person: Meine Mentees")
 st.caption(f"Nur Mentees, die dir zugewiesen sind. ✏️ öffnet das limitierte Edit-Modal.")
 
 all_mentees = load_kunden()

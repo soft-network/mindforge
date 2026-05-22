@@ -37,7 +37,7 @@ from lib.kpis import (  # noqa: E402
 require_tool_access("dashboard", "read")
 
 
-st.title("📊 Executive Dashboard")
+st.title(":material/space_dashboard: Executive Dashboard")
 st.caption("Cross-Source-KPIs · Sales · Operations · Business")
 
 df_leads    = load_leads()
@@ -86,7 +86,7 @@ hcols[4].metric(
 # -----------------------------------------------------------------------------
 
 st.markdown("---")
-st.subheader("📞 Sales")
+st.subheader(":material/phone_in_talk: Sales")
 
 s_cols = st.columns(2)
 with s_cols[0]:
@@ -100,7 +100,7 @@ with s_cols[1]:
 # -----------------------------------------------------------------------------
 
 st.markdown("---")
-st.subheader("⚙️ Operations")
+st.subheader(":material/settings: Operations")
 
 o_cols = st.columns(2)
 with o_cols[0]:
@@ -114,7 +114,7 @@ with o_cols[1]:
 # -----------------------------------------------------------------------------
 
 st.markdown("---")
-st.subheader("💰 Business")
+st.subheader(":material/payments: Business")
 
 b_cols = st.columns(2)
 with b_cols[0]:

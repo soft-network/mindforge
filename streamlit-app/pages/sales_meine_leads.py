@@ -31,7 +31,7 @@ STATUS_OPTIONS = ["New", "Qualified", "Contacted", "Converted", "Lost"]
 @st.dialog("Lead bearbeiten (Sales)", width="large")
 def edit_lead_sales(lead: pd.Series) -> None:
     """Sales darf Status ändern + Notiz anhängen. Score, Mentor-Override = Admin."""
-    st.subheader(f"✏️ {lead['Name']}")
+    st.subheader(f":material/edit: {lead['Name']}")
     st.caption(f"📧 {lead.get('E-Mail', '—')}  ·  Score `{int(lead.get('Lead Score') or 0)}`")
 
     cur_status = lead["Status"] if lead["Status"] in STATUS_OPTIONS else "New"
@@ -74,7 +74,7 @@ def edit_lead_sales(lead: pd.Series) -> None:
         st.rerun()
 
 
-st.title("📋 Meine Pipeline")
+st.title(":material/view_kanban: Meine Pipeline")
 st.caption(f"Nur Leads, die dir als Setter zugewiesen sind ({my_email}).")
 
 df_all = load_leads()

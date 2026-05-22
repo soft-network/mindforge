@@ -44,7 +44,7 @@ my_email = user.get("email", "")
 
 @st.dialog("Lead konvertieren → Kunde", width="large")
 def convert_modal(lead: pd.Series) -> None:
-    st.subheader(f"🎯 {lead['Name']}")
+    st.subheader(f":material/flag: {lead['Name']}")
     st.caption(
         f"📧 {lead.get('E-Mail', '—')}  ·  "
         f"📦 Interesse: {', '.join(lead.get('Interesse') or []) or '—'}"
@@ -165,7 +165,7 @@ def convert_modal(lead: pd.Series) -> None:
 # Page
 # -----------------------------------------------------------------------------
 
-st.title("🎯 Strategiegespräche")
+st.title(":material/flag: Strategiegespräche")
 st.caption("Heutige Closer-Calls + Convert-Workflow. Nach dem Gespräch → ✅ Konvertieren.")
 
 df_leads = load_leads()
@@ -249,6 +249,6 @@ def render_call_section(title: str, df: pd.DataFrame, show_convert: bool = True)
                     convert_modal(lead)
 
 
-render_call_section("📅 Heute", today_calls)
-render_call_section("🕓 Kommende Tage", later_calls, show_convert=False)
-render_call_section("⚠️ Past – noch offen", past_open_calls)
+render_call_section(":material/today: Heute", today_calls)
+render_call_section(":material/schedule: Kommende Tage", later_calls, show_convert=False)
+render_call_section(":material/warning: Past – noch offen", past_open_calls)

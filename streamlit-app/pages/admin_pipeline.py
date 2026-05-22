@@ -40,7 +40,7 @@ def tier_emoji(score: int) -> str:
     return "❄️"
 
 
-st.title("📊 Pipeline")
+st.title(":material/view_kanban: Pipeline")
 st.caption("Lead-Funnel als Kanban. Spalten = Status-Stages. Sortierung: höchster Score zuerst.")
 
 

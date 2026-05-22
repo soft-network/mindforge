@@ -25,7 +25,7 @@ user = require_tool_access("hot_leads", "read")
 my_email = user.get("email", "")
 
 
-st.title("📊 Sales-Cockpit")
+st.title(":material/space_dashboard: Sales-Cockpit")
 st.caption(f"👋 Hallo {user.get('name', 'Sales')}")
 
 df_leads  = load_leads()
@@ -77,7 +77,7 @@ st.markdown("---")
 
 
 # Heutige Calls — wichtigster Action-Block
-st.subheader("📞 Calls heute")
+st.subheader(":material/phone_in_talk: Calls heute")
 if booked_today.empty:
     st.caption("Heute keine Calls gebucht.")
 else:
@@ -99,7 +99,7 @@ st.markdown("---")
 
 
 # Pipeline-Snippet
-st.subheader("📋 Pipeline-Snapshot")
+st.subheader(":material/view_kanban: Pipeline-Snapshot")
 pipeline_counts = mine["Status"].value_counts() if not mine.empty else pd.Series(dtype=int)
 pcols = st.columns(5)
 for i, status in enumerate(["New", "Qualified", "Contacted", "Converted", "Lost"]):

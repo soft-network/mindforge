@@ -49,7 +49,7 @@ STATUS_OPTIONS = ["Active", "Onboarding", "Paused", "Churned"]
 @st.dialog("Kunde bearbeiten", width="large")
 def edit_kunde_modal(kunde: pd.Series) -> None:
     """Modal mit den wichtigsten editierbaren Feldern eines Kunden."""
-    st.subheader(f"✏️ {kunde['Lead'] or '—'}")
+    st.subheader(f":material/edit: {kunde['Lead'] or '—'}")
     st.caption(
         f"📦 {kunde.get('Program', '—') or '—'}  ·  "
         f"👤 Mentor: {kunde.get('Mentor Name', '—') or '—'}"
@@ -136,12 +136,12 @@ def edit_kunde_modal(kunde: pd.Series) -> None:
 
 df = load_kunden()
 if df.empty:
-    st.title("🤝 Customer Success")
+    st.title(":material/handshake: Customer Success")
     render_empty_state("Keine Kunden vorhanden.")
     st.stop()
 
 
-st.title(f"🤝 Customer Success ({len(df)})")
+st.title(f":material/handshake: Customer Success ({len(df)})")
 st.caption(
     "Onboarding · Health · MRR — Klick auf ✏️ neben einem Kunden öffnet das Edit-Modal"
 )
@@ -151,7 +151,10 @@ st.caption(
 # Tabs: Übersicht | Verwaltung
 # -----------------------------------------------------------------------------
 
-tab_overview, tab_mgmt = st.tabs(["📊 Übersicht", "📋 Verwaltung"])
+tab_overview, tab_mgmt = st.tabs([
+    ":material/insights: Übersicht",
+    ":material/format_list_bulleted: Verwaltung",
+])
 
 
 # ----- TAB ÜBERSICHT ---------------------------------------------------------

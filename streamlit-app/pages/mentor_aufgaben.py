@@ -34,7 +34,7 @@ if not mentor_id:
     st.stop()
 
 
-st.title("✅ Aufgaben")
+st.title(":material/task_alt: Aufgaben")
 st.caption("Auto-abgeleitet aus deinen Mentees und Sessions. Erledigt = Daten in Airtable korrigieren.")
 
 my_mentees  = for_mentor(load_kunden(), mentor_id, link_col="Mentor")

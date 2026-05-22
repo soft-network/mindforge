@@ -30,7 +30,7 @@ can_edit = can(user.get("rolle", ""), "programme", "write")
 @st.dialog("Mentor-Pool bearbeiten", width="large")
 def edit_pool_modal(prog: pd.Series) -> None:
     """Multi-Select für die Mentor-Pool-Zuweisung."""
-    st.subheader(f"🏆 {prog['Name']}")
+    st.subheader(f":material/inventory_2: {prog['Name']}")
     st.caption("Lege fest, welche Mentoren beim Convert-Workflow automatisch zugewiesen werden können.")
     st.markdown("---")
 
@@ -62,7 +62,7 @@ def edit_pool_modal(prog: pd.Series) -> None:
         st.rerun()
 
 
-st.title("🏆 Programme")
+st.title(":material/inventory_2: Programme")
 st.caption("Coaching-Angebote · Mentor-Pool-Zuweisung · Conversion-Snapshot")
 
 df = load_programs()

@@ -92,7 +92,7 @@ def add_session_modal(my_mentee_names: list[str]) -> None:
 # Page
 # -----------------------------------------------------------------------------
 
-st.title("📅 Meine Sessions")
+st.title(":material/event: Meine Sessions")
 
 # Lade eigene Sessions + Mentees
 all_sessions = load_sessions()
@@ -133,7 +133,7 @@ st.markdown("---")
 
 
 # NPS-Trend Chart
-st.subheader("NPS-Trend")
+st.subheader(":material/trending_up: NPS-Trend")
 chart_df = my_sessions.dropna(subset=["NPS"]).sort_values("Date")
 if chart_df.empty:
     st.caption("Sessions vorhanden, aber noch keine NPS-Werte.")
@@ -153,7 +153,7 @@ st.markdown("---")
 
 
 # Liste
-st.subheader("Verlauf")
+st.subheader(":material/history: Verlauf")
 filtered = my_sessions.sort_values("Date", ascending=False).reset_index(drop=True)
 
 COLS = [1.6, 2.5, 1, 1.5, 1.5, 0.8]

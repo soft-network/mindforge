@@ -24,7 +24,7 @@ if not mentor_id:
     st.stop()
 
 
-st.title("👤 Mein Profil")
+st.title(":material/account_circle: Mein Profil")
 st.caption("Read-only — Änderungen über den Admin-Kontakt.")
 
 rec = get_mentor_record(mentor_id)

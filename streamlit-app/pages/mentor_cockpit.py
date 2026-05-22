@@ -46,7 +46,7 @@ kpis = compute_mentor_self_kpis(my_mentees, my_sessions, kapazitaet)
 
 # ----- Header -----------------------------------------------------------------
 
-st.title(f"🎯 Cockpit")
+st.title(":material/space_dashboard: Cockpit")
 st.caption(f"👋 Hallo {mentor_name}")
 
 
@@ -96,7 +96,7 @@ st.markdown("---")
 chart_col, top_col = st.columns([2, 1])
 
 with chart_col:
-    st.subheader("NPS-Trend (eigene Sessions)")
+    st.subheader(":material/trending_up: NPS-Trend (eigene Sessions)")
     if my_sessions.empty:
         st.caption("Noch keine Sessions eingetragen.")
     else:
@@ -117,7 +117,7 @@ with chart_col:
             st.plotly_chart(fig, use_container_width=True)
 
 with top_col:
-    st.subheader("Top-Mentees")
+    st.subheader(":material/star: Top-Mentees")
     if my_mentees.empty:
         st.caption("Noch keine Mentees zugewiesen.")
     else:

@@ -41,7 +41,7 @@ TZ = ZoneInfo("Europe/Berlin")
 require_tool_access("hot_leads", "read")
 
 
-st.title("📞 Setter Daily")
+st.title(":material/phone_in_talk: Setter Daily")
 st.caption(
     "Hot-Lead-Queue · Click-to-Call · Termin-Buchung mit Google Meet · "
     "Status-Updates und Notizen synchron in Airtable"
@@ -53,7 +53,7 @@ st.caption(
 # -----------------------------------------------------------------------------
 
 with st.sidebar:
-    st.subheader("Google-Account")
+    st.subheader(":material/account_circle: Google-Account")
     if gcal.current_user_email():
         st.success(f"Eingeloggt als\n**{gcal.current_user_email()}**")
         if st.button("Ausloggen"):
@@ -63,7 +63,7 @@ with st.sidebar:
         st.caption("Noch nicht verbunden — siehe Login-Button rechts.")
 
     st.markdown("---")
-    st.subheader("Filter")
+    st.subheader(":material/filter_alt: Filter")
     min_score = st.slider("Min Quiz Score", 50, 100, 70, step=5)
     statuses = st.multiselect(
         "Status",

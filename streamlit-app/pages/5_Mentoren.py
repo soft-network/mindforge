@@ -42,7 +42,7 @@ SPEZ_OPTIONS   = ["Business", "Sales", "Mindset", "Marketing", "Operations", "Fi
 @st.dialog("Mentor bearbeiten", width="large")
 def edit_mentor_modal(mentor: pd.Series) -> None:
     """Modal-Overlay mit den editierbaren Stamm-Feldern eines Mentors."""
-    st.subheader(f"✏️ {mentor['Name'] or '—'}")
+    st.subheader(f":material/edit: {mentor['Name'] or '—'}")
     st.caption(
         f"📧 {mentor.get('E-Mail', '—') or '—'}  ·  "
         f"📍 {mentor.get('Stadt', '—') or '—'}"
@@ -147,12 +147,12 @@ require_tool_access("mentoren", "read")
 
 df = load_mentoren()
 if df.empty:
-    st.title("👥 Mentoren")
+    st.title(":material/school: Mentoren")
     st.info("Keine Mentoren vorhanden.")
     st.stop()
 
 
-st.title(f"👥 Mentoren ({len(df)})")
+st.title(f":material/school: Mentoren ({len(df)})")
 st.caption(
     "Performance · Auslastung · Spezialisierungen — Klick auf ✏️ öffnet das Edit-Modal"
 )
@@ -162,7 +162,10 @@ st.caption(
 # Tabs: Übersicht (KPIs+Charts) | Verwaltung (Filter+Liste+Edit)
 # -----------------------------------------------------------------------------
 
-tab_overview, tab_mgmt = st.tabs(["📊 Übersicht", "📋 Verwaltung"])
+tab_overview, tab_mgmt = st.tabs([
+    ":material/insights: Übersicht",
+    ":material/format_list_bulleted: Verwaltung",
+])
 
 
 # ----- TAB ÜBERSICHT ---------------------------------------------------------

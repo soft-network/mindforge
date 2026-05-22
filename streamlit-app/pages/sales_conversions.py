@@ -23,7 +23,7 @@ user = require_tool_access("engagements", "read")
 my_email = user.get("email", "")
 
 
-st.title("🤝 Meine Conversions")
+st.title(":material/handshake: Meine Conversions")
 st.caption("Mentees, die aus deinen Leads konvertiert wurden.")
 
 df_leads  = load_leads()

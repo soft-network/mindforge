@@ -27,7 +27,7 @@ if not mentor_id:
     st.stop()
 
 
-st.title("🤝 Engagements")
+st.title(":material/handshake: Engagements")
 st.caption("Deine Mentee-Verträge — read-only. Änderungen über Admin/Customer-Success.")
 
 my_engagements = for_mentor(load_kunden(), mentor_id, link_col="Mentor").reset_index(drop=True)

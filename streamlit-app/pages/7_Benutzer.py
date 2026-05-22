@@ -110,7 +110,7 @@ def new_user_modal() -> None:
 @st.dialog("Benutzer bearbeiten", width="large")
 def edit_user_modal(user: pd.Series) -> None:
     """Bearbeitet Stamm-Daten + optional Passwort-Reset."""
-    st.subheader(f"✏️ {user['Name']}")
+    st.subheader(f":material/edit: {user['Name']}")
     st.caption(f"📧 {user['E-Mail']}")
     st.markdown("---")
 
@@ -217,7 +217,7 @@ def status_badge(status: str) -> str:
 
 df = load_benutzer()
 
-st.title(f"👤 Benutzer ({len(df)})")
+st.title(f":material/manage_accounts: Benutzer ({len(df)})")
 st.caption("User-Lifecycle · Rollen · Status · Passwort-Reset")
 
 col_a, col_b = st.columns([4, 1])
