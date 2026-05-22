@@ -105,6 +105,5 @@ In Meta Ads Manager:
 - Rule: `Lead` mit `lead_score >= 70`
 - Optimization-Event in Kampagnen: „Hot Lead" statt generisch „Lead"
 
-→ Reduziert die Streuung, weil das Algo nur noch auf qualifizierte
-Leads optimiert. Direkter Pitch-Punkt im Bewerbungsinterview
-(„CAPI-Setup mit Custom Conversion auf Score-Threshold").
+→ Reduziert die Streuung, weil der Algorithmus nur noch auf qualifizierte
+Leads optimiert (CAPI-Setup mit Custom Conversion auf Score-Threshold).

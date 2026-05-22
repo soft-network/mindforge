@@ -26,7 +26,7 @@ because it looks fancy" decisions.
 │  │       Make Webhook Pipeline              │                  │
 │  │  ├─ Validate                             │                  │
 │  │  ├─ Duplicate Check                      │                  │
-│  │  ├─ Email Enrichment (GCP Function)      │                  │
+│  │  ├─ E-Mail Enrichment (GCP Function)      │                  │
 │  │  ├─ Create in Airtable                   │                  │
 │  │  ├─ Compute Lead Score                   │                  │
 │  │  ├─ Send Meta CAPI Event                 │                  │
@@ -47,7 +47,7 @@ because it looks fancy" decisions.
 │            ▼ CSV/API                                           │
 │  ┌────────────────────────┐    ┌─────────────────────────────┐ │
 │  │   Power BI Dashboard   │    │   GCP Cloud Function        │ │
-│  │  Funnel · Sources      │    │   Email-Domain-Enrichment   │ │
+│  │  Funnel · Sources      │    │   E-Mail-Domain-Enrichment   │ │
 │  │  Program Revenue       │    │   (serverless helper)       │ │
 │  └────────────────────────┘    └─────────────────────────────┘ │
 │                                                                │
@@ -164,7 +164,7 @@ DSGVO-sensitive production setups.
 | Step | Doc |
 |---|---|
 | Streamlit on Cloud Run | [08-gcp-deployment.md](08-gcp-deployment.md) |
-| Email enrichment Cloud Function | [08-gcp-deployment.md](08-gcp-deployment.md) |
+| E-Mail enrichment Cloud Function | [08-gcp-deployment.md](08-gcp-deployment.md) |
 
 ---
 

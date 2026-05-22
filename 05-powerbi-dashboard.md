@@ -12,7 +12,7 @@ Power BI hat keinen nativen Airtable-Connector. Zwei Optionen:
 
 ### Option A (empfohlen für Demo): CSV Export
 1. In Airtable: Jede Tabelle einmal als CSV exportieren (View → Download CSV)
-2. Speichere als `Leads.csv`, `Programs.csv`, `Sessions.csv`, `Clients.csv` in `C:\Users\msi\analyse\demo\sample-data\`
+2. Speichere als `Leads.csv`, `Programme.csv`, `Sessions.csv`, `Kunden.csv` in `C:\Users\msi\analyse\demo\sample-data\`
 3. In Power BI: **Get Data → Text/CSV** → alle 4 importieren
 
 ### Option B (für echte Anwendung): Airtable Web API
@@ -31,10 +31,10 @@ Im Modell-View die Verknüpfungen ziehen:
 
 | Von | Nach | Cardinality |
 |---|---|---|
-| `Leads[Interest]` | `Programs[Name]` | many-to-one |
+| `Leads[Interesse]` | `Programme[Name]` | many-to-one |
 | `Sessions[Lead]` | `Leads[Name]` | many-to-one |
-| `Clients[Lead]` | `Leads[Name]` | one-to-one |
-| `Clients[Program]` | `Programs[Name]` | many-to-one |
+| `Kunden[Lead]` | `Leads[Name]` | one-to-one |
+| `Kunden[Program]` | `Programme[Name]` | many-to-one |
 
 ---
 
@@ -68,17 +68,17 @@ DIVIDE([Converted Leads], [Total Leads], 0)
 
 Avg Lead Score = AVERAGE(Leads[Lead Score])
 
-Total MRR = SUM(Clients[MRR (EUR)])
+Total MRR = SUM(Kunden[MRR (EUR)])
 
 Avg Revenue Per Lead =
 DIVIDE([Total MRR], [Total Leads], 0)
 
 Avg Days to Convert =
 AVERAGEX(
-    FILTER(Clients, NOT(ISBLANK(Clients[Start Date]))),
+    FILTER(Kunden, NOT(ISBLANK(Kunden[Start Date]))),
     DATEDIFF(
-        RELATED(Leads[Created]),
-        Clients[Start Date],
+        RELATED(Leads[Erstellt am]),
+        Kunden[Start Date],
         DAY
     )
 )
@@ -123,7 +123,7 @@ Zweck: welche Programme verdienen Geld, welche nur Aufmerksamkeit?
   - Bubble Size: Total MRR
   - Legend: Category
 - **Visual 2:** Bar Chart
-  - Programs by Total MRR (Top 5)
+  - Programme by Total MRR (Top 5)
 - **Slicer:** Category (Career, Life, Health, Business)
 
 ---
@@ -142,7 +142,7 @@ Zweck: welche Programme verdienen Geld, welche nur Aufmerksamkeit?
 `mindforge-dashboard.pbix` im `demo/` Ordner ablegen.
 
 > Die `.pbix`-Datei ist gitignored (binär, groß, kein sinnvolles Diff).
-> Für Portfolio-Zwecke statt der Datei **PNG-Exports** der drei Report-Pages
+> Für die Demo statt der Datei **PNG-Exports** der drei Report-Pages
 > in [`docs/screenshots/`](docs/screenshots/) ablegen und von dort verlinken.
 
 ---

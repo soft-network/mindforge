@@ -1,5 +1,5 @@
 /* gtm-bootstrap.js
- * Lädt den Google Tag Manager Container. Vor dem Laden wird auf Consent
+ * Lädt den Google Tag Manager Container. Vor dem Laden wird auf Einwilligung
  * gewartet (siehe consent.js). Container-ID per Window-Config überschreibbar:
  *
  *   <script>window.MF_GTM_ID = "GTM-ABCDEFG";</script>
@@ -21,7 +21,7 @@
     version: "1.0.0",
   });
 
-  // Globale Consent-API: setzt Default DENY für alle Marketing-Cookies
+  // Globale Einwilligung-API: setzt Default DENY für alle Marketing-Cookies
   window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
   window.gtag("consent", "default", {
     ad_storage: "denied",
@@ -34,7 +34,7 @@
   });
 
   // Container nachladen — wird aber nur dann auch tatsächlich Tags feuern,
-  // wenn Consent-Update auf "granted" gesetzt wird (siehe consent.js)
+  // wenn Einwilligung-Update auf "granted" gesetzt wird (siehe consent.js)
   function loadGTM() {
     if (ID === "GTM-XXXXXX") {
       console.info("[MindForge] GTM-Container-ID nicht gesetzt — Skript-Loader übersprungen.");

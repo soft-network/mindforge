@@ -38,7 +38,7 @@ und Event-ID-Deduplication, sodass jede Conversion genau einmal in Meta landet.
 ```
 
 **Das Problem ohne CAPI:**
-- iOS 14.5+: Browser-Pixel Tracking nur mit App Tracking Transparency Consent
+- iOS 14.5+: Browser-Pixel Tracking nur mit App Tracking Transparency Einwilligung
 - ~70 % der iOS-User opt-out → Attribution verloren
 - Meta Ads optimieren auf falscher Datenbasis
 
@@ -109,8 +109,8 @@ In Meta Business Manager:
 #### Step A: SHA-256 Hash für PII
 
 - Add module: **Tools → Compose a string** (oder verwende JS-Code-Module)
-- Für **Email**: `{{lower(1.email)}}` → dann `{{sha256(<result>)}}`
-- Für **Phone** (E.164-normalisiert): `{{replace(replace(1.phone; "+"; ""); " "; "")}}` → `{{sha256(<result>)}}`
+- Für **E-Mail**: `{{lower(1.email)}}` → dann `{{sha256(<result>)}}`
+- Für **Telefon** (E.164-normalisiert): `{{replace(replace(1.phone; "+"; ""); " "; "")}}` → `{{sha256(<result>)}}`
 
 Make hat `sha256()` als eingebaute Funktion in der String-Toolbox.
 
@@ -227,7 +227,7 @@ In `landing-page/index.html`: GTM-XXXXXXX 2x ersetzen (bereits vorbereitet).
 |---|---|
 | Conversion-Tracking | Pixel + CAPI mit Event-ID-Deduplication |
 | iOS-14.5+ Kompatibilität | Server-Side Tracking als Fallback für Browser-Limits |
-| Datenschutz | PII (Email, Phone) per SHA-256 vor Versand gehasht |
+| Datenschutz | PII (E-Mail, Telefon) per SHA-256 vor Versand gehasht |
 | Tag-Management | GTM-Container für zentrale Pixel-Verwaltung |
 | API-Integration | CAPI Direct-Call mit korrekter Payload-Struktur |
 

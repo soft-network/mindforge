@@ -43,7 +43,7 @@ Repliziert das vollständige Tracking-Setup, das auf
 | GA4 Streams `G-WJ6VFGWJKX` + `G-04CBYNE97V` parallel | Zwei Streams im gleichen Account, identische Events |
 | TikTok Pixel mit `analytics.tiktok.com/api/v2/pixel/{inter,act}` | Pixel + Events API server-side mit Event-ID-Dedup |
 | HubSpot Tracking + `__ptc.gif` Klick-Tracking | HubSpot Embed-Code (optional, siehe `hubspot/README.md` §5) |
-| `SubscribedButtonClick`-Events mit External-ID-Hash | AAM aktiviert → Pixel sendet automatisch alle Klicks mit Email-Hash |
+| `SubscribedButtonClick`-Events mit External-ID-Hash | AAM aktiviert → Pixel sendet automatisch alle Klicks mit E-Mail-Hash |
 
 ---
 
@@ -51,5 +51,5 @@ Repliziert das vollständige Tracking-Setup, das auf
 
 - **LinkedIn Pixel** (nicht in LLP-Stack gesehen)
 - **Pinterest Pixel** (nicht in LLP-Stack gesehen)
-- **Hotjar / Microsoft Clarity** (LLP nutzt es nicht; im Bewerbungs-Pitch erwähnen, dass es einfach addbar wäre)
+- **Hotjar / Microsoft Clarity** (Hotjar ist im LLP-Live-Stack aktiv — Site-ID `5045828` — im Demo bewusst nicht dupliziert, als optionale Ergänzung dokumentiert)
 - **Server-Side-GTM** (echtes sGTM bräuchte App Engine / Cloud Run mit eigener Domain — zu großer Aufwand für die Demo; CAPI/MP/Events-API direkt aus Make liefert ~80% des Werts)

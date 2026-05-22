@@ -10,7 +10,7 @@
                 │  (Source: HubSpot)         │
                 │  ────────────────────────  │
                 │  ContactID (PK)            │
-                │  Email (Business Key)      │
+                │  E-Mail (Business Key)      │
                 │  QuizScore                 │
                 │  QuizTier                  │
                 │  QuizCompletedAt (FK→date) │
@@ -29,7 +29,7 @@
 │         │ │          │ │mentor  │ │program   │ │(Airtable)    │
 │DateKey  │ │StageKey  │ │MentorID│ │ProgramID │ │SessionID     │
 │Year     │ │Name      │ │Name    │ │Name      │ │ContactID(FK) │
-│Quarter  │ │Order     │ │City    │ │Price     │ │MentorID(FK)  │
+│Quarter  │ │Order     │ │Stadt    │ │Price     │ │MentorID(FK)  │
 │Month    │ │          │ │Capacity│ │Duration  │ │Date          │
 │Week     │ │          │ │        │ │          │ │NPS           │
 └─────────┘ └──────────┘ └────────┘ └──────────┘ │Duration      │
@@ -97,7 +97,7 @@ let
     }),
 
     Renamed = Table.RenameColumns(Typed, {
-        {"p_email", "Email"},
+        {"p_email", "E-Mail"},
         {"p_firstname", "FirstName"},
         {"p_lastname", "LastName"},
         {"p_lifecyclestage", "LifecycleStage"},
@@ -154,8 +154,8 @@ let
         {"SessionID","fields","CreatedAt"}),
 
     ExpandFields = Table.ExpandRecordColumn(Expanded, "fields",
-        {"Contact Email","Mentor","Date","Duration (min)","NPS","Notes"},
-        {"Email","MentorID","SessionDate","DurationMin","NPS","Notes"}),
+        {"Contact E-Mail","Mentor","Date","Dauer (min)","NPS","Notizen"},
+        {"E-Mail","MentorID","SessionDate","DurationMin","NPS","Notizen"}),
 
     Typed = Table.TransformColumnTypes(ExpandFields, {
         {"SessionID", type text},
@@ -204,7 +204,7 @@ in
 | `fact_quiz_leads[MentorID]` | `dim_mentor[MentorID]` | * → 1 | Single | Yes |
 | `fact_quiz_leads[ProgramID]` | `dim_program[ProgramID]` | * → 1 | Single | Yes |
 | `fact_quiz_leads[LifecycleStage]` | `dim_stage[StageKey]` | * → 1 | Single | Yes |
-| `fact_sessions[Email]` | `fact_quiz_leads[Email]` | * → 1 | Single | Yes |
+| `fact_sessions[E-Mail]` | `fact_quiz_leads[E-Mail]` | * → 1 | Single | Yes |
 | `fact_sessions[MentorID]` | `dim_mentor[MentorID]` | * → 1 | Single | No (Inactive — Konflikt mit obigem; via USERELATIONSHIP) |
 | `fact_sessions[SessionDate]` | `dim_date[Date]` | * → 1 | Single | Yes |
 

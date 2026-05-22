@@ -9,7 +9,7 @@
 ## Was schon gebaut ist
 
 In `landing-page/`:
-- **[index.html](landing-page/index.html)** — Komplette Page mit Hero, Programs, Form, Footer
+- **[index.html](landing-page/index.html)** — Komplette Page mit Hero, Programme, Form, Footer
 - **[styles.css](landing-page/styles.css)** — Minimal modernes Styling
 - **[script.js](landing-page/script.js)** — Form-Handler mit UTM-Capture, Validation, Webhook-Submit, Meta-Pixel-Trigger
 
@@ -19,7 +19,7 @@ In `landing-page/`:
 |---|---|
 | **UTM-Quellen-Erkennung** (Google/Facebook/Instagram etc.) | `script.js` → `captureSource()` |
 | **Referrer-Fallback** (wenn keine UTM) | `script.js` → `captureSource()` |
-| **Client-Side Validation** (Name, Email, Programm) | `script.js` → `validateForm()` |
+| **Client-Side Validation** (Name, E-Mail, Programm) | `script.js` → `validateForm()` |
 | **Event-ID Generation** (für Pixel-CAPI-Deduplication) | `script.js` → `generateEventId()` |
 | **Meta Pixel** im `<head>` | `index.html` |
 | **Google Tag Manager** Container | `index.html` |
@@ -107,7 +107,7 @@ In GitHub:
 | Page-Aufruf mit `?utm_source=facebook` | Hidden source field = "Facebook" |
 | Page-Aufruf mit Referrer Instagram | Hidden source field = "Instagram" |
 | Form leer absenden | Rote Feld-Outlines, Error-Message |
-| Invalid Email | Email-Feld rot, Error-Message |
+| Invalid E-Mail | E-Mail-Feld rot, Error-Message |
 | Valid Submit | Webhook fired, Pixel "Lead" fired, Success-Message, Form reset |
 | Network-Error simulieren (Webhook-URL falsch) | Error-Message, Button re-enabled |
 

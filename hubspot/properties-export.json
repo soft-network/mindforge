@@ -2,7 +2,7 @@
   "inputs": [
     {
       "name": "quiz_business_status",
-      "label": "Quiz · Business Status",
+      "label": "Quiz · Selbstständig",
       "type": "string",
       "fieldType": "text",
       "groupName": "quiz_lead_data",
@@ -10,7 +10,7 @@
     },
     {
       "name": "quiz_years_self_employed",
-      "label": "Quiz · Years Self-Employed",
+      "label": "Quiz · Dauer Selbstständigkeit",
       "type": "string",
       "fieldType": "text",
       "groupName": "quiz_lead_data",
@@ -18,7 +18,7 @@
     },
     {
       "name": "quiz_business_field",
-      "label": "Quiz · Business Field",
+      "label": "Quiz · Branche",
       "type": "string",
       "fieldType": "text",
       "groupName": "quiz_lead_data",
@@ -26,7 +26,7 @@
     },
     {
       "name": "quiz_visibility",
-      "label": "Quiz · Visibility",
+      "label": "Quiz · Sichtbarkeit",
       "type": "string",
       "fieldType": "text",
       "groupName": "quiz_lead_data",
@@ -34,7 +34,7 @@
     },
     {
       "name": "quiz_team_setup",
-      "label": "Quiz · Team Setup",
+      "label": "Quiz · Team",
       "type": "string",
       "fieldType": "text",
       "groupName": "quiz_lead_data",
@@ -42,7 +42,7 @@
     },
     {
       "name": "quiz_monthly_revenue",
-      "label": "Quiz · Monthly Revenue",
+      "label": "Quiz · Monatsumsatz",
       "type": "string",
       "fieldType": "text",
       "groupName": "quiz_lead_data",
@@ -50,7 +50,7 @@
     },
     {
       "name": "quiz_main_wish",
-      "label": "Quiz · Main Wish",
+      "label": "Quiz · Hauptwunsch",
       "type": "string",
       "fieldType": "text",
       "groupName": "quiz_lead_data",
@@ -58,7 +58,7 @@
     },
     {
       "name": "quiz_gap",
-      "label": "Quiz · Gap (Multi)",
+      "label": "Quiz · Lücke (Multi)",
       "type": "string",
       "fieldType": "textarea",
       "groupName": "quiz_lead_data",
@@ -66,7 +66,7 @@
     },
     {
       "name": "quiz_time_budget",
-      "label": "Quiz · Time Budget",
+      "label": "Quiz · Zeitbudget",
       "type": "string",
       "fieldType": "text",
       "groupName": "quiz_lead_data",
@@ -86,7 +86,7 @@
       "type": "datetime",
       "fieldType": "date",
       "groupName": "quiz_lead_data",
-      "description": "Zeitpunkt des Quiz-Abschlusses (UTC ISO)"
+      "description": "Zeitpunkt des Quiz-Abschlusses (Europe/Berlin ISO)"
     },
     {
       "name": "lead_source_subdomain",

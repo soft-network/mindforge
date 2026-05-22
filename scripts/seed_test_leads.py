@@ -16,7 +16,10 @@ import json
 import sys
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+
+TZ_BERLIN = ZoneInfo("Europe/Berlin")
 from pathlib import Path
 from urllib import request, error
 
@@ -194,25 +197,25 @@ def airtable_record(p: dict, score: int, tier: str, completed_at: str, event_id:
     a = p["answers"]
     return {
         "Name": f"{p['fn']} {p['ln']}",
-        "First Name": p["fn"], "Last Name": p["ln"],
-        "Email": email_for(p), "Phone": phone_for(p["country"]),
-        "Country": p["country"], "Consent": True,
+        "Vorname": p["fn"], "Nachname": p["ln"],
+        "E-Mail": email_for(p), "Telefon": phone_for(p["country"]),
+        "Land": p["country"], "Einwilligung": True,
         "Source": "Facebook" if p["utm"]["source"] == "facebook" else
                   "Instagram" if p["utm"]["source"] == "instagram" else
                   "Google Ads" if p["utm"]["source"] == "google" else "Other",
         "Status": "New",
         "Quiz Score": score,
         "Quiz Tier": tier,
-        "Quiz · Business Status": a["business_status"],
-        "Quiz · Years Self-Employed": a["years_self_employed"],
-        "Quiz · Business Field": a["business_field"],
-        "Quiz · Visibility": a["visibility"],
-        "Quiz · Team Setup": a["team_setup"],
-        "Quiz · Monthly Revenue": a["monthly_revenue"],
-        "Quiz · Main Wish": a["main_wish"],
-        "Quiz · Gap": a["gap"],
-        "Quiz · Time Budget": a["time_budget"],
-        "Quiz Completed At": completed_at,
+        "Quiz · Selbstständig": a["business_status"],
+        "Quiz · Dauer Selbstständigkeit": a["years_self_employed"],
+        "Quiz · Branche": a["business_field"],
+        "Quiz · Sichtbarkeit": a["visibility"],
+        "Quiz · Team": a["team_setup"],
+        "Quiz · Monatsumsatz": a["monthly_revenue"],
+        "Quiz · Hauptwunsch": a["main_wish"],
+        "Quiz · Lücke": a["gap"],
+        "Quiz · Zeitbudget": a["time_budget"],
+        "Quiz Abgeschlossen am": completed_at,
         "Source Subdomain": "quiz.mindforge.demo",
         "Event ID": event_id,
         "UTM Source":   p["utm"]["source"],
@@ -229,10 +232,10 @@ def airtable_upsert(table_id: str, records: list[dict]) -> int:
     n = 0
     for i in range(0, len(records), 10):
         chunk = records[i:i + 10]
-        # Idempotency via upsert on Email field
+        # Idempotency via upsert on E-Mail field
         body = {
             "records": [{"fields": r} for r in chunk],
-            "performUpsert": {"fieldsToMergeOn": ["Email"]},
+            "performUpsert": {"fieldsToMergeOn": ["E-Mail"]},
         }
         code, resp = http("PATCH", f"https://api.airtable.com/v0/{AT_BASE}/{table_id}",
                           headers, body)
@@ -309,7 +312,7 @@ def main() -> None:
     at_records = []
     hs_records = []
     rows = []
-    now = datetime.now(timezone.utc)
+    now = datetime.now(TZ_BERLIN)
 
     for i, p in enumerate(PROFILES):
         score = compute_score(p["answers"])

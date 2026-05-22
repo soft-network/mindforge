@@ -4,14 +4,11 @@ End-to-end demo of a marketing-to-CRM pipeline for an online coaching business.
 Built as a reference implementation combining low-code automation with light
 custom code, modern marketing-tech, and serverless cloud deployment.
 
-> **Bewerbungs-Kontext:** Dieses Demo-Projekt ist gezielt als Portfolio-Stück
-> für die Stelle *Low Code Frontend Webentwickler* bei **Love Life Passport**
-> aufgesetzt. Die ausführliche Geschäfts-, Funnel- und Rollenanalyse,
-> das Tech-Stack-Mapping zur Stellenanzeige und der Bewerbungs-Pitch
-> liegen in [`LOVELIFEPASSPORT-ANALYSE.md`](LOVELIFEPASSPORT-ANALYSE.md).
->
-> Die geplante **Phase E** (Quiz-Frontend + HubSpot-Bridge + voller Pixel-Stack —
-> abgeleitet aus der Live-Analyse des LLP-Quiz) ist beschrieben in
+> Die Architektur ist an einem realen Coaching-Funnel (Love Life Passport)
+> orientiert; die technische Hintergrund-Analyse liegt in
+> [`LOVELIFEPASSPORT-ANALYSE.md`](LOVELIFEPASSPORT-ANALYSE.md). Die
+> HubSpot-Erweiterung der Pipeline (Quiz-Frontend, Bridge, Pixel-Stack,
+> Setter-Daily mit Google Calendar) ist beschrieben in
 > [`PHASE-E-PLAN.md`](PHASE-E-PLAN.md).
 
 ---
@@ -117,7 +114,7 @@ This repository implements that pipeline end-to-end.
 ```
 demo/
 ├── README.md                       This file
-├── LOVELIFEPASSPORT-ANALYSE.md     Business + role analysis · stack mapping · pitch
+├── LOVELIFEPASSPORT-ANALYSE.md     LLP-Geschäfts- und Funnel-Analyse · technischer Hintergrund
 ├── PHASE-E-PLAN.md                 Realitäts-Bridge: Quiz + HubSpot + Tracking + Cross-Source PBI
 ├── 00-architecture.md              Detailed architecture & extension plan
 ├── 01-accounts-setup.md            Tools and accounts needed
@@ -155,7 +152,7 @@ demo/
 ├── powerbi-cross-source/           Phase E: Cross-Source Dashboard HubSpot + Airtable
 │
 ├── gcp/
-│   ├── cloud-function/             Email-domain enrichment
+│   ├── cloud-function/             E-Mail-domain enrichment
 │   │   ├── main.py
 │   │   └── requirements.txt
 │   ├── cloud-function-score/       Lead scoring (Python, called by Make)
@@ -272,5 +269,5 @@ to get a working dataset immediately.
 
 ## License
 
-This is a portfolio reference implementation. Code is provided as-is for
+This is a reference implementation. Code is provided as-is for
 educational purposes. The "MindForge" brand and copy are fictional.

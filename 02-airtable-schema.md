@@ -6,7 +6,7 @@
 
 ---
 
-## Tabelle 1: `Programs`
+## Tabelle 1: `Programme`
 
 Das sind die Kurse/Coachings, die MindForge anbietet. **Diese Tabelle zuerst erstellen**, weil Leads darauf verlinken.
 
@@ -19,10 +19,10 @@ Das sind die Kurse/Coachings, die MindForge anbietet. **Diese Tabelle zuerst ers
 | `Description` | Long text | – |
 | `Leads` | Link to `Leads` | (wird automatisch erstellt nach Tabelle 2) |
 | `Lead Count` | Count | Counts `Leads` |
-| `Converted Clients` | Count | Counts `Clients` (nach Tabelle 4) |
-| `Conversion Rate` | Formula | `IF({Lead Count}=0, 0, {Converted Clients}/{Lead Count})` — Format: Percent |
+| `Converted Kunden` | Count | Counts `Kunden` (nach Tabelle 4) |
+| `Conversion Rate` | Formula | `IF({Lead Count}=0, 0, {Converted Kunden}/{Lead Count})` — Format: Percent |
 
-### Sample-Daten für `Programs`
+### Sample-Daten für `Programme`
 
 Lass die Tabelle erstmal leer — wir importieren später per CSV.
 
@@ -35,15 +35,15 @@ Hier landen alle Webhook-Submissions vom Landing-Page-Formular.
 | Feldname | Typ | Optionen / Formel |
 |---|---|---|
 | `Name` | Single line text | Primary field |
-| `Email` | Email | – |
-| `Phone` | Phone number | – |
+| `E-Mail` | E-Mail | – |
+| `Telefon` | Telefon number | – |
 | `Source` | Single select | Google Ads, Facebook, Instagram, Referral, Organic, Other |
-| `Interest` | Link to `Programs` | Single record |
-| `Created` | Created time | Auto |
+| `Interesse` | Link to `Programme` | Single record |
+| `Erstellt am` | Erstellt am time | Auto |
 | `Lead Score` | Number | Integer, 0-100. Wird vom Script gesetzt. |
 | `Status` | Single select | New, Qualified, Contacted, Converted, Lost |
-| `Program Price` | Lookup | Lookup `Price (EUR)` aus `Interest` |
-| `Notes` | Long text | – |
+| `Program Price` | Lookup | Lookup `Price (EUR)` aus `Interesse` |
+| `Notizen` | Long text | – |
 
 ### Wichtig
 - `Lead Score` bleibt manuell editierbar, wird aber vom Script automatisch berechnet.
@@ -62,11 +62,11 @@ Discovery Calls / Beratungstermine pro Lead.
 | `Date` | Date with time | – |
 | `Outcome` | Single select | No Show, Not Interested, Interested, Booked |
 | `Lead Name` | Lookup | Lookup `Name` aus `Lead` |
-| `Notes` | Long text | – |
+| `Notizen` | Long text | – |
 
 ---
 
-## Tabelle 4: `Clients`
+## Tabelle 4: `Kunden`
 
 Konvertierte Leads (zahlende Kunden).
 
@@ -74,7 +74,7 @@ Konvertierte Leads (zahlende Kunden).
 |---|---|---|
 | `Client ID` | Autonumber | Primary field |
 | `Lead` | Link to `Leads` | Single record |
-| `Program` | Link to `Programs` | Single record |
+| `Program` | Link to `Programme` | Single record |
 | `Start Date` | Date | – |
 | `MRR (EUR)` | Currency | EUR |
 | `Status` | Single select | Active, Cancelled, Completed |
@@ -86,16 +86,16 @@ Konvertierte Leads (zahlende Kunden).
 ## Verknüpfungen — visuell
 
 ```
-Programs ◄────────── Leads ◄────────── Sessions
+Programme ◄────────── Leads ◄────────── Sessions
    ▲                    ▲
    │                    │
-   └──── Clients ───────┘
+   └──── Kunden ───────┘
 ```
 
-- 1 Lead → max. 1 Interest (Program)
+- 1 Lead → max. 1 Interesse (Program)
 - 1 Lead → viele Sessions
 - 1 Lead → max. 1 Client (nach Konvertierung)
-- 1 Program → viele Leads, viele Clients
+- 1 Program → viele Leads, viele Kunden
 
 ---
 
@@ -107,7 +107,7 @@ Nach Schema-Anlage:
 2. Wähle Layout: **Record Review**
 3. Source Table: `Leads`
 4. Filter: `Status = "New"`
-5. Felder anzeigen: Name, Email, Phone, Source, Interest, Lead Score, Status
+5. Felder anzeigen: Name, E-Mail, Telefon, Source, Interesse, Lead Score, Status
 
 → Das Sales-Team öffnet das Interface, sieht alle neuen Leads und kann sie nacheinander durchgehen.
 
@@ -119,7 +119,7 @@ Nach Schema-Anlage:
 |---|---|
 | Komplexe Datenmodelle (Links, Lookups, Rollups) | 4 Tabellen, 3 Links, 4 Lookups, 1 Formula-Rollup |
 | Interfaces | Lead-Review-Interface |
-| Sauberes Datenmanagement | Single-Selects statt Freitext, Phone-Validation |
+| Sauberes Datenmanagement | Single-Selects statt Freitext, Telefon-Validation |
 
 ---
 

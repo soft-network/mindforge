@@ -53,8 +53,8 @@ Alle hier benötigten Tools haben einen **kostenlosen Tier**, der für die Demo 
 
 - **Link:** https://uptimerobot.com/signUp
 - **Plan:** Free (50 Monitors, 5-Min-Intervall)
-- **Was du brauchst:** Email-Adresse
-- **Nach Signup:** Email-Verifikation, dann direkt loslegen
+- **Was du brauchst:** E-Mail-Adresse
+- **Nach Signup:** E-Mail-Verifikation, dann direkt loslegen
 
 ### 7. Meta Business Manager (für Pixel)
 

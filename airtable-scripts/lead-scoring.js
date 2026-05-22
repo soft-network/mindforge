@@ -14,13 +14,13 @@
 // Score 0-100, basierend auf:
 //   - Source-Qualität       (max 30)
 //   - Programm-Preis        (max 30, linear 0-5000 EUR)
-//   - Phone vorhanden       (15)
-//   - Notes >20 Zeichen     (5)
+//   - Telefon vorhanden       (15)
+//   - Notizen >20 Zeichen     (5)
 //   - Recency               (max 20)
 // =============================================================
 
 const LEADS_TABLE = 'Leads';
-const PROGRAMS_TABLE = 'Programs';
+const PROGRAMS_TABLE = 'Programme';
 
 // Gewichtung pro Source — basiert auf typischen Conversion-Rates
 const SOURCE_WEIGHTS = {
@@ -55,8 +55,8 @@ if (!lead) {
     output.table([
         { Kriterium: 'Source',     Punkte: score.breakdown.source },
         { Kriterium: 'Programm',   Punkte: score.breakdown.program },
-        { Kriterium: 'Phone',      Punkte: score.breakdown.phone },
-        { Kriterium: 'Notes',      Punkte: score.breakdown.notes },
+        { Kriterium: 'Telefon',      Punkte: score.breakdown.phone },
+        { Kriterium: 'Notizen',      Punkte: score.breakdown.notes },
         { Kriterium: 'Recency',    Punkte: score.breakdown.recency },
         { Kriterium: 'GESAMT',     Punkte: score.total },
     ]);
@@ -104,7 +104,7 @@ async function calculateScore(lead) {
     breakdown.source = SOURCE_WEIGHTS[source] ?? 0;
 
     // 2. Programm-Preis (Premium-Programme zeigen höheren Intent)
-    const interestLinks = lead.getCellValue('Interest');
+    const interestLinks = lead.getCellValue('Interesse');
     if (interestLinks && interestLinks.length > 0) {
         const programRecord = await programsTable.selectRecordAsync(interestLinks[0].id);
         if (programRecord) {
@@ -114,20 +114,20 @@ async function calculateScore(lead) {
         }
     }
 
-    // 3. Phone vorhanden
-    const phone = lead.getCellValueAsString('Phone');
+    // 3. Telefon vorhanden
+    const phone = lead.getCellValueAsString('Telefon');
     if (phone && phone.trim().length > 0) {
         breakdown.phone = PHONE_BONUS;
     }
 
-    // 4. Notes vorhanden (zeigt Engagement)
-    const notes = lead.getCellValueAsString('Notes');
+    // 4. Notizen vorhanden (zeigt Engagement)
+    const notes = lead.getCellValueAsString('Notizen');
     if (notes && notes.trim().length > 20) {
         breakdown.notes = NOTES_BONUS;
     }
 
     // 5. Recency — neuer Lead = mehr Punkte
-    const createdValue = lead.getCellValue('Created');
+    const createdValue = lead.getCellValue('Erstellt am');
     if (createdValue) {
         const created = new Date(createdValue);
         const hoursOld = (Date.now() - created.getTime()) / (1000 * 60 * 60);

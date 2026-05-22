@@ -14,7 +14,7 @@
 [Streamlit App URL]  ◄─── ping every 5min ───        │
                                                      │
                               on failure ─────────►  ├─► Slack Webhook
-                                                     ├─► Email
+                                                     ├─► E-Mail
                                                      └─► Statuspage Update
                                                               │
                                                               ▼
@@ -30,7 +30,7 @@
 
 1. https://uptimerobot.com/signUp
 2. Free Plan: 50 Monitors, 5-Min-Intervall, unbegrenzt Alerts
-3. Verifikations-Email bestätigen
+3. Verifikations-E-Mail bestätigen
 
 ### Monitor 1: Make Webhook
 
@@ -62,7 +62,7 @@ Im Make-Scenario direkt nach Webhook:
 1. Type: **HTTP(s)** (Default GET)
 2. **URL:** `https://<dein-user>.github.io/mindforge-pipeline-demo/`
 3. **Interval:** 5 Min
-4. **Alert Contacts:** Slack + Email
+4. **Alert Contacts:** Slack + E-Mail
 5. Save
 
 ### Monitor 3: Streamlit Coach Admin (später, Phase C)
@@ -74,7 +74,7 @@ Im Make-Scenario direkt nach Webhook:
 ### Alert Contacts einrichten
 
 1. **My Settings** → **Alert Contacts** → **+ Add Alert Contact**
-2. Type: **Email** → deine Email + Test
+2. Type: **E-Mail** → deine E-Mail + Test
 3. Type: **Slack** → folge der Slack-Webhook-Anleitung von UptimeRobot
    - In Slack: App "Incoming Webhooks" hinzufügen, Channel `#mindforge-alerts`, Webhook-URL kopieren
    - In UptimeRobot: Slack Webhook URL einfügen
@@ -144,7 +144,7 @@ Bei größeren Vorfällen ergänzt du manuell:
 - [ ] Monitor 1 (Make Webhook) eingerichtet, POST mit `_uptime_check`
 - [ ] Monitor 2 (Landing Page) eingerichtet
 - [ ] Slack Alert Contact eingerichtet und getestet
-- [ ] Email Alert Contact eingerichtet und getestet
+- [ ] E-Mail Alert Contact eingerichtet und getestet
 - [ ] Make-Scenario filtert `_uptime_check === true` aus
 - [ ] Statuspage Account erstellt
 - [ ] 3 Components angelegt
@@ -159,7 +159,7 @@ Bei größeren Vorfällen ergänzt du manuell:
 |---|---|
 | Monitoring | UptimeRobot Multi-Monitor Setup (5-Min-Intervall) |
 | System-Integration | UptimeRobot ↔ Statuspage via Webhook |
-| Reliability | Automatisches Alert-Routing (Slack + Email) |
+| Reliability | Automatisches Alert-Routing (Slack + E-Mail) |
 | Stakeholder-Kommunikation | Öffentliche Statuspage als Single Source of Truth |
 
 ---

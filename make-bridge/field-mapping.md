@@ -15,11 +15,11 @@ und welche Make-Scenarien es schreiben.
 
 | Logisches Feld | HubSpot Property | Airtable Field | SoT | Geschrieben von |
 |---|---|---|---|---|
-| Email | `email` | `Email` | Immutable | Scenario #1 |
-| Vorname | `firstname` | `First Name` | HS | Scenario #1, später ggf. Workflow |
-| Nachname | `lastname` | `Last Name` | HS | Scenario #1 |
-| Telefon | `phone` | `Phone` | HS | Scenario #1 |
-| Land | `country` | `Country` | HS | Scenario #1 |
+| E-Mail | `email` | `E-Mail` | Immutable | Scenario #1 |
+| Vorname | `firstname` | `Vorname` | HS | Scenario #1, später ggf. Workflow |
+| Nachname | `lastname` | `Nachname` | HS | Scenario #1 |
+| Telefon | `phone` | `Telefon` | HS | Scenario #1 |
+| Land | `country` | `Land` | HS | Scenario #1 |
 
 ---
 
@@ -27,15 +27,15 @@ und welche Make-Scenarien es schreiben.
 
 | Logisches Feld | HubSpot Property | Airtable Field | SoT | Geschrieben von |
 |---|---|---|---|---|
-| Business Status | `quiz_business_status` | `Quiz · Business Status` | Immutable | Scenario #1 |
-| Years Self-Empl. | `quiz_years_self_employed` | `Quiz · Years Self-Employed` | Immutable | Scenario #1 |
+| Business Status | `quiz_business_status` | `Quiz · Selbstständig` | Immutable | Scenario #1 |
+| Years Self-Empl. | `quiz_years_self_employed` | `Quiz · Dauer Selbstständigkeit` | Immutable | Scenario #1 |
 | Branche | `quiz_business_field` | `Quiz · Field` | Immutable | Scenario #1 |
-| Sichtbarkeit | `quiz_visibility` | `Quiz · Visibility` | Immutable | Scenario #1 |
+| Sichtbarkeit | `quiz_visibility` | `Quiz · Sichtbarkeit` | Immutable | Scenario #1 |
 | Team-Aufstellung | `quiz_team_setup` | `Quiz · Team` | Immutable | Scenario #1 |
 | Monatsumsatz | `quiz_monthly_revenue` | `Quiz · Revenue` | Immutable | Scenario #1 |
 | Wunsch | `quiz_main_wish` | `Quiz · Wish` | Immutable | Scenario #1 |
-| Lücken (Multi) | `quiz_gap` | `Quiz · Gap` (Multi-Select) | Immutable | Scenario #1 |
-| Zeitbudget | `quiz_time_budget` | `Quiz · Time Budget` | Immutable | Scenario #1 |
+| Lücken (Multi) | `quiz_gap` | `Quiz · Lücke` (Multi-Select) | Immutable | Scenario #1 |
+| Zeitbudget | `quiz_time_budget` | `Quiz · Zeitbudget` | Immutable | Scenario #1 |
 | Score | `quiz_score` | `Quiz Score` | Immutable | Scenario #1 |
 | Completed At | `quiz_completed_at` | `Quiz Completed` | Immutable | Scenario #1 |
 | Source-Subdomain | `lead_source_subdomain` | `Source Subdomain` | Immutable | Scenario #1 |
@@ -59,12 +59,12 @@ und welche Make-Scenarien es schreiben.
 
 | Logisches Feld | HubSpot Property | Airtable Field | SoT | Geschrieben von |
 |---|---|---|---|---|
-| Mentor-ID | `mentor_id` | `Mentor (link to Mentors table)` | **AT** | Scenario #3 |
+| Mentor-ID | `mentor_id` | `Mentor (link to Mentoren table)` | **AT** | Scenario #3 |
 | Mentor-Name | `mentor_name` | `Mentor Name (Lookup)` | **AT** | Scenario #3 |
 | Onboarding-Status | `onboarding_status` | `Onboarding Status` (Select) | **AT** | Scenario #3 |
-| Programm | `program` | `Program (link to Programs)` | **AT** | Scenario #3 |
+| Programm | `program` | `Program (link to Programme)` | **AT** | Scenario #3 |
 | Programm-Start | `program_start` | `Program Start Date` | **AT** | Scenario #3 |
-| Last Session | `last_session_date` | `Last Session Date` (Rollup) | **AT** | Scenario #3 |
+| Last Session | `last_session_date` | `Letzte Session` (Rollup) | **AT** | Scenario #3 |
 | NPS | `nps` | `NPS` (avg Rollup) | **AT** | Scenario #3 |
 | LTV | `ltv` | `LTV` (Sum of Deals) | **AT** | Scenario #3 |
 | Customer Health | `customer_health` | `Customer Health Score` (Formula) | **AT** | Scenario #3 |
@@ -76,7 +76,7 @@ und welche Make-Scenarien es schreiben.
 | Logisches Feld | HubSpot Property | Airtable Field | SoT | Zweck |
 |---|---|---|---|---|
 | Last Source | `_last_source` | `_last_source` | wird vom schreibenden Szenario gesetzt | Loop-Prevention |
-| HubSpot Last-Mod | `hs_lastmodifieddate` | `HS Last Modified` (synced) | HS | Last-Wins-Tie-Breaker |
+| HubSpot Last-Mod | `hs_lastmodifieddate` | `HS Zuletzt geändert` (synced) | HS | Last-Wins-Tie-Breaker |
 | Airtable Last-Mod | `at_last_modified` (synced) | `Last Modified Time` | AT | Last-Wins-Tie-Breaker |
 
 ---
@@ -99,5 +99,5 @@ Trigger-Feld schreiben — kein Loop.
 ## DSGVO-Hinweis
 
 - Bei Löschung des Kontakts in HubSpot → manueller Cleanup in Airtable nötig (kein Auto-Sync vorgesehen, weil Operations-Daten ggf. archiviert werden müssen)
-- Beim Right-to-Be-Forgotten-Request: Email als Lookup nutzen → manuelle Anonymisierung in beiden Systemen
+- Beim Right-to-Be-Forgotten-Request: E-Mail als Lookup nutzen → manuelle Anonymisierung in beiden Systemen
 - E-Mail-Hash für Tracking (CAPI, GA4 MP, TikTok) hat keine Personenbezug-Pflicht, weil pseudonymisiert

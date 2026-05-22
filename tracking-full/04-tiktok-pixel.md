@@ -10,7 +10,7 @@ Replikat des LLP-Setups (POSTs an `analytics.tiktok.com/api/v2/pixel/{inter,act}
 1. `ads.tiktok.com` → **Sign up** (kostenlos)
 2. Beim Onboarding-Wizard:
    - Business Type: Coaching/Education
-   - Country: Germany
+   - Land: Germany
 3. **Tools → Events → Web Events → Manage**
 4. **Set up Web Events → Manually install pixel**
 5. Pixel-Name: `MindForge Quiz Pixel`

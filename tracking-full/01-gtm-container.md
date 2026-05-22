@@ -86,7 +86,7 @@ function() {
   fbq('track', 'PageView');
   </script>
   ```
-- Consent settings: `ad_storage`, `ad_user_data`, `ad_personalization`
+- Einwilligung settings: `ad_storage`, `ad_user_data`, `ad_personalization`
 
 ### 5.2 Meta Pixel - Lead Event
 - Tag Type: **Custom HTML**
@@ -142,7 +142,7 @@ Alle Tags markieren mit:
 - **Required additional consent**: `ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`
 
 Im `consent.js` (Quiz-Frontend) wird `gtag('consent', 'update', ...)`
-gefeuert. GTM hält Tags zurück, bis Consent granted.
+gefeuert. GTM hält Tags zurück, bis Einwilligung granted.
 
 ---
 

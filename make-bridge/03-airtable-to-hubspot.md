@@ -27,11 +27,11 @@ propagiert werden, damit:
 In Airtable einrichten unter **Automations → Create Automation**:
 
 **Trigger:** *When record matches conditions*
-- Table: `Clients`
+- Table: `Kunden`
 - Conditions:
   - `Mentor` is not empty, OR
   - `Onboarding Status` is not empty, OR
-  - `Last Session Date` updated within 1 day
+  - `Letzte Session` updated within 1 day
 
 **Aktion:** *Send a webhook*
 - URL: `https://hook.eu2.make.com/<MAKE_WEBHOOK_AIRTABLE_CHANGE>`
@@ -42,11 +42,11 @@ In Airtable einrichten unter **Automations → Create Automation**:
   {
     "_source": "airtable-automation",
     "record_id": "{{record_id}}",
-    "email": "{{Email}}",
+    "email": "{{E-Mail}}",
     "mentor_id": "{{Mentor}}",
     "mentor_name": "{{Mentor Name (Lookup)}}",
     "onboarding_status": "{{Onboarding Status}}",
-    "last_session_date": "{{Last Session Date}}",
+    "last_session_date": "{{Letzte Session}}",
     "nps": "{{NPS}}",
     "program": "{{Program}}",
     "program_start": "{{Program Start Date}}",
@@ -61,7 +61,7 @@ In Airtable einrichten unter **Automations → Create Automation**:
 ### 1. Custom Webhook
 - Name: `airtable_change_webhook`
 
-### 2. Search HubSpot Contact by Email
+### 2. Search HubSpot Contact by E-Mail
 - HubSpot → Search Contacts
 - Filter: `email = {{1.email}}`
 - Limit: 1
@@ -97,14 +97,14 @@ Group: **Customer Operations**.
 
 | Internal Name | Type | Quelle |
 |---|---|---|
-| `mentor_id` | Single-line | Airtable `Clients.Mentor` |
-| `mentor_name` | Single-line | Airtable `Clients.Mentor Name (Lookup)` |
-| `onboarding_status` | Single-line | Airtable `Clients.Onboarding Status` |
-| `last_session_date` | DateTime | Airtable `Clients.Last Session Date` |
-| `nps` | Number | Airtable `Clients.NPS` |
-| `program` | Single-line | Airtable `Clients.Program` |
-| `program_start` | Date | Airtable `Clients.Program Start Date` |
-| `ltv` | Number | Airtable `Clients.LTV` |
+| `mentor_id` | Single-line | Airtable `Kunden.Mentor` |
+| `mentor_name` | Single-line | Airtable `Kunden.Mentor Name (Lookup)` |
+| `onboarding_status` | Single-line | Airtable `Kunden.Onboarding Status` |
+| `last_session_date` | DateTime | Airtable `Kunden.Letzte Session` |
+| `nps` | Number | Airtable `Kunden.NPS` |
+| `program` | Single-line | Airtable `Kunden.Program` |
+| `program_start` | Date | Airtable `Kunden.Program Start Date` |
+| `ltv` | Number | Airtable `Kunden.LTV` |
 
 ---
 
@@ -123,7 +123,7 @@ Loop-Gefahr. Drei Schutz-Mechanismen:
 
 ## Test-Plan
 
-1. Manuell in Airtable: `Clients`-Record mit Email `test+ops@example.com` anlegen
+1. Manuell in Airtable: `Kunden`-Record mit E-Mail `test+ops@example.com` anlegen
 2. `Mentor`-Feld auf einen bestehenden Wert setzen
 3. Erwartet:
    - Make-Szenario läuft (sichtbar in Make → Scenarios → History)
