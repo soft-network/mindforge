@@ -528,3 +528,138 @@ def reset_user_password(user_id: str, new_password: str) -> None:
         {"Passwort-Hash": hash_password(new_password)},
     )
     load_benutzer.clear()
+
+
+# -----------------------------------------------------------------------------
+# Sessions — Loader + Writer für Mentor-Sessions-Page
+# -----------------------------------------------------------------------------
+
+@st.cache_data(ttl=60)
+def load_sessions() -> pd.DataFrame:
+    """Alle Sessions mit Mentor-Name-Lookup.
+
+    Mentor-Filter passiert clientside in der Mentor-Page via for_mentor().
+    """
+    records = _api().table(_base_id(), "Sessions").all()
+    if not records:
+        return pd.DataFrame(columns=[
+            "id", "Session ID", "Lead", "Date", "Outcome", "Notizen",
+            "Dauer (min)", "NPS", "Aufnahme-URL", "Mentor", "Mentor Name",
+        ])
+
+    mentor_names = load_mentor_lookup()
+    rows = []
+    for rec in records:
+        f = rec["fields"]
+        mref = f.get("Mentor", [])
+        mid  = mref[0] if isinstance(mref, list) and mref else None
+        rows.append({
+            "id":           rec["id"],
+            "Session ID":   f.get("Session ID"),
+            "Lead":         f.get("Lead", ""),
+            "Date":         f.get("Date"),
+            "Outcome":      f.get("Outcome", ""),
+            "Notizen":      f.get("Notizen", ""),
+            "Dauer (min)":  f.get("Dauer (min)", 0) or 0,
+            "NPS":          f.get("NPS"),
+            "Aufnahme-URL": f.get("Aufnahme-URL", ""),
+            "Mentor":       mref,
+            "Mentor Name":  mentor_names.get(mid, "—") if mid else "—",
+        })
+    df = pd.DataFrame(rows)
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce", utc=True)
+    return df
+
+
+def add_session(
+    mentor_id: str,
+    lead_name: str,
+    date_iso: str,
+    dauer_min: int,
+    outcome: str,
+    notiz: str = "",
+    nps: Optional[int] = None,
+    aufnahme_url: str = "",
+) -> dict:
+    """Trägt eine neue Session ein.
+
+    Args:
+        mentor_id:   Airtable-RecordId des Mentors (z.B. 'rec...')
+        lead_name:   Lead-Text-Wert (so wie er auch in Kunden.Lead steht)
+        date_iso:    ISO-DateTime-String inkl. Timezone (z.B. '2026-05-22T14:30:00+02:00')
+        dauer_min:   Session-Dauer in Minuten
+        outcome:     Single-Select-Wert (z.B. 'Erfolg', 'Folgetermin', 'Eskalation')
+        notiz:       optionale freie Notiz
+        nps:         0-10, optional (wenn kein Feedback vorliegt)
+        aufnahme_url: optionaler Recording-Link
+    """
+    if not mentor_id:
+        raise ValueError("mentor_id ist Pflicht.")
+    if not lead_name:
+        raise ValueError("Lead-Name ist Pflicht (muss zu einem Mentee passen).")
+    if dauer_min < 1:
+        raise ValueError("Dauer muss positiv sein.")
+    if nps is not None and not (0 <= nps <= 10):
+        raise ValueError("NPS muss zwischen 0 und 10 sein.")
+
+    fields: dict = {
+        "Mentor":      [mentor_id],
+        "Lead":        lead_name,
+        "Date":        date_iso,
+        "Dauer (min)": int(dauer_min),
+        "Outcome":     outcome,
+    }
+    if notiz.strip():
+        fields["Notizen"] = notiz.strip()
+    if nps is not None:
+        fields["NPS"] = int(nps)
+    if aufnahme_url.strip():
+        fields["Aufnahme-URL"] = aufnahme_url.strip()
+
+    rec = _api().table(_base_id(), "Sessions").create(fields, typecast=True)
+    # Cache invalidieren — Sessions, Kunden (Letzte Session ändert sich),
+    # Mentoren (Avg NPS ändert sich)
+    load_sessions.clear()
+    load_kunden.clear()
+    load_mentoren.clear()
+    return rec
+
+
+def update_session(session_id: str, fields: dict) -> None:
+    """Korrigiert eine Session — typecast=True für Outcome-Werte."""
+    _api().table(_base_id(), "Sessions").update(session_id, fields, typecast=True)
+    load_sessions.clear()
+    load_kunden.clear()
+    load_mentoren.clear()
+
+
+# -----------------------------------------------------------------------------
+# Self-Scope-Helpers — werden von Mentor-/Sales-Pages konsumiert,
+# um DataFrames auf die eigene Person zu filtern.
+# -----------------------------------------------------------------------------
+
+def for_mentor(df: pd.DataFrame, mentor_id: str, link_col: str = "Mentor") -> pd.DataFrame:
+    """Filtert ein DataFrame auf Zeilen wo `link_col` den `mentor_id` enthält.
+
+    `link_col` enthält Listen von RecordIds (Airtable Multi-Link), oder
+    einzelne IDs. Beide Formen werden behandelt.
+    """
+    if df.empty or link_col not in df.columns:
+        return df
+
+    def has_id(val) -> bool:
+        if isinstance(val, list):
+            return mentor_id in val
+        return val == mentor_id
+
+    return df[df[link_col].apply(has_id)]
+
+
+def get_mentor_record(mentor_id: str) -> Optional[dict]:
+    """Lade einen einzelnen Mentor-Record direkt aus Airtable (uncached)."""
+    if not mentor_id:
+        return None
+    try:
+        return _api().table(_base_id(), "Mentoren").get(mentor_id)
+    except Exception:  # noqa: BLE001
+        return None

@@ -162,11 +162,29 @@ elif _role == "Sales":
     })
 
 elif _role == "Mentor":
+    mentor_cockpit_page = st.Page(
+        "pages/mentor_cockpit.py", title="Cockpit", icon="🎯", default=True,
+    )
+    mentor_mentees_page = st.Page(
+        "pages/mentor_mentees.py", title="Meine Mentees", icon="🧑‍🎓",
+    )
+    mentor_sessions_page = st.Page(
+        "pages/mentor_sessions.py", title="Meine Sessions", icon="📅",
+    )
+    mentor_aufgaben_page = st.Page(
+        "pages/mentor_aufgaben.py", title="Aufgaben", icon="✅",
+    )
+    mentor_engagements_page = st.Page(
+        "pages/mentor_engagements.py", title="Engagements", icon="🤝",
+    )
+    mentor_profil_page = st.Page(
+        "pages/mentor_profil.py", title="Mein Profil", icon="👤",
+    )
     pg = st.navigation({
-        "📊 Übersicht":      [dashboard_page],
-        "🧑‍🎓 Meine Mentees": [cs_page],              # gefiltert auf self im Loader
-        "👤 Mein Profil":    [mentoren_page],        # read-only self
-        "ℹ️ Info":           [programme_page],
+        "🎯 Mein Tag":        [mentor_cockpit_page, mentor_sessions_page, mentor_aufgaben_page],
+        "🧑‍🎓 Meine Mentees": [mentor_mentees_page, mentor_engagements_page],
+        "👤 Mein Profil":     [mentor_profil_page],
+        "ℹ️ Info":             [programme_page],
     })
 
 else:

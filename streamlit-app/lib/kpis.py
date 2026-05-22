@@ -214,6 +214,84 @@ def health_distribution(df_kunden: pd.DataFrame) -> pd.DataFrame:
     })
 
 
+# -----------------------------------------------------------------------------
+# Mentor-Self-KPIs (für Mentor-Cockpit)
+# Bewusst getrennt von compute_cs_kpis() — Mentor sieht nur seine eigenen
+# Mentees und Sessions, und braucht andere KPIs (Kapazitäts-Auslastung
+# statt MRR-Total).
+# -----------------------------------------------------------------------------
+
+class MentorSelfKpis(TypedDict):
+    aktive_mentees:       int
+    kapazitaet_pro_woche: int
+    auslastung_pct:       float
+    avg_nps:              float
+    sessions_diese_woche: int
+    sessions_30_tage:     int
+    churn_risk_mentees:   int
+    onboarding_offen:     int
+
+
+def compute_mentor_self_kpis(
+    df_my_mentees: pd.DataFrame,
+    df_my_sessions: pd.DataFrame,
+    kapazitaet: int,
+) -> MentorSelfKpis:
+    """KPIs für den eigenen Mentor-Cockpit.
+
+    Erwartet bereits auf den Mentor gefilterte DataFrames.
+    """
+    if df_my_mentees.empty and df_my_sessions.empty:
+        return MentorSelfKpis(
+            aktive_mentees       = 0,
+            kapazitaet_pro_woche = kapazitaet,
+            auslastung_pct       = 0.0,
+            avg_nps              = 0.0,
+            sessions_diese_woche = 0,
+            sessions_30_tage     = 0,
+            churn_risk_mentees   = 0,
+            onboarding_offen     = 0,
+        )
+
+    aktive_mentees = len(df_my_mentees)
+    auslastung = (aktive_mentees / kapazitaet * 100.0) if kapazitaet else 0.0
+
+    # NPS-Durchschnitt aus eigenen Sessions
+    nps_series = df_my_sessions["NPS"].dropna() if not df_my_sessions.empty else pd.Series(dtype=float)
+    avg_nps = float(nps_series.mean()) if not nps_series.empty else 0.0
+
+    # Sessions: diese Woche + letzte 30 Tage
+    now = pd.Timestamp.now(tz="UTC")
+    week_ago = now - pd.Timedelta(days=7)
+    days30   = now - pd.Timedelta(days=30)
+
+    if not df_my_sessions.empty and "Date" in df_my_sessions.columns:
+        sessions_woche = int((df_my_sessions["Date"] >= week_ago).sum())
+        sessions_30    = int((df_my_sessions["Date"] >= days30).sum())
+    else:
+        sessions_woche = 0
+        sessions_30    = 0
+
+    # Churn-Risk + Onboarding-Backlog aus Mentees
+    if not df_my_mentees.empty:
+        churn_risk = int((df_my_mentees["Health Score"] < 50).sum())
+        onb_offen  = int((df_my_mentees["Onboarding Status"] != "Activated").sum())
+    else:
+        churn_risk = 0
+        onb_offen  = 0
+
+    return MentorSelfKpis(
+        aktive_mentees       = aktive_mentees,
+        kapazitaet_pro_woche = kapazitaet,
+        auslastung_pct       = round(auslastung, 1),
+        avg_nps              = round(avg_nps, 1),
+        sessions_diese_woche = sessions_woche,
+        sessions_30_tage     = sessions_30,
+        churn_risk_mentees   = churn_risk,
+        onboarding_offen     = onb_offen,
+    )
+
+
 def mrr_per_program(df_kunden: pd.DataFrame) -> pd.DataFrame:
     """MRR-Summe + Kunden-Anzahl pro Programm — für MRR-Chart.
 
