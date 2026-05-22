@@ -1,6 +1,10 @@
 # Local-only working folder (excluded from public repo)
 _application/
 
+# Claude Code persönliche Permissions — niemals committen.
+# Team-Settings gehören in .claude/settings.json (committet).
+.claude/settings.local.json
+
 # Secrets — NEVER commit
 streamlit-app/.streamlit/secrets.toml
 *.env
