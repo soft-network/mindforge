@@ -154,15 +154,16 @@ def tier_emoji(score: int) -> str:
 # Page — Filter + Liste
 # -----------------------------------------------------------------------------
 
-st.title("📋 Leads")
+df = load_leads()
+if df.empty:
+    st.title("📋 Leads")
+    st.info("Keine Leads vorhanden.")
+    st.stop()
+
+st.title(f"📋 Leads ({len(df)})")
 st.caption(
     "Filter · Zeitraum · Klick auf ✏️ neben einem Lead öffnet das Edit-Modal"
 )
-
-df = load_leads()
-if df.empty:
-    st.info("Keine Leads vorhanden.")
-    st.stop()
 
 
 # ----- Filter-Row (5 Spalten) -------------------------------------------------

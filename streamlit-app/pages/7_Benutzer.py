@@ -215,15 +215,15 @@ def status_badge(status: str) -> str:
 # Page
 # -----------------------------------------------------------------------------
 
-st.title("👤 Benutzer")
+df = load_benutzer()
+
+st.title(f"👤 Benutzer ({len(df)})")
 st.caption("User-Lifecycle · Rollen · Status · Passwort-Reset")
 
 col_a, col_b = st.columns([4, 1])
 col_a.markdown("Verwalte hier alle Login-Konten und ihre Rollen.")
 if col_b.button("➕ Neuer Benutzer", type="primary", use_container_width=True):
     new_user_modal()
-
-df = load_benutzer()
 
 if df.empty:
     render_empty_state("Noch keine Benutzer angelegt.", icon="👤")

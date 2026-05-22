@@ -1,9 +1,13 @@
 [theme]
-primaryColor = "#4f46e5"
-backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#f9fafb"
-textColor = "#1f2937"
-font = "sans serif"
+# Primary-Accent: warmes Orange — passt zum 🔥-MindForge-Logo. Wird für
+# Buttons, Slider-Tracks, aktive Tabs und Links verwendet.
+primaryColor             = "#f97316"
+# Hauptflächen: hell neutral, leicht kühl — Charts bleiben farbecht.
+backgroundColor          = "#ffffff"
+# Side-Panels / Container — minimal abgesetzt vom Hauptbereich.
+secondaryBackgroundColor = "#f1f5f9"
+textColor                = "#111827"
+font                     = "sans serif"
 
 [server]
 headless = true
