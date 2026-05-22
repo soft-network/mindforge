@@ -153,12 +153,22 @@ if _role == "Hauptadmin":
     })
 
 elif _role == "Sales":
+    sales_cockpit_page = st.Page(
+        "pages/sales_cockpit.py", title="Cockpit", icon="📊", default=True,
+    )
+    sales_strategie_page = st.Page(
+        "pages/sales_strategiegespraeche.py", title="Strategiegespräche", icon="🎯",
+    )
+    sales_meine_leads_page = st.Page(
+        "pages/sales_meine_leads.py", title="Meine Pipeline", icon="📋",
+    )
+    sales_conversions_page = st.Page(
+        "pages/sales_conversions.py", title="Meine Conversions", icon="🤝",
+    )
     pg = st.navigation({
-        "📊 Übersicht":     [dashboard_page],
-        "📞 Mein Tag":      [setter_page],          # Hot-Lead-Queue + Buchung
-        "📋 Leads":         [leads_page],
-        "🧑‍🎓 Mentees":      [cs_page],              # für Convert-Sicht
-        "ℹ️ Info":           [programme_page, mentoren_page],   # Read-Kontext
+        "📊 Mein Tag":       [sales_cockpit_page, setter_page, sales_strategie_page],
+        "📋 Meine Leads":    [sales_meine_leads_page, sales_conversions_page],
+        "ℹ️ Info":            [programme_page, mentoren_page],
     })
 
 elif _role == "Mentor":

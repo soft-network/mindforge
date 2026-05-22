@@ -225,20 +225,133 @@ def load_leads() -> pd.DataFrame:
 
 @st.cache_data(ttl=300)
 def load_programs() -> pd.DataFrame:
-    """Alle Programme — für Programme-Page."""
+    """Alle Programme — für Programme-Page und Convert-Workflow.
+
+    Inkl. Mentor-Pool (Multi-Link) und aufgelöste Namen für die UI.
+    """
     records = _api().table(_base_id(), "Programme").all()
+    mentor_names = load_mentor_lookup()
     rows = []
     for rec in records:
         f = rec["fields"]
+        mentor_pool = f.get("Mentoren", []) or []
         rows.append({
-            "id":               rec["id"],
-            "Name":             f.get("Name", ""),
-            "Category":         f.get("Category", ""),
-            "Price (EUR)":      f.get("Price (EUR)", 0),
-            "Lead Count":       f.get("Lead Count", 0),
-            "Converted Kunden": f.get("Converted Kunden", 0),
+            "id":                 rec["id"],
+            "Name":                f.get("Name", ""),
+            "Category":            f.get("Category", ""),
+            "Price (EUR)":         f.get("Price (EUR)", 0),
+            "Lead Count":          f.get("Lead Count", 0),
+            "Converted Kunden":    f.get("Converted Clients", 0) or f.get("Converted Kunden", 0),
+            "Mentoren":            mentor_pool,
+            "Mentor-Pool-Namen":   [mentor_names.get(mid, "?") for mid in mentor_pool],
         })
     return pd.DataFrame(rows)
+
+
+def update_programm(programm_id: str, fields: dict) -> None:
+    """Generic Programm-Update — primär für Mentor-Pool-Zuweisung."""
+    _api().table(_base_id(), "Programme").update(programm_id, fields, typecast=True)
+    load_programs.clear()
+
+
+# -----------------------------------------------------------------------------
+# Convert-Workflow — Lead → Kunde mit Auto-Mentor-Routing
+# Wird von der Sales-Strategiegespräche-Page benutzt.
+# -----------------------------------------------------------------------------
+
+def pick_least_loaded_mentor(pool_ids: list[str]) -> Optional[str]:
+    """Wählt aus einem Mentor-Pool den Mentor mit niedrigster Auslastung.
+
+    Auslastung = aktive_kunden / kapazität. Berücksichtigt nur Active-Status.
+    Bei Gleichstand: alphabetisch deterministisch.
+    """
+    if not pool_ids:
+        return None
+
+    df_mentoren = load_mentoren()
+    if df_mentoren.empty:
+        return None
+
+    pool_df = df_mentoren[df_mentoren["id"].isin(pool_ids)]
+    pool_df = pool_df[pool_df["Status"] == "Active"]
+    if pool_df.empty:
+        return None
+
+    pool_df = pool_df.copy()
+    pool_df["Auslastung"] = pool_df.apply(
+        lambda r: (r["Aktive Kunden"] / r["Kapazität"]) if r["Kapazität"] else 1.0,
+        axis=1,
+    )
+    pool_df = pool_df.sort_values(["Auslastung", "Name"], ascending=[True, True])
+    return pool_df.iloc[0]["id"]
+
+
+def convert_lead_to_kunde(
+    lead_id: str,
+    lead_name: str,
+    programm_name: str,
+    mentor_id: Optional[str] = None,
+    mrr_eur: float = 0.0,
+    converted_by_email: Optional[str] = None,
+) -> tuple[dict, str]:
+    """Konvertiert einen Lead in einen Kunden-Record.
+
+    Wenn `mentor_id` None ist, wird automatisch der am wenigsten ausgelastete
+    Mentor aus `Programme.Mentoren` gewählt.
+
+    Returns:
+        (kunde_record, gewaehlter_mentor_id) — beide auch wenn Mentor leer
+
+    Side-Effects:
+        - Lead.Status = 'Converted'
+        - Caches invalidiert (Leads, Kunden, Mentoren)
+    """
+    from datetime import date
+
+    if not lead_id or not lead_name:
+        raise ValueError("lead_id und lead_name sind Pflicht.")
+    if not programm_name:
+        raise ValueError("Programm muss gewählt werden.")
+
+    # Falls Mentor nicht gegeben: Auto-Routing aus Programm-Pool
+    chosen_mentor_id = mentor_id
+    if not chosen_mentor_id:
+        # Programm-Record finden
+        df_prog = load_programs()
+        match = df_prog[df_prog["Name"] == programm_name]
+        if not match.empty:
+            pool = match.iloc[0]["Mentoren"] or []
+            chosen_mentor_id = pick_least_loaded_mentor(pool)
+
+    # Kunden-Record anlegen
+    kunde_fields = {
+        "Lead":              lead_name,
+        "Program":           programm_name,
+        "Start Date":        date.today().isoformat(),
+        "MRR (EUR)":         float(mrr_eur),
+        "LTV":               0.0,
+        "Status":            "Active",
+        "Onboarding Status": "Pending",
+    }
+    if chosen_mentor_id:
+        kunde_fields["Mentor"] = [chosen_mentor_id]
+
+    kunde_rec = _api().table(_base_id(), "Kunden").create(
+        kunde_fields, typecast=True,
+    )
+
+    # Lead-Status auf Converted setzen
+    lead_patch = {"Status": "Converted"}
+    if chosen_mentor_id:
+        lead_patch["Mentor"] = [chosen_mentor_id]
+    _api().table(_base_id(), "Leads").update(lead_id, lead_patch, typecast=True)
+
+    # Caches invalidieren — alle drei betroffen
+    load_leads.clear()
+    load_kunden.clear()
+    load_mentoren.clear()
+
+    return kunde_rec, chosen_mentor_id or ""
 
 
 def update_lead(lead_id: str, fields: dict) -> None:
