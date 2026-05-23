@@ -49,29 +49,39 @@ st.caption(
 
 
 # -----------------------------------------------------------------------------
-# Sidebar — Google-Login + Filter
+# Google-Account + Filter — direkt in der Page (statt Sidebar)
 # -----------------------------------------------------------------------------
 
-with st.sidebar:
-    st.subheader(":material/account_circle: Google-Account")
-    if gcal.current_user_email():
-        st.success(f"Eingeloggt als\n**{gcal.current_user_email()}**")
-        if st.button("Ausloggen"):
-            gcal.logout()
-            st.rerun()
-    else:
-        st.caption("Noch nicht verbunden — siehe Login-Button rechts.")
+with st.container(border=True):
+    cols = st.columns([2, 2, 2])
 
-    st.markdown("---")
-    st.subheader(":material/filter_alt: Filter")
-    min_score = st.slider("Min Quiz Score", 50, 100, 70, step=5)
-    statuses = st.multiselect(
-        "Status",
-        ["New", "Qualified", "Contacted"],
-        default=["New", "Qualified"],
-    )
-    if not statuses:
-        statuses = ["New", "Qualified"]
+    # Google-Account-Status
+    with cols[0]:
+        st.markdown("**:material/account_circle: Google-Account**")
+        if gcal.current_user_email():
+            st.success(f"Eingeloggt als\n**{gcal.current_user_email()}**")
+            if st.button("Google-Logout", key="gcal_logout_btn"):
+                gcal.logout()
+                st.rerun()
+        else:
+            st.caption("Noch nicht verbunden — siehe Login-Button unten.")
+
+    # Filter-Block
+    with cols[1]:
+        st.markdown("**:material/filter_alt: Min Score**")
+        min_score = st.slider("Quiz Score (min)", 50, 100, 70, step=5,
+                              label_visibility="collapsed")
+
+    with cols[2]:
+        st.markdown("**:material/list: Status-Filter**")
+        statuses = st.multiselect(
+            "Status",
+            ["New", "Qualified", "Contacted"],
+            default=["New", "Qualified"],
+            label_visibility="collapsed",
+        )
+        if not statuses:
+            statuses = ["New", "Qualified"]
 
 
 # -----------------------------------------------------------------------------

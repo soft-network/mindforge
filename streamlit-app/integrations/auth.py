@@ -192,9 +192,34 @@ def render_login_gate() -> bool:
     if "current_user" in st.session_state:
         return True
 
+    # Default-Sidebar + Streamlit-Auto-Nav vor Login komplett ausblenden,
+    # sodass nur die Login-Box zentral sichtbar ist.
+    st.markdown(
+        """
+        <style>
+        [data-testid="stSidebar"],
+        [data-testid="stSidebarNav"] { display: none !important; }
+        [data-testid="collapsedControl"] { display: none !important; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     # Login-Form
     with st.container():
-        st.title("🔥 MindForge Coach")
+        st.markdown(
+            """
+            <div style="display:flex; align-items:center; gap:10px;
+                        margin-bottom: 8px;">
+              <span class="material-symbols-outlined"
+                    style="color:#FF4B4B; font-size:32px;
+                           font-variation-settings:'FILL' 1, 'wght' 500;">favorite</span>
+              <span style="font-size:28px; font-weight:600;
+                           color:#262730;">Lovelifepassport</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         st.caption("Bitte mit deiner Email und Passwort einloggen.")
 
         with st.form("login_form", clear_on_submit=False):
