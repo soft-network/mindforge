@@ -146,18 +146,20 @@ def _render_mentor_sidebar() -> None:
 
 
 def _render_admin_sidebar() -> None:
-    section_header("insights", "Übersicht")
-    _page_link("pages/1_Dashboard.py",    "Dashboard", "space_dashboard")
-    _page_link("pages/admin_pipeline.py", "Pipeline",  "view_kanban")
+    # Strikte Trennung: alles Read-only/Analytisch unter Insights,
+    # alles Schreibend/Verwaltung unter Administration.
+    section_header("insights", "Insights")
+    _page_link("pages/1_Dashboard.py",        "Dashboard",       "space_dashboard")
+    _page_link("pages/admin_pipeline.py",     "Pipeline",        "view_kanban")
+    _page_link("pages/admin_performance.py",  "Performance",     "leaderboard")
+    _page_link("pages/mentor_analytics.py",   "Mentor-Analytics", "school")
+    _page_link("pages/cs_analytics.py",       "CS-Analytics",    "handshake")
 
     section_header("settings", "Administration")
     _page_link("pages/2_Leads.py",            "Leads",            "format_list_bulleted")
     _page_link("pages/5_Mentoren.py",         "Mentoren",         "school")
     _page_link("pages/6_Customer_Success.py", "Customer Success", "handshake")
     _page_link("pages/4_Programme.py",        "Programme",        "inventory_2")
-
-    section_header("emoji_events", "Analytics")
-    _page_link("pages/admin_performance.py", "Performance", "leaderboard")
 
     section_header("phone_in_talk", "Monitoring")
     _page_link("pages/3_Setter_Daily.py", "Setter Daily", "phone_in_talk")

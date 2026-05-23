@@ -154,105 +154,83 @@ if df.empty:
 
 st.title(f":material/school: Mentoren ({len(df)})")
 st.caption(
-    "Performance · Auslastung · Spezialisierungen — Klick auf ✏️ öffnet das Edit-Modal"
+    "Verwaltung · Filter · Edit-Modal — KPIs+Charts findest du in **Insights → Mentor-Analytics**."
 )
 
 
 # -----------------------------------------------------------------------------
-# Tabs: Übersicht (KPIs+Charts) | Verwaltung (Filter+Liste+Edit)
+# Filter-Row (5 Spalten)
 # -----------------------------------------------------------------------------
 
-tab_overview, tab_mgmt = st.tabs([
-    ":material/insights: Übersicht",
-    ":material/format_list_bulleted: Verwaltung",
-])
+fcols = st.columns(5)
+status_filter = fcols[0].selectbox("Status",         ["Alle"] + STATUS_OPTIONS)
+spez_filter   = fcols[1].selectbox("Spezialisierung", unique_specializations(df))
+stadt_filter  = fcols[2].selectbox("Stadt",           unique_options(df, "Stadt"))
+search        = fcols[3].text_input("Suche (Name/E-Mail)", "")
+sort_by       = fcols[4].selectbox(
+    "Sortieren nach",
+    ["⌀ NPS (hoch → niedrig)", "Aktive Kunden", "Kapazität", "Name (A–Z)"],
+)
+
+# Filter + Sort
+filtered = filter_mentoren(
+    df,
+    status=status_filter, spezialisierung=spez_filter,
+    stadt=stadt_filter, search=search,
+).reset_index(drop=True)
+
+if sort_by == "⌀ NPS (hoch → niedrig)":
+    filtered = filtered.sort_values("Avg NPS", ascending=False, na_position="last")
+elif sort_by == "Aktive Kunden":
+    filtered = filtered.sort_values("Aktive Kunden", ascending=False)
+elif sort_by == "Kapazität":
+    filtered = filtered.sort_values("Kapazität", ascending=False)
+elif sort_by == "Name (A–Z)":
+    filtered = filtered.sort_values("Name", ascending=True)
+filtered = filtered.reset_index(drop=True)
+
+st.write(f"**{len(filtered)} Mentoren** gefunden")
+
+if filtered.empty:
+    st.caption("Keine Mentoren im aktuellen Filter.")
+    st.stop()
 
 
-# ----- TAB ÜBERSICHT ---------------------------------------------------------
+# Mentor-Liste mit Edit-Button
+hcols = st.columns([0.5, 2.5, 1.5, 2, 1.2, 1, 1.2, 1, 0.8])
+hcols[0].markdown("**●**")
+hcols[1].markdown("**Name**")
+hcols[2].markdown("**Stadt**")
+hcols[3].markdown("**Spezialisierung**")
+hcols[4].markdown("**Status**")
+hcols[5].markdown("**Kap.**")
+hcols[6].markdown("**Kunden**")
+hcols[7].markdown("**NPS**")
+hcols[8].markdown("**Edit**")
+st.markdown(
+    "<hr style='margin-top:0; margin-bottom:0.5rem'>",
+    unsafe_allow_html=True,
+)
 
-with tab_overview:
-    render_mentor_kpi_row(compute_mentor_kpis(df))
-    st.markdown("---")
-    ccols = st.columns(2)
-    with ccols[0]:
-        render_mentor_capacity(df)
-    with ccols[1]:
-        render_specialization(df)
+for _, mentor in filtered.iterrows():
+    cols = st.columns([0.5, 2.5, 1.5, 2, 1.2, 1, 1.2, 1, 0.8])
+    cols[0].markdown(status_badge(mentor["Status"]))
+    cols[1].markdown(f"**{mentor['Name'] or '—'}**")
+    cols[2].caption(mentor.get("Stadt") or "—")
 
+    specs = mentor.get("Spezialisierung") or []
+    cols[3].caption(", ".join(specs) if isinstance(specs, list) and specs else "—")
 
-# ----- TAB VERWALTUNG --------------------------------------------------------
+    cols[4].markdown(f"`{mentor['Status'] or '—'}`")
+    cols[5].markdown(f"`{int(mentor['Kapazität'] or 0)}`")
+    cols[6].markdown(f"`{int(mentor['Aktive Kunden'] or 0)}`")
 
-with tab_mgmt:
-    # Filter-Row (5 Spalten)
-    fcols = st.columns(5)
-    status_filter = fcols[0].selectbox("Status",         ["Alle"] + STATUS_OPTIONS)
-    spez_filter   = fcols[1].selectbox("Spezialisierung", unique_specializations(df))
-    stadt_filter  = fcols[2].selectbox("Stadt",           unique_options(df, "Stadt"))
-    search        = fcols[3].text_input("Suche (Name/E-Mail)", "")
-    sort_by       = fcols[4].selectbox(
-        "Sortieren nach",
-        ["⌀ NPS (hoch → niedrig)", "Aktive Kunden", "Kapazität", "Name (A–Z)"],
-    )
+    nps = mentor.get("Avg NPS")
+    cols[7].markdown(f"`{nps:.1f}`" if pd.notna(nps) else "`—`")
 
-    # Filter + Sort
-    filtered = filter_mentoren(
-        df,
-        status=status_filter, spezialisierung=spez_filter,
-        stadt=stadt_filter, search=search,
-    ).reset_index(drop=True)
-
-    if sort_by == "⌀ NPS (hoch → niedrig)":
-        filtered = filtered.sort_values("Avg NPS", ascending=False, na_position="last")
-    elif sort_by == "Aktive Kunden":
-        filtered = filtered.sort_values("Aktive Kunden", ascending=False)
-    elif sort_by == "Kapazität":
-        filtered = filtered.sort_values("Kapazität", ascending=False)
-    elif sort_by == "Name (A–Z)":
-        filtered = filtered.sort_values("Name", ascending=True)
-    filtered = filtered.reset_index(drop=True)
-
-    st.write(f"**{len(filtered)} Mentoren** gefunden")
-
-    if filtered.empty:
-        st.caption("Keine Mentoren im aktuellen Filter.")
-        st.stop()
-
-
-    # Mentor-Liste mit Edit-Button
-    hcols = st.columns([0.5, 2.5, 1.5, 2, 1.2, 1, 1.2, 1, 0.8])
-    hcols[0].markdown("**●**")
-    hcols[1].markdown("**Name**")
-    hcols[2].markdown("**Stadt**")
-    hcols[3].markdown("**Spezialisierung**")
-    hcols[4].markdown("**Status**")
-    hcols[5].markdown("**Kap.**")
-    hcols[6].markdown("**Kunden**")
-    hcols[7].markdown("**NPS**")
-    hcols[8].markdown("**Edit**")
-    st.markdown(
-        "<hr style='margin-top:0; margin-bottom:0.5rem'>",
-        unsafe_allow_html=True,
-    )
-
-    for _, mentor in filtered.iterrows():
-        cols = st.columns([0.5, 2.5, 1.5, 2, 1.2, 1, 1.2, 1, 0.8])
-        cols[0].markdown(status_badge(mentor["Status"]))
-        cols[1].markdown(f"**{mentor['Name'] or '—'}**")
-        cols[2].caption(mentor.get("Stadt") or "—")
-
-        specs = mentor.get("Spezialisierung") or []
-        cols[3].caption(", ".join(specs) if isinstance(specs, list) and specs else "—")
-
-        cols[4].markdown(f"`{mentor['Status'] or '—'}`")
-        cols[5].markdown(f"`{int(mentor['Kapazität'] or 0)}`")
-        cols[6].markdown(f"`{int(mentor['Aktive Kunden'] or 0)}`")
-
-        nps = mentor.get("Avg NPS")
-        cols[7].markdown(f"`{nps:.1f}`" if pd.notna(nps) else "`—`")
-
-        if cols[8].button(
-            "✏️",
-            key=f"edit_mentor_btn_{mentor['id']}",
-            help="Mentor bearbeiten",
-        ):
-            edit_mentor_modal(mentor)
+    if cols[8].button(
+        "✏️",
+        key=f"edit_mentor_btn_{mentor['id']}",
+        help="Mentor bearbeiten",
+    ):
+        edit_mentor_modal(mentor)

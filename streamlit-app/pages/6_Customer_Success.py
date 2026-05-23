@@ -143,103 +143,80 @@ if df.empty:
 
 st.title(f":material/handshake: Customer Success ({len(df)})")
 st.caption(
-    "Onboarding · Health · MRR — Klick auf ✏️ neben einem Kunden öffnet das Edit-Modal"
+    "Verwaltung · Filter · Edit-Modal — KPIs+Charts findest du in **Insights → CS-Analytics**."
 )
 
 
 # -----------------------------------------------------------------------------
-# Tabs: Übersicht | Verwaltung
+# Filter-Row (6 Spalten)
 # -----------------------------------------------------------------------------
 
-tab_overview, tab_mgmt = st.tabs([
-    ":material/insights: Übersicht",
-    ":material/format_list_bulleted: Verwaltung",
-])
+fcols = st.columns(6)
+status_filter      = fcols[0].selectbox("Status",      ["Alle"] + STATUS_OPTIONS)
+onboarding_filter  = fcols[1].selectbox("Onboarding",  ["Alle"] + ONBOARDING_STAGES)
+program_filter     = fcols[2].selectbox("Programm",    unique_options(df, "Program"))
+mentor_filter      = fcols[3].selectbox("Mentor",      unique_options(df, "Mentor Name"))
+health_filter      = fcols[4].selectbox("Health-Tier", HEALTH_TIER_OPTIONS)
+search             = fcols[5].text_input("Suche (Lead)", "")
+
+# Filter + Sort
+filtered = filter_kunden(
+    df,
+    status=status_filter, onboarding=onboarding_filter,
+    programm=program_filter, mentor=mentor_filter,
+    health_tier=health_filter, search=search,
+).reset_index(drop=True)
+
+filtered = filtered.sort_values(
+    ["Health Score", "Letzte Session"], ascending=[True, True], na_position="first",
+).reset_index(drop=True)
+
+st.write(f"**{len(filtered)} Kunden** gefunden")
+
+if filtered.empty:
+    render_empty_state("Keine Kunden im aktuellen Filter.", icon="🔍")
+    st.stop()
 
 
-# ----- TAB ÜBERSICHT ---------------------------------------------------------
+# Kunden-Liste
+hcols = st.columns([0.5, 2.5, 2, 1.8, 1.5, 1.2, 1.2, 1.2, 0.8])
+hcols[0].markdown("**●**")
+hcols[1].markdown("**Lead**")
+hcols[2].markdown("**Programm**")
+hcols[3].markdown("**Mentor**")
+hcols[4].markdown("**Onboarding**")
+hcols[5].markdown("**MRR**")
+hcols[6].markdown("**Letzte Session**")
+hcols[7].markdown("**Health**")
+hcols[8].markdown("**Edit**")
+st.markdown(
+    "<hr style='margin-top:0; margin-bottom:0.5rem'>",
+    unsafe_allow_html=True,
+)
 
-with tab_overview:
-    render_cs_kpi_row(compute_cs_kpis(df))
-    st.markdown("---")
-    ccols = st.columns(2)
-    with ccols[0]:
-        render_onboarding_funnel(df)
-    with ccols[1]:
-        render_health_distribution(df)
-    render_mrr_chart(df)
+for _, kunde in filtered.iterrows():
+    cols = st.columns([0.5, 2.5, 2, 1.8, 1.5, 1.2, 1.2, 1.2, 0.8])
+    cols[0].markdown(kunde.get("Health Emoji", "●"))
+    cols[1].markdown(f"**{kunde['Lead'] or '—'}**")
+    cols[2].caption(kunde.get("Program") or "—")
+    cols[3].caption(kunde.get("Mentor Name") or "—")
+    cols[4].markdown(f"`{kunde['Onboarding Status'] or '—'}`")
+    mrr = kunde.get("MRR (EUR)") or 0
+    cols[5].markdown(f"`€ {mrr:,.0f}`")
 
+    last = kunde.get("Letzte Session")
+    if pd.notna(last):
+        days_ago = (pd.Timestamp.now(tz="UTC") - last).days
+        cols[6].caption(f"vor {days_ago} Tagen")
+    else:
+        cols[6].caption("—")
 
-# ----- TAB VERWALTUNG --------------------------------------------------------
+    score = int(kunde.get("Health Score") or 0)
+    cols[7].markdown(f"`{score}`  {kunde.get('Health Tier', '')}")
 
-with tab_mgmt:
-    # Filter-Row (6 Spalten)
-    fcols = st.columns(6)
-    status_filter      = fcols[0].selectbox("Status",      ["Alle"] + STATUS_OPTIONS)
-    onboarding_filter  = fcols[1].selectbox("Onboarding",  ["Alle"] + ONBOARDING_STAGES)
-    program_filter     = fcols[2].selectbox("Programm",    unique_options(df, "Program"))
-    mentor_filter      = fcols[3].selectbox("Mentor",      unique_options(df, "Mentor Name"))
-    health_filter      = fcols[4].selectbox("Health-Tier", HEALTH_TIER_OPTIONS)
-    search             = fcols[5].text_input("Suche (Lead)", "")
-
-    # Filter + Sort
-    filtered = filter_kunden(
-        df,
-        status=status_filter, onboarding=onboarding_filter,
-        programm=program_filter, mentor=mentor_filter,
-        health_tier=health_filter, search=search,
-    ).reset_index(drop=True)
-
-    filtered = filtered.sort_values(
-        ["Health Score", "Letzte Session"], ascending=[True, True], na_position="first",
-    ).reset_index(drop=True)
-
-    st.write(f"**{len(filtered)} Kunden** gefunden")
-
-    if filtered.empty:
-        render_empty_state("Keine Kunden im aktuellen Filter.", icon="🔍")
-        st.stop()
-
-
-    # Kunden-Liste
-    hcols = st.columns([0.5, 2.5, 2, 1.8, 1.5, 1.2, 1.2, 1.2, 0.8])
-    hcols[0].markdown("**●**")
-    hcols[1].markdown("**Lead**")
-    hcols[2].markdown("**Programm**")
-    hcols[3].markdown("**Mentor**")
-    hcols[4].markdown("**Onboarding**")
-    hcols[5].markdown("**MRR**")
-    hcols[6].markdown("**Letzte Session**")
-    hcols[7].markdown("**Health**")
-    hcols[8].markdown("**Edit**")
-    st.markdown(
-        "<hr style='margin-top:0; margin-bottom:0.5rem'>",
-        unsafe_allow_html=True,
-    )
-
-    for _, kunde in filtered.iterrows():
-        cols = st.columns([0.5, 2.5, 2, 1.8, 1.5, 1.2, 1.2, 1.2, 0.8])
-        cols[0].markdown(kunde.get("Health Emoji", "●"))
-        cols[1].markdown(f"**{kunde['Lead'] or '—'}**")
-        cols[2].caption(kunde.get("Program") or "—")
-        cols[3].caption(kunde.get("Mentor Name") or "—")
-        cols[4].markdown(f"`{kunde['Onboarding Status'] or '—'}`")
-        mrr = kunde.get("MRR (EUR)") or 0
-        cols[5].markdown(f"`€ {mrr:,.0f}`")
-
-        last = kunde.get("Letzte Session")
-        if pd.notna(last):
-            days_ago = (pd.Timestamp.now(tz="UTC") - last).days
-            cols[6].caption(f"vor {days_ago} Tagen")
-        else:
-            cols[6].caption("—")
-
-        score = int(kunde.get("Health Score") or 0)
-        cols[7].markdown(f"`{score}`  {kunde.get('Health Tier', '')}")
-
-        if cols[8].button(
-            "✏️",
-            key=f"edit_kunde_btn_{kunde['id']}",
-            help="Kunde bearbeiten",
-        ):
-            edit_kunde_modal(kunde)
+    if cols[8].button(
+        "✏️",
+        key=f"edit_kunde_btn_{kunde['id']}",
+        help="Kunde bearbeiten",
+    ):
+        edit_kunde_modal(kunde)

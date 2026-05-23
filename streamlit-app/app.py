@@ -101,6 +101,8 @@ pg = st.navigation([
     _page("pages/7_Benutzer.py",         "Benutzer",          "👤"),
     _page("pages/admin_pipeline.py",     "Pipeline",          "📊"),
     _page("pages/admin_performance.py",  "Performance",       "🏆"),
+    _page("pages/mentor_analytics.py",   "Mentor-Analytics",  "📈"),
+    _page("pages/cs_analytics.py",       "CS-Analytics",      "💗"),
     # Sales
     _page("pages/sales_cockpit.py",              "Sales-Cockpit",       "📊"),
     _page("pages/sales_strategiegespraeche.py",  "Strategiegespräche",  "🎯"),
